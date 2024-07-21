@@ -40,3 +40,5 @@ application-test.yml
 ### VS Code ###
 .vscode/
 
+### ETC ###
+.DS_Store

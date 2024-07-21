@@ -13,7 +13,8 @@ public enum Exceptions {
     FORBIDDEN(403, "Forbidden"),
     NOT_FOUND(404, "Not Found"),
     METHOD_NOT_ALLOWED(405, "Method Not Allowed"),
-    REQUEST_TIMEOUT(408, "Request Timeout");
+    REQUEST_TIMEOUT(408, "Request Timeout"),
+    INTERNAL_SERVER_ERROR(500, "Internal Server Error"),;
 
     private int code;
     private String msg;

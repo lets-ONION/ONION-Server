@@ -9,9 +9,9 @@ public class ResponseDTO<T> {
     private String code;
     private T data;
 
-    public ResponseDTO(String msg, ResponseCode code, T data) {
+    public ResponseDTO(String msg, ResponseCode responseCode, T data) {
         this.msg = msg;
-        this.code = code.getCode();
+        this.code = responseCode.getCode() + " " + responseCode.getMessage();
         this.data = data;
     }
 }

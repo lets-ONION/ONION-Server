@@ -6,12 +6,12 @@ import lombok.Data;
 public class ResponseDTO<T> {
 
     private String msg;
-    private String code;
+    private int code;
     private T data;
 
-    public ResponseDTO(String msg, ResponseCode responseCode, T data) {
-        this.msg = msg;
-        this.code = responseCode.getCode() + " " + responseCode.getMessage();
+    public ResponseDTO(T data, Responses responses) {
+        this.msg = responses.getMessage();
+        this.code = responses.getCode();
         this.data = data;
     }
 }

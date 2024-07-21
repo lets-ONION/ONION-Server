@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: lets-onionApp
+  profiles.include:
+    - local
+    - prod

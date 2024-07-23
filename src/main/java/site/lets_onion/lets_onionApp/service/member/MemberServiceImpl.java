@@ -57,7 +57,7 @@ public class MemberServiceImpl implements MemberService {
             member = searchedResult.get(0);
             existMember = true;
         }
-        LoginDTO loginDTO = new LoginDTO(
+        LoginDTO loginDTO = new LoginDTO(member,
                 jwtProvider.createAccessToken(member.getId()),
                 jwtProvider.createRefreshToken(member.getId()),
                 existMember

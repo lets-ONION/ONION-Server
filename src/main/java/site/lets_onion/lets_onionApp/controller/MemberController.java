@@ -1,21 +1,28 @@
 package site.lets_onion.lets_onionApp.controller;
 
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import site.lets_onion.lets_onionApp.dto.jwt.RefreshTokenDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.TokenDTO;
 import site.lets_onion.lets_onionApp.dto.member.LoginDTO;
 import site.lets_onion.lets_onionApp.service.member.MemberService;
 import site.lets_onion.lets_onionApp.service.member.Redirection;
+import site.lets_onion.lets_onionApp.util.exception.ExceptionDTO;
 import site.lets_onion.lets_onionApp.util.jwt.JwtProvider;
 import site.lets_onion.lets_onionApp.util.response.ResponseDTO;
 
 import java.net.URI;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,6 +34,8 @@ public class MemberController {
 
 
     @GetMapping("/oauth/kakao/login")
+    @Operation(summary = "백엔드 로그인", description = "백엔드 개발 시 로그인에 사용되는 API입니다.")
+    @ApiResponse(responseCode = "301", description = "리다이렉트 성공")
     public ResponseEntity<?> getRedirect(HttpServletRequest request) {
         String addr = request.getRemoteAddr();
         Redirection redirection;
@@ -43,7 +52,18 @@ public class MemberController {
 
 
     @GetMapping("/oauth/kakao/callback")
-    public ResponseEntity<ResponseDTO<LoginDTO>> localLogin(HttpServletRequest request, @RequestParam String code) {
+    @Operation(summary = "카카오 인증 API", description = "카카오 인가 코드를 받아 인증 처리를 하는 API입니다.")
+    @ApiResponse(responseCode = "200", description = "기존 사용자 로그인 성공")
+    @ApiResponse(responseCode = "201", description = "신규 사용자 가입 및 로그인 성공",
+    content = @Content(examples = @ExampleObject("{\"msg\": \"string\",\"code\": 0,\"data\":" +
+            "{\"member\": {\"nickname\":\"string\",\"member_id\": 0},\"access_token\":" +
+            "\"string\",\"refresh_token\": \"string\",\"exist_user\": false}}")))
+    @ApiResponse(responseCode = "40x", description = "에러",
+            content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))
+    public ResponseEntity<ResponseDTO<LoginDTO>> localLogin(
+            HttpServletRequest request,
+            @Parameter(description = "카카오 서버에서 발급 받은 인가코드입니다.")
+            @RequestParam String code) {
         String addr = request.getRemoteAddr();
         Redirection redirection;
         if ("127.0.0.1".equals(addr) || "0:0:0:0:0:0:0:1".equals(addr)) {
@@ -61,15 +81,22 @@ public class MemberController {
 
 
     @PostMapping("/token/refresh")
+    @Operation(summary = "토큰 리프레시",
+            description = "리프레시 토큰을 통해 새로운 액세스/리프레시 토큰을 발급받는 API입니다.")
+    @ApiResponse(responseCode = "200", description = "토큰 리프레시 성공")
+    @ApiResponse(responseCode = "40x", description = "에러", content = @Content(schema =
+    @Schema(implementation = ExceptionDTO.class)))
     public ResponseEntity<ResponseDTO<TokenDTO>> tokenReissue(
-            @RequestBody Map<String, String> request) {
+            @RequestBody RefreshTokenDTO request) {
         return new ResponseEntity<>(
-                memberService.tokenReissue(request.get("refresh_token")),
+                memberService.tokenReissue(request.getRefreshToken()),
                 HttpStatus.OK);
     }
 
 
     @PostMapping("/auth/logout")
+    @Operation(summary = "로그아웃", description = "로그아웃을 처리하는 API입니다.")
+    @ApiResponse(responseCode = "200", description = "로그아웃 성공")
     public ResponseEntity<ResponseDTO> logout(HttpServletRequest request
     , @RequestBody TokenDTO dto) {
         Long memberId = jwtProvider.getMemberId(request);

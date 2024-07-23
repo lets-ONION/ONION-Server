@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public class UncheckException extends RuntimeException {
+public class CustomException extends RuntimeException {
 
     private final Exceptions exceptions;
 

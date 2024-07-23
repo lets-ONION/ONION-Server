@@ -9,6 +9,8 @@ public enum Exceptions {
     UNAUTHORIZED(401, "Unauthorized"),
     BLACKLISTED_TOKEN(401, "Blacklisted Token"),
     INVALID_TOKEN(401, "Invalid Token"),
+    INVALID_ISSUED_TIME(401, "Invalid Issued Time"),
+    NOT_ACCESS_TOKEN(401, "Not Access Token"),
     EXPIRED_TOKEN(401, "Expired Token"),
     FORBIDDEN(403, "Forbidden"),
     NOT_FOUND(404, "Not Found"),

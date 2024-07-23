@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class ExceptionAdviceHandler {
 
-    @ExceptionHandler({UncheckException.class})
-    public ResponseEntity handleUncheckException(UncheckException e) {
+    @ExceptionHandler({CustomException.class})
+    public ResponseEntity handleUncheckException(CustomException e) {
         return new ResponseEntity(
                 new ExceptionDTO(e.getMsg(), e.getExceptions()),
                 HttpStatus.valueOf(e.getCode()));

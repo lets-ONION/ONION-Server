@@ -13,6 +13,7 @@ import site.lets_onion.lets_onionApp.domain.Member;
 import site.lets_onion.lets_onionApp.dto.jwt.TokenDTO;
 import site.lets_onion.lets_onionApp.dto.member.KakaoMemberInfoDTO;
 import site.lets_onion.lets_onionApp.dto.member.LoginDTO;
+import site.lets_onion.lets_onionApp.dto.member.StatusMessageDTO;
 import site.lets_onion.lets_onionApp.dto.member.TokenResponseDTO;
 import site.lets_onion.lets_onionApp.repository.member.MemberRepository;
 import site.lets_onion.lets_onionApp.util.jwt.JwtProvider;
@@ -80,6 +81,16 @@ public class MemberServiceImpl implements MemberService {
     public ResponseDTO<TokenDTO> tokenReissue(String refreshToken) {
         TokenDTO tokens = jwtProvider.refreshAccessToken(refreshToken);
         return new ResponseDTO<>(tokens, Responses.OK);
+    }
+
+    @Override
+    public ResponseDTO<StatusMessageDTO> updateStatusMessage(Long memberId, String message) {
+        return null;
+    }
+
+    @Override
+    public ResponseDTO<StatusMessageDTO> getStatusMessage(Long memberId) {
+        return null;
     }
 
 

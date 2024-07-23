@@ -10,7 +10,7 @@ public class ResponseDTO<T> {
     private T data;
 
     public ResponseDTO(T data, Responses responses) {
-        this.msg = responses.getMessage();
+        this.msg = responses.getMsg();
         this.code = responses.getCode();
         this.data = data;
     }

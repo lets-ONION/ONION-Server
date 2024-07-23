@@ -8,8 +8,8 @@ public class ExceptionDTO {
     private String msg;
     private int code;
 
-    public ExceptionDTO(String message, Exceptions exceptions) {
-        this.msg = message;
-        this.code = exceptions.getCode();
+    public ExceptionDTO(CustomException e) {
+        this.msg = e.getExceptions().getMsg();
+        this.code = e.getExceptions().getCode();
     }
 }

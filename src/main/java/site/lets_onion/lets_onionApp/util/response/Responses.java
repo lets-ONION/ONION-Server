@@ -11,11 +11,11 @@ public enum Responses {
     MOVED_PERMANENTLY(303, "Moved Permanently"),
     ;
 
-    private int code;
-    private String message;
+    private final int code;
+    private final String msg;
 
-    Responses(int code, String message){
+    Responses(int code, String msg){
         this.code = code;
-        this.message = message;
+        this.msg = msg;
     }
 }

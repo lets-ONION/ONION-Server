@@ -11,12 +11,10 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
 import site.lets_onion.lets_onionApp.domain.Member;
 import site.lets_onion.lets_onionApp.dto.jwt.TokenDTO;
-import site.lets_onion.lets_onionApp.dto.member.KakaoMemberInfoDTO;
-import site.lets_onion.lets_onionApp.dto.member.LoginDTO;
-import site.lets_onion.lets_onionApp.dto.member.StatusMessageDTO;
-import site.lets_onion.lets_onionApp.dto.member.TokenResponseDTO;
+import site.lets_onion.lets_onionApp.dto.member.*;
 import site.lets_onion.lets_onionApp.repository.member.MemberRepository;
 import site.lets_onion.lets_onionApp.util.jwt.JwtProvider;
+import site.lets_onion.lets_onionApp.util.redis.RedisConnector;
 import site.lets_onion.lets_onionApp.util.response.ResponseDTO;
 import site.lets_onion.lets_onionApp.util.response.Responses;
 
@@ -29,6 +27,7 @@ public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
     private final JwtProvider jwtProvider;
+    private final RedisConnector redisConnector;
 
     @Value("${kakao.apiKey}")
     private String clientId;
@@ -84,13 +83,36 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
+    @Transactional
     public ResponseDTO<StatusMessageDTO> updateStatusMessage(Long memberId, String message) {
-        return null;
+        redisConnector.setWithTtl(memberId.toString(), message, 86400000L); // 24시간 유지
+        return new ResponseDTO<>(new StatusMessageDTO(message),
+                Responses.CREATED);
     }
 
     @Override
+    @Transactional
     public ResponseDTO<StatusMessageDTO> getStatusMessage(Long memberId) {
-        return null;
+        String message = redisConnector.get(memberId.toString());
+        return new ResponseDTO<>(new StatusMessageDTO(message),
+                Responses.OK);
+    }
+
+    @Override
+    @Transactional
+    public ResponseDTO<MemberInfoDTO> updateNickname(Long memberId, String nickname) {
+        Member member = memberRepository.findById(memberId).get();
+        member.setNickname(nickname);
+        return new ResponseDTO<>(new MemberInfoDTO(member),
+                Responses.OK);
+    }
+
+
+    @Override
+    public ResponseDTO<MemberInfoDTO> getMemberInfo(Long memberId) {
+        Member member = memberRepository.findById(memberId).get();
+        return new ResponseDTO<>(new MemberInfoDTO(member),
+                Responses.OK);
     }
 
 

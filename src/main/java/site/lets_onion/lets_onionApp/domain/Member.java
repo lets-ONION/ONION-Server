@@ -16,7 +16,6 @@ public class Member {
 
     private Long kakaoId;
     private String nickname;
-    private String statusMessage;
 
     @Builder
     public Member(@NonNull Long kakaoId) {
@@ -25,9 +24,5 @@ public class Member {
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
-    }
-
-    public void setStatusMessage(String statusMessage) {
-        this.statusMessage = statusMessage;
     }
 }

@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +17,9 @@ import org.springframework.web.bind.annotation.*;
 import site.lets_onion.lets_onionApp.dto.jwt.RefreshTokenDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.TokenDTO;
 import site.lets_onion.lets_onionApp.dto.member.LoginDTO;
+import site.lets_onion.lets_onionApp.dto.member.MemberInfoDTO;
+import site.lets_onion.lets_onionApp.dto.member.NicknameDTO;
+import site.lets_onion.lets_onionApp.dto.member.StatusMessageDTO;
 import site.lets_onion.lets_onionApp.service.member.MemberService;
 import site.lets_onion.lets_onionApp.service.member.Redirection;
 import site.lets_onion.lets_onionApp.util.exception.ExceptionDTO;
@@ -103,5 +107,71 @@ public class MemberController {
         return new ResponseEntity<>(
                 memberService.logout(memberId, dto.getAccessToken(),
                         dto.getRefreshToken()), HttpStatus.OK);
+    }
+
+
+    @PutMapping("/update/nickname")
+    @Operation(summary = "닉네임 수정", description = "닉네임을 수정하는 API입니다.")
+    @ApiResponse(responseCode = "200", description = "닉네임 수정 성공")
+    public ResponseEntity<ResponseDTO<MemberInfoDTO>> updateNickname(
+            HttpServletRequest request, @RequestBody NicknameDTO dto) {
+        Long memberId = jwtProvider.getMemberId(request);
+        return new ResponseEntity<>(
+                memberService.updateNickname(memberId, dto.getNickname()),
+                HttpStatus.OK);
+    }
+
+
+    @PostMapping("/update/status-message")
+    @Operation(summary = "상태메시지 수정",
+            description = "상태메시지를 작성하는 API입니다.24시간 후 삭제됩니다.")
+    @ApiResponse(responseCode = "200", description = "상태메시지 작성 성공")
+    public ResponseEntity<ResponseDTO<StatusMessageDTO>> updateStatusMessage(
+            HttpServletRequest request, @RequestBody StatusMessageDTO dto
+    ) {
+        Long memberId = jwtProvider.getMemberId(request);
+        return new ResponseEntity<>(memberService
+                .updateStatusMessage(memberId,dto.getStatusMessage()),
+                HttpStatus.OK);
+    }
+
+
+    @GetMapping("/get/status-message")
+    @Operation(summary = "상태메시지 조회",
+    description = "상태메시지를 조회하는 API입니다. 쿼리파라미터가 없으면 자신의 상태메시지를 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "상태메시지 조회 성공")
+    public ResponseEntity<ResponseDTO<StatusMessageDTO>> getStatusMessage(
+            HttpServletRequest request,
+            @Nullable @RequestParam(name = "member_id") Long memberId
+    ) {
+        jwtProvider.validateToken(request);
+        Long id;
+        if (memberId == null) {
+            id = jwtProvider.getMemberId(request);
+        } else {
+            id = memberId;
+        }
+        return new ResponseEntity<>(memberService.getStatusMessage(id),
+                HttpStatus.OK);
+    }
+
+
+    @GetMapping("/get/info")
+    @Operation(summary = "유저 정보 조회",
+    description = "유저 정보를 조회하는 API입니다. 쿼리파라미터가 없으면 자신의 정보를 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "유저 정보 조회 성공")
+    public ResponseEntity<ResponseDTO<MemberInfoDTO>> getMemberInfo(
+            HttpServletRequest request,
+            @Nullable @RequestParam(name = "member_id") Long memberId
+    ) {
+        jwtProvider.validateToken(request);
+        Long id;
+        if (memberId == null) {
+            id = jwtProvider.getMemberId(request);
+        } else {
+            id = memberId;
+        }
+        return new ResponseEntity<>(memberService.getMemberInfo(id),
+                HttpStatus.OK);
     }
 }

@@ -2,6 +2,7 @@ package site.lets_onion.lets_onionApp.service.member;
 
 import site.lets_onion.lets_onionApp.dto.jwt.TokenDTO;
 import site.lets_onion.lets_onionApp.dto.member.LoginDTO;
+import site.lets_onion.lets_onionApp.dto.member.MemberInfoDTO;
 import site.lets_onion.lets_onionApp.dto.member.StatusMessageDTO;
 import site.lets_onion.lets_onionApp.util.response.ResponseDTO;
 
@@ -24,4 +25,10 @@ public interface MemberService {
 
     /*상태메시지 조회*/
     ResponseDTO<StatusMessageDTO> getStatusMessage(Long memberId);
+
+    /*닉네임 수정*/
+    ResponseDTO<MemberInfoDTO> updateNickname(Long memberId, String nickname);
+
+    /*유저 정보 조회*/
+    ResponseDTO<MemberInfoDTO> getMemberInfo(Long memberId);
 }

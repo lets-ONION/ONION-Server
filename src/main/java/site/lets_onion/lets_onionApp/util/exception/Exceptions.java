@@ -9,6 +9,8 @@ public enum Exceptions {
     BAD_REQUEST(400, "Bad Request"),
 
     /*401 UNAUTHORIZED*/
+    KAKAO_AUTH_FAILED_WITH_TOKEN(401, "Kakao Auth Failed With Toekn"),
+    KAKAO_AUTH_FAILED_WITH_ID(401, "Kakao Auth Failed With Id"),
     UNAUTHORIZED(401, "Unauthorized"),
     BLACKLISTED_TOKEN(401, "Blacklisted Token"),
     INVALID_TOKEN(401, "Invalid Token"),

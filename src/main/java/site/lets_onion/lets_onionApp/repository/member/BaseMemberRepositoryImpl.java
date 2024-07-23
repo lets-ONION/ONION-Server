@@ -5,6 +5,8 @@ import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import site.lets_onion.lets_onionApp.domain.Member;
 
+import java.util.List;
+
 @Repository
 public class BaseMemberRepositoryImpl implements BaseMemberRepository {
 
@@ -12,11 +14,11 @@ public class BaseMemberRepositoryImpl implements BaseMemberRepository {
     private EntityManager em;
 
     @Override
-    public Member findByKakaoId(String kakaoId) {
+    public List<Member> findByKakaoId(Long kakaoId) {
         return em.createQuery("select m from Member m " +
                 " where m.kakaoId =:kakaoId", Member.class)
                 .setParameter("kakaoId", kakaoId)
-                .getSingleResult();
+                .getResultList();
     }
 
     @Override

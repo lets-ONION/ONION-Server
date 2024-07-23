@@ -14,12 +14,12 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
 
-    private String kakaoId;
+    private Long kakaoId;
     private String nickname;
 
 
     @Builder
-    public Member(@NonNull String kakaoId) {
+    public Member(@NonNull Long kakaoId) {
         this.kakaoId = kakaoId;
     }
 

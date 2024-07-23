@@ -10,6 +10,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.nio.file.AccessDeniedException;
 
@@ -91,5 +92,11 @@ public class ExceptionAdviceHandler {
     public ResponseEntity<String> handleRuntimeException(RuntimeException e) {
         return new ResponseEntity<>(e.getMessage(),
                 HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    /*WebClient 예외*/
+    @ExceptionHandler(WebClientResponseException.class)
+    public ResponseEntity handleWebClientResponseException(WebClientResponseException e) {
+        return new ResponseEntity<>(e.getResponseBodyAs(String.class), e.getStatusCode());
     }
 }

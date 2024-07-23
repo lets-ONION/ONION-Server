@@ -8,16 +8,14 @@ import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import site.lets_onion.lets_onionApp.util.exception.Exceptions;
+import site.lets_onion.lets_onionApp.dto.jwt.TokenDTO;
 import site.lets_onion.lets_onionApp.util.exception.CustomException;
+import site.lets_onion.lets_onionApp.util.exception.Exceptions;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 @Component
@@ -79,7 +77,7 @@ public class JwtProvider {
 
 
     /*리프레시 토큰 검증 후 새로운 액세스 토큰 발급*/
-    public Map<String, String> refreshAccessToken(String refreshToken) {
+    public TokenDTO refreshAccessToken(String refreshToken) {
         Jws<Claims> claims = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(refreshToken);
         if (!claims.getPayload().get("type").equals(TokenType.REFRESH.name())) {
             throw new CustomException(Exceptions.INVALID_TOKEN);
@@ -91,15 +89,25 @@ public class JwtProvider {
         if (expireAt.before(new Date())) {
             throw new CustomException(Exceptions.EXPIRED_TOKEN);
         }
-        if (blackList.containsKey(refreshToken)) {
+        if (blackList.containsToken(refreshToken)) {
             throw new CustomException(Exceptions.BLACKLISTED_TOKEN);
         }
         Long memberId = Long.parseLong(claims.getPayload().getSubject());
-        Map<String, String> tokenMap = new HashMap<>();
-        tokenMap.put("access", createAccessToken(memberId));
-        tokenMap.put("refresh", createRefreshToken(memberId));
-        blackList.put(refreshToken, expireAt.toString());
-        return tokenMap;
+        blackList.putToken(refreshToken, expireAt.toString());
+        return new TokenDTO(createAccessToken(memberId),
+                createRefreshToken(memberId));
+    }
+
+
+    /*로그아웃*/
+    public void logout(String accessToken, String refreshToken) {
+        Date accessTokenExpiration = Jwts.parser().verifyWith(secretKey).build()
+                .parseSignedClaims(accessToken).getPayload().getExpiration();
+        Date refreshTokenExpiration = Jwts.parser().verifyWith(secretKey).build()
+                .parseSignedClaims(refreshToken).getPayload().getExpiration();
+
+        blackList.putToken(accessToken, accessTokenExpiration.toString());
+        blackList.putToken(refreshToken, refreshTokenExpiration.toString());
     }
 
 

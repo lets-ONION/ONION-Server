@@ -33,7 +33,7 @@ public class MemoryBlackList implements BlackList {
 
 
     @Override
-    public void put(String token, String date) {
+    public void putToken(String token, String date) {
         try {
             blackList.put(token, formatter.parse(date));
         } catch (ParseException e) {
@@ -42,7 +42,7 @@ public class MemoryBlackList implements BlackList {
     }
 
     @Override
-    public boolean containsKey(String token) {
+    public boolean containsToken(String token) {
         return blackList.containsKey(token);
     }
 

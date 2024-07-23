@@ -15,7 +15,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 @Component
-@Primary
 public class MemoryBlackList implements BlackList {
 
     public ConcurrentHashMap<String, Date> blackList;

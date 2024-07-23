@@ -53,5 +53,7 @@ jobs:
             docker stop $(docker ps -a -q) 
             docker rm $(docker ps -a -q)
             docker pull "${{ secrets.DOCKER_USERNAME }}"/lets-onion-prod
+            export DOCKER_USERNAME="${{ secrets.DOCKER_USERNAME }}"
+            export REDIS_PASSWORD="${{ secrets.REDIS_PASSWORD }}"
             docker compose up -d
             docker image prune -a -f

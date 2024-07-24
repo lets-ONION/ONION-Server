@@ -4,3 +4,6 @@ spring:
   profiles.include:
     - local
     - prod
+springdoc:
+  swagger-ui:
+    path: /api-docs

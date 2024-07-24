@@ -2,9 +2,13 @@ package site.lets_onion.lets_onionApp.util.jwt;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -15,6 +19,8 @@ public class MemoryBlackList implements BlackList {
 
     public ConcurrentHashMap<String, Date> blackList;
     public ScheduledExecutorService scheduler;
+    private SimpleDateFormat formatter = new SimpleDateFormat(
+            "EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
 
     /*어플리케이션이 실행될 때마다 블랙리스트 및 삭제 스케쥴러 재시작*/
     @PostConstruct
@@ -23,6 +29,22 @@ public class MemoryBlackList implements BlackList {
         scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.scheduleAtFixedRate(this::removeExpiredTokens, 0, 1, TimeUnit.HOURS);
     }
+
+
+    @Override
+    public void putToken(String token, String date) {
+        try {
+            blackList.put(token, formatter.parse(date));
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public boolean containsToken(String token) {
+        return blackList.containsKey(token);
+    }
+
 
     /*블랙리스트 내 토큰 자동 삭제*/
     private void removeExpiredTokens() {
@@ -36,16 +58,5 @@ public class MemoryBlackList implements BlackList {
         if (scheduler != null) {
             scheduler.shutdown();
         }
-    }
-
-
-    @Override
-    public void put(String token, Date date) {
-        blackList.put(token, date);
-    }
-
-    @Override
-    public boolean containsKey(String token) {
-        return blackList.containsKey(token);
     }
 }

@@ -150,5 +150,4 @@ public class MemberServiceImpl implements MemberService {
         Member member = Member.builder().kakaoId(kakaoId).build();
         return memberRepository.save(member);
     }
-
 }

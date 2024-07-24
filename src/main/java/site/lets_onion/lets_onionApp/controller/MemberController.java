@@ -110,7 +110,7 @@ public class MemberController {
     }
 
 
-    @PutMapping("/update/nickname")
+    @PutMapping("/nickname/update")
     @Operation(summary = "닉네임 수정", description = "닉네임을 수정하는 API입니다.")
     @ApiResponse(responseCode = "200", description = "닉네임 수정 성공")
     public ResponseEntity<ResponseDTO<MemberInfoDTO>> updateNickname(
@@ -122,7 +122,7 @@ public class MemberController {
     }
 
 
-    @PostMapping("/update/status-message")
+    @PostMapping("/status-message/update")
     @Operation(summary = "상태메시지 수정",
             description = "상태메시지를 작성하는 API입니다.24시간 후 삭제됩니다.")
     @ApiResponse(responseCode = "200", description = "상태메시지 작성 성공")
@@ -136,7 +136,7 @@ public class MemberController {
     }
 
 
-    @GetMapping("/get/status-message")
+    @GetMapping("/status-message/get")
     @Operation(summary = "상태메시지 조회",
     description = "상태메시지를 조회하는 API입니다. 쿼리파라미터가 없으면 자신의 상태메시지를 조회합니다.")
     @ApiResponse(responseCode = "200", description = "상태메시지 조회 성공")
@@ -156,7 +156,7 @@ public class MemberController {
     }
 
 
-    @GetMapping("/get/info")
+    @GetMapping("/info/get")
     @Operation(summary = "유저 정보 조회",
     description = "유저 정보를 조회하는 API입니다. 쿼리파라미터가 없으면 자신의 정보를 조회합니다.")
     @ApiResponse(responseCode = "200", description = "유저 정보 조회 성공")

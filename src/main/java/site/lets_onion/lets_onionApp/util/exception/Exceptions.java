@@ -7,6 +7,8 @@ public enum Exceptions {
 
     /*400 BAD_REQUEST*/
     BAD_REQUEST(400, "Bad Request"),
+    ALREADY_REGISTERED(400, "Already Registered"),
+    MEMBER_NOT_EXIST(400, "Member Not Exist"),
 
     /*401 UNAUTHORIZED*/
     KAKAO_AUTH_FAILED_WITH_TOKEN(401, "Kakao Auth Failed With Toekn"),
@@ -32,6 +34,7 @@ public enum Exceptions {
     REQUEST_TIMEOUT(408, "Request Timeout"),
 
     /*500 INTERNAL_SERVER_ERROR*/
+    FAILED_TO_SEND_PUSH_MESSAGE(500, "Failed To Send Push Message"),
     INTERNAL_SERVER_ERROR(500, "Internal Server Error");
 
     private final int code;

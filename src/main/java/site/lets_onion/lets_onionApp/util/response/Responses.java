@@ -5,6 +5,7 @@ import lombok.Getter;
 @Getter
 public enum Responses {
     OK(200, "OK"),
+    PUSH_SENT_SUCCESSFULLY(200, "Push sent successfully"),
     CREATED(201, "Created"),
     ACCEPTED(202, "Accepted"),
     NO_CONTENT(204, "No Content"),

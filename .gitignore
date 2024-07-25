@@ -42,3 +42,4 @@ application-test.yml
 
 ### ETC ###
 .DS_Store
+/src/main/resources/firebase/firebase-key.json

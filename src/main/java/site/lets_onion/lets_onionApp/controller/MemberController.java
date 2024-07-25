@@ -14,12 +14,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import site.lets_onion.lets_onionApp.dto.jwt.LogoutDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.RefreshTokenDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.TokenDTO;
 import site.lets_onion.lets_onionApp.dto.member.LoginDTO;
 import site.lets_onion.lets_onionApp.dto.member.MemberInfoDTO;
 import site.lets_onion.lets_onionApp.dto.member.NicknameDTO;
 import site.lets_onion.lets_onionApp.dto.member.StatusMessageDTO;
+import site.lets_onion.lets_onionApp.dto.push.DeviceTokenRequestDTO;
 import site.lets_onion.lets_onionApp.service.member.MemberService;
 import site.lets_onion.lets_onionApp.service.member.Redirection;
 import site.lets_onion.lets_onionApp.util.exception.ExceptionDTO;
@@ -104,13 +106,12 @@ public class MemberController {
     @PostMapping("/auth/logout")
     @Operation(summary = "로그아웃", description = "로그아웃을 처리하는 API입니다.")
     @ApiResponse(responseCode = "200", description = "로그아웃 성공")
-    public ResponseEntity<ResponseDTO> logout(HttpServletRequest request
-    , @RequestBody TokenDTO dto)
+    public ResponseEntity<ResponseDTO<Boolean>> logout(HttpServletRequest request
+    , @RequestBody LogoutDTO logoutDTO)
     {
         Long memberId = jwtProvider.getMemberId(request);
         return new ResponseEntity<>(
-                memberService.logout(memberId, dto.getAccessToken(),
-                        dto.getRefreshToken()), HttpStatus.OK);
+                memberService.logout(memberId, logoutDTO), HttpStatus.OK);
     }
 
 
@@ -176,5 +177,21 @@ public class MemberController {
         }
         return new ResponseEntity<>(memberService.getMemberInfo(id),
                 HttpStatus.OK);
+    }
+
+
+    @PostMapping("/device-token/save")
+    @Operation(summary = "디바이스 토큰 업데이트",
+            description = "디바이스 토큰을 서버에 전송하는 API입니다. 기존 토큰과 같을 시 200이 응답됩니다.")
+    @ApiResponse(responseCode = "200", description = "디바이스 토큰 업데이트 성공")
+    public ResponseEntity<ResponseDTO<Boolean>> updateDeviceToken(
+            HttpServletRequest request,
+            @RequestBody DeviceTokenRequestDTO dto)
+    {
+        Long memberId = jwtProvider.getMemberId(request);
+        return new ResponseEntity<>(
+                memberService.saveDeviceToken(
+                        memberId, dto.getDeviceToken()
+                ),HttpStatus.OK);
     }
 }

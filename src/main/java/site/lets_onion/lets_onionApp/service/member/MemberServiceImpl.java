@@ -9,11 +9,18 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.client.WebClient;
-import site.lets_onion.lets_onionApp.domain.Member;
+import site.lets_onion.lets_onionApp.domain.member.DeviceToken;
+import site.lets_onion.lets_onionApp.domain.member.Member;
+import site.lets_onion.lets_onionApp.dto.jwt.LogoutDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.TokenDTO;
 import site.lets_onion.lets_onionApp.dto.member.*;
+import site.lets_onion.lets_onionApp.dto.push.PushNotificationDTO;
+import site.lets_onion.lets_onionApp.repository.deviceToken.DeviceTokenRepository;
 import site.lets_onion.lets_onionApp.repository.member.MemberRepository;
+import site.lets_onion.lets_onionApp.util.exception.CustomException;
+import site.lets_onion.lets_onionApp.util.exception.Exceptions;
 import site.lets_onion.lets_onionApp.util.jwt.JwtProvider;
+import site.lets_onion.lets_onionApp.util.push.PushType;
 import site.lets_onion.lets_onionApp.util.redis.RedisConnector;
 import site.lets_onion.lets_onionApp.util.response.ResponseDTO;
 import site.lets_onion.lets_onionApp.util.response.Responses;
@@ -26,6 +33,7 @@ import java.util.List;
 public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
+    private final DeviceTokenRepository deviceTokenRepository;
     private final JwtProvider jwtProvider;
     private final RedisConnector redisConnector;
 
@@ -71,16 +79,20 @@ public class MemberServiceImpl implements MemberService {
     }
 
     @Override
-    public ResponseDTO logout(Long memberId, String accessToken, String refreshToken) {
-        jwtProvider.logout(accessToken, refreshToken);
-        return new ResponseDTO(null, Responses.OK);
+    @Transactional
+    public ResponseDTO<Boolean> logout(Long memberId, LogoutDTO logoutDTO) {
+        jwtProvider.logout(logoutDTO.getAccessToken(), logoutDTO.getRefreshToken());
+        deviceTokenRepository.deleteDeviceToken(memberId, logoutDTO.getDeviceToken());
+        return new ResponseDTO<>(Boolean.TRUE, Responses.OK);
     }
+
 
     @Override
     public ResponseDTO<TokenDTO> tokenReissue(String refreshToken) {
         TokenDTO tokens = jwtProvider.refreshAccessToken(refreshToken);
         return new ResponseDTO<>(tokens, Responses.OK);
     }
+
 
     @Override
     @Transactional
@@ -89,6 +101,7 @@ public class MemberServiceImpl implements MemberService {
         return new ResponseDTO<>(new StatusMessageDTO(message),
                 Responses.CREATED);
     }
+
 
     @Override
     @Transactional
@@ -101,8 +114,8 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public ResponseDTO<MemberInfoDTO> updateNickname(Long memberId, String nickname) {
-        Member member = memberRepository.findById(memberId).get();
-        member.setNickname(nickname);
+        Member member = findMember(memberId);
+        member.updateNickname(nickname);
         return new ResponseDTO<>(new MemberInfoDTO(member),
                 Responses.OK);
     }
@@ -110,9 +123,40 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public ResponseDTO<MemberInfoDTO> getMemberInfo(Long memberId) {
-        Member member = memberRepository.findById(memberId).get();
+        Member member = findMember(memberId);
         return new ResponseDTO<>(new MemberInfoDTO(member),
                 Responses.OK);
+    }
+
+    @Override
+    @Transactional
+    public ResponseDTO<Boolean> saveDeviceToken(Long memberId, String deviceToken) {
+        Member member = memberRepository.findWithDeviceTokens(memberId);
+        List<DeviceToken> deviceTokens = member.getDeviceTokens();
+        for (DeviceToken dt : deviceTokens) {
+            if (dt.getDeviceToken().equals(deviceToken)) {
+                deviceTokenRepository.delete(dt);
+                throw new CustomException(Exceptions.ALREADY_REGISTERED);
+            }
+        }
+        DeviceToken deviceTokenEntity = new DeviceToken(member, deviceToken);
+        deviceTokenRepository.save(deviceTokenEntity);
+        return new ResponseDTO<>(Boolean.TRUE, Responses.OK);
+    }
+
+    @Override
+    @Transactional
+    public ResponseDTO<PushNotificationDTO> modifyPushSetting(Long memberId, PushType pushType) {
+        Member member = findMember(memberId);
+        if (pushType.equals(PushType.TRADING)) {
+            member.getPushNotification().changeTradeRequest();
+        } else if (pushType.equals(PushType.FRIEND_REQUEST)) {
+            member.getPushNotification().changeFriendRequest();
+        } else if (pushType.equals(PushType.ALL)) {
+            member.getPushNotification().changeEveryone();
+        }
+        return new ResponseDTO<>(new PushNotificationDTO(member)
+                , Responses.OK);
     }
 
 
@@ -129,7 +173,6 @@ public class MemberServiceImpl implements MemberService {
                 .bodyValue(formData)
                 .retrieve().bodyToMono(TokenResponseDTO.class)
                 .block();
-
         return response.getAccessToken().toString();
     }
 
@@ -140,7 +183,6 @@ public class MemberServiceImpl implements MemberService {
                 .header("Authorization", "Bearer " + token)
                 .retrieve().bodyToMono(KakaoMemberInfoDTO.class)
                 .block();
-
         return response.getKakaoId();
     }
 
@@ -149,5 +191,12 @@ public class MemberServiceImpl implements MemberService {
     private Member createMember(Long kakaoId) {
         Member member = Member.builder().kakaoId(kakaoId).build();
         return memberRepository.save(member);
+    }
+
+
+    /*유저 조회*/
+    private Member findMember(Long memberId) {
+        return memberRepository.findById(memberId).orElseThrow(() ->
+                new NullPointerException("User Not Exists"));
     }
 }

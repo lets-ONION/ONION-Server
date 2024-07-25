@@ -1,9 +1,12 @@
 package site.lets_onion.lets_onionApp.service.member;
 
+import site.lets_onion.lets_onionApp.dto.jwt.LogoutDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.TokenDTO;
 import site.lets_onion.lets_onionApp.dto.member.LoginDTO;
 import site.lets_onion.lets_onionApp.dto.member.MemberInfoDTO;
 import site.lets_onion.lets_onionApp.dto.member.StatusMessageDTO;
+import site.lets_onion.lets_onionApp.dto.push.PushNotificationDTO;
+import site.lets_onion.lets_onionApp.util.push.PushType;
 import site.lets_onion.lets_onionApp.util.response.ResponseDTO;
 
 public interface MemberService {
@@ -15,7 +18,7 @@ public interface MemberService {
     ResponseDTO<LoginDTO> login(String code, Redirection redirection);
 
     /*로그아웃*/
-    ResponseDTO<?> logout(Long memberId, String accessToken, String refreshToken);
+    ResponseDTO<Boolean> logout(Long memberId, LogoutDTO logoutDTO);
 
     /*토큰 리프레시*/
     ResponseDTO<TokenDTO> tokenReissue(String refreshToken);
@@ -31,4 +34,10 @@ public interface MemberService {
 
     /*유저 정보 조회*/
     ResponseDTO<MemberInfoDTO> getMemberInfo(Long memberId);
+
+    /*유저 디바이스 토큰 추가*/
+    ResponseDTO<Boolean> saveDeviceToken(Long memberId, String deviceToken);
+
+    /*알림 설정 업데이트*/
+    ResponseDTO<PushNotificationDTO> modifyPushSetting(Long memberId, PushType pushType);
 }

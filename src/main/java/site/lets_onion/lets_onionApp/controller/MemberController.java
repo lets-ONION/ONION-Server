@@ -40,7 +40,8 @@ public class MemberController {
     @GetMapping("/oauth/kakao/login")
     @Operation(summary = "백엔드 로그인", description = "백엔드 개발 시 로그인에 사용되는 API입니다.")
     @ApiResponse(responseCode = "301", description = "리다이렉트 성공")
-    public ResponseEntity<?> getRedirect(HttpServletRequest request) {
+    public ResponseEntity<?> getRedirect(HttpServletRequest request)
+    {
         String addr = request.getRemoteAddr();
         Redirection redirection;
         if ("127.0.0.1".equals(addr) || "0:0:0:0:0:0:0:1".equals(addr)) {
@@ -67,7 +68,8 @@ public class MemberController {
     public ResponseEntity<ResponseDTO<LoginDTO>> localLogin(
             HttpServletRequest request,
             @Parameter(description = "카카오 서버에서 발급 받은 인가코드입니다.")
-            @RequestParam String code) {
+            @RequestParam String code)
+    {
         String addr = request.getRemoteAddr();
         Redirection redirection;
         if ("127.0.0.1".equals(addr) || "0:0:0:0:0:0:0:1".equals(addr)) {
@@ -91,7 +93,8 @@ public class MemberController {
     @ApiResponse(responseCode = "40x", description = "에러", content = @Content(schema =
     @Schema(implementation = ExceptionDTO.class)))
     public ResponseEntity<ResponseDTO<TokenDTO>> tokenReissue(
-            @RequestBody RefreshTokenDTO request) {
+            @RequestBody RefreshTokenDTO request)
+    {
         return new ResponseEntity<>(
                 memberService.tokenReissue(request.getRefreshToken()),
                 HttpStatus.OK);
@@ -102,7 +105,8 @@ public class MemberController {
     @Operation(summary = "로그아웃", description = "로그아웃을 처리하는 API입니다.")
     @ApiResponse(responseCode = "200", description = "로그아웃 성공")
     public ResponseEntity<ResponseDTO> logout(HttpServletRequest request
-    , @RequestBody TokenDTO dto) {
+    , @RequestBody TokenDTO dto)
+    {
         Long memberId = jwtProvider.getMemberId(request);
         return new ResponseEntity<>(
                 memberService.logout(memberId, dto.getAccessToken(),
@@ -114,7 +118,8 @@ public class MemberController {
     @Operation(summary = "닉네임 수정", description = "닉네임을 수정하는 API입니다.")
     @ApiResponse(responseCode = "200", description = "닉네임 수정 성공")
     public ResponseEntity<ResponseDTO<MemberInfoDTO>> updateNickname(
-            HttpServletRequest request, @RequestBody NicknameDTO dto) {
+            HttpServletRequest request, @RequestBody NicknameDTO dto)
+    {
         Long memberId = jwtProvider.getMemberId(request);
         return new ResponseEntity<>(
                 memberService.updateNickname(memberId, dto.getNickname()),
@@ -144,7 +149,6 @@ public class MemberController {
             HttpServletRequest request,
             @Nullable @RequestParam(name = "member_id") Long memberId
     ) {
-        jwtProvider.validateToken(request);
         Long id;
         if (memberId == null) {
             id = jwtProvider.getMemberId(request);
@@ -164,7 +168,6 @@ public class MemberController {
             HttpServletRequest request,
             @Nullable @RequestParam(name = "member_id") Long memberId
     ) {
-        jwtProvider.validateToken(request);
         Long id;
         if (memberId == null) {
             id = jwtProvider.getMemberId(request);

@@ -25,6 +25,14 @@ jobs:
         run: |
           echo $APPLICATION_PROD | base64 --decode > src/main/resources/application-prod.yml
 
+      - name: generate firebase-key.json
+        env:
+          FIREBASE_KEY: ${{ secrets.FIREBASE_KEY }}
+        run: |
+          mkdir -p src/main/resources/firebase
+          echo $FIREBASE_KEY | base64 --decode > src/main/resources/firebase/firebase-key.json
+          head -n 2 src/main/resources/firebase/firebase-key.json
+
       # Grant execute permission for gradlew
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew

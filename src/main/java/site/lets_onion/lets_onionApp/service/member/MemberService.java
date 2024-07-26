@@ -2,6 +2,7 @@ package site.lets_onion.lets_onionApp.service.member;
 
 import site.lets_onion.lets_onionApp.dto.jwt.LogoutDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.TokenDTO;
+import site.lets_onion.lets_onionApp.dto.member.KakaoScopesDTO;
 import site.lets_onion.lets_onionApp.dto.member.LoginDTO;
 import site.lets_onion.lets_onionApp.dto.member.MemberInfoDTO;
 import site.lets_onion.lets_onionApp.dto.member.StatusMessageDTO;
@@ -40,4 +41,7 @@ public interface MemberService {
 
     /*알림 설정 업데이트*/
     ResponseDTO<PushNotificationDTO> modifyPushSetting(Long memberId, PushType pushType);
+
+    /*유저 동의 항목 조회*/
+    ResponseDTO<KakaoScopesDTO> checkKakaoScopes(Long memberId);
 }

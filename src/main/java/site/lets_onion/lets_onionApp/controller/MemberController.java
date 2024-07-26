@@ -17,10 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import site.lets_onion.lets_onionApp.dto.jwt.LogoutDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.RefreshTokenDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.TokenDTO;
-import site.lets_onion.lets_onionApp.dto.member.LoginDTO;
-import site.lets_onion.lets_onionApp.dto.member.MemberInfoDTO;
-import site.lets_onion.lets_onionApp.dto.member.NicknameDTO;
-import site.lets_onion.lets_onionApp.dto.member.StatusMessageDTO;
+import site.lets_onion.lets_onionApp.dto.member.*;
 import site.lets_onion.lets_onionApp.dto.push.DeviceTokenRequestDTO;
 import site.lets_onion.lets_onionApp.service.member.MemberService;
 import site.lets_onion.lets_onionApp.service.member.Redirection;
@@ -193,5 +190,21 @@ public class MemberController {
                 memberService.saveDeviceToken(
                         memberId, dto.getDeviceToken()
                 ),HttpStatus.OK);
+    }
+
+    @GetMapping("/kakao/scope")
+    @Operation(summary = "카카오 동의항목 확인",
+    description = "유저의 카카오 정보 동의 내역을 확인하는 API입니다.")
+    @ApiResponse(responseCode = "200", description = """
+    자세한 내용은
+    https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#check-consent-response-body-scope
+    """)
+    public ResponseEntity<ResponseDTO<KakaoScopesDTO>> kakaoTest(
+            HttpServletRequest request
+    ) {
+        Long memberId = jwtProvider.getMemberId(request);
+        return new ResponseEntity<>(
+                memberService.checkKakaoScopes(memberId),
+                HttpStatus.OK);
     }
 }

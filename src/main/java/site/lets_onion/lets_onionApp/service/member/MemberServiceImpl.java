@@ -51,6 +51,7 @@ public class MemberServiceImpl implements MemberService {
     private WebClient tokenWebClient = WebClient.create("https://kauth.kakao.com/oauth/token");
     private WebClient memberInfoWebClient = WebClient.create("https://kapi.kakao.com/v2/user/me");
     private WebClient logoutWebClient = WebClient.create("https://kapi.kakao.com/v1/user/logout");
+    private WebClient scopeWebClient = WebClient.create("https://kapi.kakao.com/v2/user/scopes");
 
     @Override
     public String getRedirectUri(Redirection redirection) {
@@ -176,6 +177,23 @@ public class MemberServiceImpl implements MemberService {
         }
         return new ResponseDTO<>(new PushNotificationDTO(member)
                 , Responses.OK);
+    }
+
+    @Override
+    public ResponseDTO<KakaoScopesDTO> checkKakaoScopes(Long memberId) {
+        Member member = findMember(memberId);
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("target_id_type", "user_id");
+        formData.add("target_id", member.getKakaoId().toString());
+
+        KakaoScopesDTO response = scopeWebClient
+                .get().uri(URIBuilder -> URIBuilder
+                        .queryParam("target_id_type", "user_id")
+                        .queryParam("target_id", "3629252493")
+                        .build())
+                .header("Authorization", "KakaoAK " + adminKey )
+                .retrieve().bodyToMono(KakaoScopesDTO.class).block();
+        return new ResponseDTO<>(response, Responses.OK);
     }
 
 

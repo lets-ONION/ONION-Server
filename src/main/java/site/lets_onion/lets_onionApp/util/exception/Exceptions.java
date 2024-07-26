@@ -11,7 +11,7 @@ public enum Exceptions {
     MEMBER_NOT_EXIST(400, "Member Not Exist"),
 
     /*401 UNAUTHORIZED*/
-    KAKAO_AUTH_FAILED_WITH_TOKEN(401, "Kakao Auth Failed With Toekn"),
+    KAKAO_AUTH_FAILED_WITH_TOKEN(401, "Kakao Auth Failed With Token"),
     KAKAO_AUTH_FAILED_WITH_ID(401, "Kakao Auth Failed With Id"),
     UNAUTHORIZED(401, "Unauthorized"),
     BLACKLISTED_TOKEN(401, "Blacklisted Token"),

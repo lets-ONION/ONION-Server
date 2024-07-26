@@ -12,7 +12,9 @@ import site.lets_onion.lets_onionApp.dto.integration.KakaoScopesDTO;
 import site.lets_onion.lets_onionApp.dto.integration.KakaoTokenResponseDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.LogoutDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.TokenDTO;
-import site.lets_onion.lets_onionApp.dto.member.*;
+import site.lets_onion.lets_onionApp.dto.member.LoginDTO;
+import site.lets_onion.lets_onionApp.dto.member.MemberInfoDTO;
+import site.lets_onion.lets_onionApp.dto.member.StatusMessageDTO;
 import site.lets_onion.lets_onionApp.dto.push.PushNotificationDTO;
 import site.lets_onion.lets_onionApp.repository.deviceToken.DeviceTokenRepository;
 import site.lets_onion.lets_onionApp.repository.member.MemberRepository;
@@ -230,7 +232,7 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public ResponseDTO<PushNotificationDTO> modifyPushSetting(Long memberId, PushType pushType) {
         Member member = findMember(memberId);
-        if (pushType.equals(PushType.TRADING)) {
+        if (pushType.equals(PushType.TRADE_REQUEST)) {
             member.getPushNotification().changeTradeRequest();
         } else if (pushType.equals(PushType.FRIEND_REQUEST)) {
             member.getPushNotification().changeFriendRequest();
@@ -292,6 +294,6 @@ public class MemberServiceImpl implements MemberService {
     /*유저 조회*/
     private Member findMember(Long memberId) {
         return memberRepository.findById(memberId).orElseThrow(() ->
-                new NullPointerException("User Not Exists"));
+                new CustomException(Exceptions.MEMBER_NOT_EXIST));
     }
 }

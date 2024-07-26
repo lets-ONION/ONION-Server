@@ -61,9 +61,21 @@ public class MemberController {
     @Operation(summary = "카카오 인증 API", description = "카카오 인가 코드를 받아 인증 처리를 하는 API입니다.")
     @ApiResponse(responseCode = "200", description = "기존 사용자 로그인 성공")
     @ApiResponse(responseCode = "201", description = "신규 사용자 가입 및 로그인 성공",
-    content = @Content(examples = @ExampleObject("{\"msg\": \"string\",\"code\": 0,\"data\":" +
-            "{\"member\": {\"nickname\":\"string\",\"member_id\": 0},\"access_token\":" +
-            "\"string\",\"refresh_token\": \"string\",\"exist_user\": false}}")))
+    content = @Content(examples = @ExampleObject("""
+            {
+                "msg":"string",
+                "code": 0,
+                "data": {
+                    "member": {
+                        "nickname":"string",
+                        "member_id": Long
+                    },
+                    "access_token":"string",
+                    "refresh_token": "string",
+                    "exist_user": 신규 유저일 시 false, 기존 유저일 시 true
+                }
+            }
+            """)))
     @ApiResponse(responseCode = "40x", description = "에러",
             content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))
     public ResponseEntity<ResponseDTO<LoginDTO>> localLogin(

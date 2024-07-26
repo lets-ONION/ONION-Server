@@ -2,12 +2,12 @@ package site.lets_onion.lets_onionApp.repository.member;
 
 import site.lets_onion.lets_onionApp.domain.member.Member;
 
-import java.util.List;
+import java.util.Optional;
 
 public interface BaseMemberRepository {
 
     /*카카오 ID로 조회*/
-    List<Member> findByKakaoId(Long kakaoId);
+    Optional<Member> findByKakaoId(Long kakaoId);
 
 
     /*닉네임으로 조회*/

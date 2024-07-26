@@ -3,13 +3,8 @@ package site.lets_onion.lets_onionApp.service.member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.reactive.function.client.WebClient;
 import site.lets_onion.lets_onionApp.domain.member.DeviceToken;
 import site.lets_onion.lets_onionApp.domain.member.Member;
 import site.lets_onion.lets_onionApp.dto.jwt.LogoutDTO;
@@ -25,11 +20,11 @@ import site.lets_onion.lets_onionApp.util.push.PushType;
 import site.lets_onion.lets_onionApp.util.redis.KakaoRedisConnector;
 import site.lets_onion.lets_onionApp.util.redis.KakaoTokens;
 import site.lets_onion.lets_onionApp.util.redis.ServiceRedisConnector;
+import site.lets_onion.lets_onionApp.util.request.KakaoRequest;
 import site.lets_onion.lets_onionApp.util.response.ResponseDTO;
 import site.lets_onion.lets_onionApp.util.response.Responses;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service @Slf4j
@@ -45,13 +40,8 @@ public class MemberServiceImpl implements MemberService {
 
     @Value("${kakao.apiKey}")
     private String clientId;
-    @Value("${kakao.adminKey}")
-    private String adminKey;
     private String kakaoCodeUri = "https://kauth.kakao.com/oauth/authorize?response_type=code";
-    private WebClient tokenWebClient = WebClient.create("https://kauth.kakao.com/oauth/token");
-    private WebClient memberInfoWebClient = WebClient.create("https://kapi.kakao.com/v2/user/me");
-    private WebClient logoutWebClient = WebClient.create("https://kapi.kakao.com/v1/user/logout");
-    private WebClient scopeWebClient = WebClient.create("https://kapi.kakao.com/v2/user/scopes");
+    private final KakaoRequest kakaoRequest;
 
     @Override
     public String getRedirectUri(Redirection redirection) {
@@ -60,20 +50,21 @@ public class MemberServiceImpl implements MemberService {
                 "&scope=friends,talk_message";
     }
 
+
     @Override
     @Transactional
     public ResponseDTO<LoginDTO> login(String code, Redirection redirection) {
-        KakaoTokenResponseDTO tokenResponse = requestKakaoToken(code, redirection);
-        Long kakaoId = requestMemberInfo(tokenResponse.getAccessToken());
+        KakaoTokenResponseDTO tokenResponse = kakaoRequest.requestKakaoAuthToken(code, redirection);
+        Long kakaoId = kakaoRequest.requestKakaoMemberInfo(tokenResponse.getAccessToken()).getKakaoId();
 
-        List<Member> searchedResult = memberRepository.findByKakaoId(kakaoId);
         Member member;
+        Optional<Member> searched = memberRepository.findByKakaoId(kakaoId);
         boolean existMember;
-        if (searchedResult.isEmpty()) {
+        if (searched.orElse(null) == null) {
              member = createMember(kakaoId);
              existMember = false;
         } else {
-            member = searchedResult.get(0);
+            member = searched.get();
             existMember = true;
         }
         LoginDTO loginDTO = new LoginDTO(member,
@@ -93,15 +84,20 @@ public class MemberServiceImpl implements MemberService {
         }
     }
 
+
     @Override
     @Transactional
     public ResponseDTO<Boolean> logout(Long memberId, LogoutDTO logoutDTO) {
         jwtProvider.logout(logoutDTO.getAccessToken(), logoutDTO.getRefreshToken());
         deviceTokenRepository.deleteDeviceToken(memberId, logoutDTO.getDeviceToken());
-        if(!requestKakaoLogout(memberId)) {
+        Member member = findMember(memberId);
+        try {
+            kakaoRequest.requestKakaoLogout(member, kakaoRedisConnector.get(memberId).getAccessToken());
+            return new ResponseDTO<>(Boolean.TRUE, Responses.OK);
+        } catch (Exception e) {
+            log.error(e.getMessage());
             throw new CustomException(Exceptions.KAKAO_LOGOUT_FAILED);
         }
-        return new ResponseDTO<>(Boolean.TRUE, Responses.OK);
     }
 
 
@@ -129,6 +125,7 @@ public class MemberServiceImpl implements MemberService {
                 Responses.OK);
     }
 
+
     @Override
     @Transactional
     public ResponseDTO<MemberInfoDTO> updateNickname(Long memberId, String nickname) {
@@ -146,6 +143,7 @@ public class MemberServiceImpl implements MemberService {
                 Responses.OK);
     }
 
+
     @Override
     @Transactional
     public ResponseDTO<Boolean> saveDeviceToken(Long memberId, String deviceToken) {
@@ -161,6 +159,7 @@ public class MemberServiceImpl implements MemberService {
         deviceTokenRepository.save(deviceTokenEntity);
         return new ResponseDTO<>(Boolean.TRUE, Responses.OK);
     }
+
 
     @Override
     @Transactional
@@ -181,43 +180,8 @@ public class MemberServiceImpl implements MemberService {
     public ResponseDTO<KakaoScopesDTO> checkKakaoScopes(Long memberId) {
         Member member = findMember(memberId);
         String kakaoToken = kakaoRedisConnector.get(member.getId()).getAccessToken();
-
-        KakaoScopesDTO response = scopeWebClient
-                .get().uri(URIBuilder -> URIBuilder
-                        .queryParam("target_id_type", "user_id")
-                        .queryParam("target_id", member.getKakaoId().toString())
-                        .build())
-                .header("Authorization", "Bearer " + kakaoToken)
-                .retrieve().bodyToMono(KakaoScopesDTO.class).block();
+        KakaoScopesDTO response = kakaoRequest.requestKakaoScopes(member, kakaoToken);
         return new ResponseDTO<>(response, Responses.OK);
-    }
-
-
-    /*카카오 인증 서버에 액세스 토큰 요청*/
-    private KakaoTokenResponseDTO requestKakaoToken(String code, Redirection redirection) {
-        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-        formData.add("grant_type", "authorization_code");
-        formData.add("client_id", clientId);
-        formData.add("redirect_uri", redirection.getRedirectUri());
-        formData.add("code", code);
-
-        KakaoTokenResponseDTO response = tokenWebClient.post()
-                .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .bodyValue(formData)
-                .retrieve().bodyToMono(KakaoTokenResponseDTO.class)
-                .block();
-        return Optional.ofNullable(response)
-                .orElseThrow(() -> new CustomException(Exceptions.KAKAO_AUTH_FAILED_WITH_TOKEN));
-    }
-
-
-    /*카카오 인증 서버에 유저 정보 요청*/
-    private Long requestMemberInfo(String token) {
-        KakaoMemberInfoDTO response = memberInfoWebClient.get()
-                .header("Authorization", "Bearer " + token)
-                .retrieve().bodyToMono(KakaoMemberInfoDTO.class)
-                .block();
-        return response.getKakaoId();
     }
 
 
@@ -225,26 +189,6 @@ public class MemberServiceImpl implements MemberService {
     private Member createMember(Long kakaoId) {
         Member member = Member.builder().kakaoId(kakaoId).build();
         return memberRepository.save(member);
-    }
-
-
-    /*카카오 인증 서버에 로그아웃 요청*/
-    private boolean requestKakaoLogout(Long memberId) {
-        Member member = findMember(memberId);
-        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-        formData.add("target_id_type", "user_id");
-        formData.add("target_id", member.getKakaoId().toString());
-
-        Map<String, Long> response = logoutWebClient.post().contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .header("Authorization", "KakaoAK " + adminKey)
-                .bodyValue(formData).retrieve()
-                .bodyToMono(new ParameterizedTypeReference<Map<String, Long>>() {})
-                .block();
-        if (!response.containsKey("id")) {
-            return false;
-        }
-        kakaoRedisConnector.remove(memberId);
-        return true;
     }
 
 

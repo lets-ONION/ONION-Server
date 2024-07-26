@@ -7,9 +7,7 @@ import lombok.Getter;
 public class PushNotification {
 
     private boolean friendRequest = true;
-
     private boolean tradeRequest = true;
-
     private boolean everyone = true;
 
     public void changeFriendRequest() {

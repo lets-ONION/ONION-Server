@@ -14,6 +14,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import site.lets_onion.lets_onionApp.dto.integration.FriendRequestDTO;
+import site.lets_onion.lets_onionApp.dto.integration.KakaoScopesDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.LogoutDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.RefreshTokenDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.TokenDTO;
@@ -205,6 +207,24 @@ public class MemberController {
         Long memberId = jwtProvider.getMemberId(request);
         return new ResponseEntity<>(
                 memberService.checkKakaoScopes(memberId),
+                HttpStatus.OK);
+    }
+
+
+    @GetMapping("/kakao/friends")
+    @Operation(summary = "카카오톡 친구&&앱 회원 리스트 조회",
+    description = "한 번에 100페이지씩 가져옵니다. offset을 0부터 100씩 늘려가며 요청해주세요.")
+    @ApiResponse(responseCode = "200", description = """
+    자세한 내용은
+    https://developers.kakao.com/docs/latest/ko/kakaotalk-social/rest-api#get-friends
+    """)
+    public ResponseEntity<ResponseDTO<FriendRequestDTO>> requestKakaoFriends(
+            HttpServletRequest request,
+            @RequestParam int offset
+    ) {
+        Long memberId = jwtProvider.getMemberId(request);
+        return new ResponseEntity<>(
+                memberService.requestKakaoFriends(memberId,offset),
                 HttpStatus.OK);
     }
 }

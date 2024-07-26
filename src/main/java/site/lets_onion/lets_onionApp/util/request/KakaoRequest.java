@@ -9,9 +9,10 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import site.lets_onion.lets_onionApp.domain.member.Member;
-import site.lets_onion.lets_onionApp.dto.member.KakaoMemberInfoDTO;
-import site.lets_onion.lets_onionApp.dto.member.KakaoScopesDTO;
-import site.lets_onion.lets_onionApp.dto.member.KakaoTokenResponseDTO;
+import site.lets_onion.lets_onionApp.dto.integration.FriendRequestDTO;
+import site.lets_onion.lets_onionApp.dto.integration.KakaoMemberInfoDTO;
+import site.lets_onion.lets_onionApp.dto.integration.KakaoScopesDTO;
+import site.lets_onion.lets_onionApp.dto.integration.KakaoTokenResponseDTO;
 import site.lets_onion.lets_onionApp.service.member.Redirection;
 import site.lets_onion.lets_onionApp.util.exception.CustomException;
 import site.lets_onion.lets_onionApp.util.exception.Exceptions;
@@ -30,6 +31,7 @@ public class KakaoRequest {
     private WebClient logoutWebClient = WebClient.create("https://kapi.kakao.com/v1/user/logout");
     private WebClient scopeWebClient = WebClient.create("https://kapi.kakao.com/v2/user/scopes");
     private WebClient kakaoTokenRefreshWebClient = WebClient.create("https://kauth.kakao.com/oauth/token");
+    private WebClient friendsWebClient = WebClient.create("https://kapi.kakao.com/v1/api/talk/friends");
     private final KakaoRedisConnector kakaoRedisConnector;
 
 
@@ -117,6 +119,34 @@ public class KakaoRequest {
             }
         }
 
+    }
+
+
+    /**
+     * 카카오 서버에서 유저의 카카오 친구 중<br>
+     * 앱 사용자 리스트를 조회합니다.
+     * @param member
+     * @param token
+     * @param offset
+     * @return
+     */
+    public FriendRequestDTO kakaoRequestFriends(Member member, String token, int offset) {
+        try {
+            return friendsWebClient.get()
+                    .uri(URIBuilder -> URIBuilder
+                            .queryParam("limit", "100")
+                            .queryParam("offset", String.valueOf(offset))
+                            .build())
+                    .header("Authorization", "Bearer " + token)
+                    .retrieve().bodyToMono(FriendRequestDTO.class).block();
+        } catch (WebClientResponseException e) {
+            if (e.getStatusCode().value() == 401) {
+                return kakaoRequestFriends(member, kakaoTokenRefresh(member), offset);
+            } else {
+                log.error(e.getMessage());
+                throw new RuntimeException(e.getMessage() + e.getResponseBodyAsString());
+            }
+        }
     }
 
 

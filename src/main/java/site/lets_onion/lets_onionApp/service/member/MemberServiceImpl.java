@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.lets_onion.lets_onionApp.domain.member.DeviceToken;
 import site.lets_onion.lets_onionApp.domain.member.Member;
+import site.lets_onion.lets_onionApp.dto.integration.FriendRequestDTO;
+import site.lets_onion.lets_onionApp.dto.integration.KakaoScopesDTO;
+import site.lets_onion.lets_onionApp.dto.integration.KakaoTokenResponseDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.LogoutDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.TokenDTO;
 import site.lets_onion.lets_onionApp.dto.member.*;
@@ -250,6 +253,22 @@ public class MemberServiceImpl implements MemberService {
         String kakaoToken = kakaoRedisConnector.get(member.getId()).getAccessToken();
         KakaoScopesDTO response = kakaoRequest.requestKakaoScopes(member, kakaoToken);
         return new ResponseDTO<>(response, Responses.OK);
+    }
+
+
+    /**
+     * 카카오톡 친구 목록을 조회합니다.
+     * @param memberId
+     * @return
+     */
+    @Override
+    public ResponseDTO<FriendRequestDTO> requestKakaoFriends(Long memberId, int offset) {
+        Member member = findMember(memberId);
+        String kakaoToken = kakaoRedisConnector.get(memberId).getAccessToken();
+        return new ResponseDTO<>(
+                kakaoRequest.kakaoRequestFriends(member, kakaoToken, offset),
+                Responses.OK
+        );
     }
 
 

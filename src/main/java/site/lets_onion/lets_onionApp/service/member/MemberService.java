@@ -1,11 +1,10 @@
 package site.lets_onion.lets_onionApp.service.member;
 
+import site.lets_onion.lets_onionApp.dto.integration.FriendRequestDTO;
+import site.lets_onion.lets_onionApp.dto.integration.KakaoScopesDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.LogoutDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.TokenDTO;
-import site.lets_onion.lets_onionApp.dto.member.KakaoScopesDTO;
-import site.lets_onion.lets_onionApp.dto.member.LoginDTO;
-import site.lets_onion.lets_onionApp.dto.member.MemberInfoDTO;
-import site.lets_onion.lets_onionApp.dto.member.StatusMessageDTO;
+import site.lets_onion.lets_onionApp.dto.member.*;
 import site.lets_onion.lets_onionApp.dto.push.PushNotificationDTO;
 import site.lets_onion.lets_onionApp.util.push.PushType;
 import site.lets_onion.lets_onionApp.util.response.ResponseDTO;
@@ -44,4 +43,7 @@ public interface MemberService {
 
     /*유저 동의 항목 조회*/
     ResponseDTO<KakaoScopesDTO> checkKakaoScopes(Long memberId);
+
+    /*유저의 카카오 친구 목록 조회*/
+    ResponseDTO<FriendRequestDTO> requestKakaoFriends(Long memberId, int offset);
 }

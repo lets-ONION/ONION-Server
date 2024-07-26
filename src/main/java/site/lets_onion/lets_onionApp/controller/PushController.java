@@ -46,7 +46,9 @@ public class PushController {
 
 
     @PostMapping("/test")
-    @Operation(summary = "푸시 메시지를 테스트하는 API입니다.")
+    @Operation(summary = "푸시 메시지를 테스트하는 API입니다.",
+    description = "백엔드쪽에서 테스트할 수 있는 방법이 없어서 우선 " +
+            "받는 요청은 그대로 다 돌려보내도록 했습니다ㅜ")
     public ResponseEntity<ResponseDTO<PushTestResponseDTO>> pushTest(
             HttpServletRequest request,
             @RequestBody PushTestRequestDTO pushTestRequestDTO)

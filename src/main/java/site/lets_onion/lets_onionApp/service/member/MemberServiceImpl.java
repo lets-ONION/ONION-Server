@@ -21,11 +21,14 @@ import site.lets_onion.lets_onionApp.util.exception.CustomException;
 import site.lets_onion.lets_onionApp.util.exception.Exceptions;
 import site.lets_onion.lets_onionApp.util.jwt.JwtProvider;
 import site.lets_onion.lets_onionApp.util.push.PushType;
-import site.lets_onion.lets_onionApp.util.redis.RedisConnector;
+import site.lets_onion.lets_onionApp.util.redis.KakaoRedisConnector;
+import site.lets_onion.lets_onionApp.util.redis.KakaoTokens;
+import site.lets_onion.lets_onionApp.util.redis.ServiceRedisConnector;
 import site.lets_onion.lets_onionApp.util.response.ResponseDTO;
 import site.lets_onion.lets_onionApp.util.response.Responses;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service @Slf4j
 @Transactional(readOnly = true)
@@ -35,7 +38,8 @@ public class MemberServiceImpl implements MemberService {
     private final MemberRepository memberRepository;
     private final DeviceTokenRepository deviceTokenRepository;
     private final JwtProvider jwtProvider;
-    private final RedisConnector redisConnector;
+    private final ServiceRedisConnector serviceRedisConnector;
+    private final KakaoRedisConnector kakaoRedisConnector;
 
     @Value("${kakao.apiKey}")
     private String clientId;
@@ -52,8 +56,8 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public ResponseDTO<LoginDTO> login(String code, Redirection redirection) {
-        String token = requestKakaoToken(code, redirection);
-        Long kakaoId = requestMemberInfo(token);
+        KakaoTokenResponseDTO tokenResponse = requestKakaoToken(code, redirection);
+        Long kakaoId = requestMemberInfo(tokenResponse.getAccessToken());
 
         List<Member> searchedResult = memberRepository.findByKakaoId(kakaoId);
         Member member;
@@ -70,7 +74,14 @@ public class MemberServiceImpl implements MemberService {
                 jwtProvider.createRefreshToken(member.getId()),
                 existMember
         );
-
+        for (int i = 0; i < 100; i++) {
+            System.out.println("tokenResponse = " + tokenResponse);
+        }
+        kakaoRedisConnector.setWithTtl(
+                member.getId(),
+                new KakaoTokens(tokenResponse.getAccessToken(), tokenResponse.getRefreshToken()),
+                (long) tokenResponse.getRefreshExpiresIn()
+        );
         if (existMember) {
             return new ResponseDTO<>(loginDTO, Responses.OK);
         } else {
@@ -97,7 +108,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public ResponseDTO<StatusMessageDTO> updateStatusMessage(Long memberId, String message) {
-        redisConnector.setWithTtl(memberId.toString(), message, 86400000L); // 24시간 유지
+        serviceRedisConnector.setWithTtl(memberId.toString(), message, 86400000L); // 24시간 유지
         return new ResponseDTO<>(new StatusMessageDTO(message),
                 Responses.CREATED);
     }
@@ -106,7 +117,7 @@ public class MemberServiceImpl implements MemberService {
     @Override
     @Transactional
     public ResponseDTO<StatusMessageDTO> getStatusMessage(Long memberId) {
-        String message = redisConnector.get(memberId.toString());
+        String message = serviceRedisConnector.get(memberId.toString());
         return new ResponseDTO<>(new StatusMessageDTO(message),
                 Responses.OK);
     }
@@ -161,19 +172,21 @@ public class MemberServiceImpl implements MemberService {
 
 
     /*카카오 인증 서버에 액세스 토큰 요청*/
-    private String requestKakaoToken(String code, Redirection redirection) {
+    private KakaoTokenResponseDTO requestKakaoToken(String code, Redirection redirection) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("grant_type", "authorization_code");
         formData.add("client_id", clientId);
         formData.add("redirect_uri", redirection.getRedirectUri());
         formData.add("code", code);
 
-        TokenResponseDTO response = tokenWebClient.post()
+        KakaoTokenResponseDTO response = tokenWebClient.post()
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .bodyValue(formData)
-                .retrieve().bodyToMono(TokenResponseDTO.class)
+                .retrieve().bodyToMono(KakaoTokenResponseDTO.class)
                 .block();
-        return response.getAccessToken().toString();
+//        return response.getAccessToken().toString();
+        return Optional.ofNullable(response)
+                .orElseThrow(() -> new CustomException(Exceptions.KAKAO_AUTH_FAILED_WITH_TOKEN));
     }
 
 

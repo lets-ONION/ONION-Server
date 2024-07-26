@@ -26,6 +26,10 @@ public enum Exceptions {
 
     /*404 NOT_FOUND*/
     NOT_FOUND(404, "Not Found"),
+    KAKAO_TOKEN_NOT_FOUND(404, """
+            Kakao Token Not Found.
+            Maybe Expired.
+            """),
 
     /*405 METHOD_NOT_ALLOWED*/
     METHOD_NOT_ALLOWED(405, "Method Not Allowed"),

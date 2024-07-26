@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
-public class RedisConnector {
+public class ServiceRedisConnector {
 
     private final RedisTemplate<String, String> redisTemplate;
 

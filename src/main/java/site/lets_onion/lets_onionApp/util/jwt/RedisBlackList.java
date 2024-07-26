@@ -3,7 +3,7 @@ package site.lets_onion.lets_onionApp.util.jwt;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
-import site.lets_onion.lets_onionApp.util.redis.RedisConnector;
+import site.lets_onion.lets_onionApp.util.redis.ServiceRedisConnector;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -14,7 +14,7 @@ import java.util.Locale;
 @RequiredArgsConstructor
 public class RedisBlackList implements BlackList {
 
-    private final RedisConnector redisConnector;
+    private final ServiceRedisConnector serviceRedisConnector;
     private SimpleDateFormat formatter =
             new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
 
@@ -27,11 +27,11 @@ public class RedisBlackList implements BlackList {
             throw new RuntimeException(e);
         }
         long ttl = parsedDate.getTime() - new Date(System.currentTimeMillis()).getTime();
-        redisConnector.setWithTtl(token, date, ttl);
+        serviceRedisConnector.setWithTtl(token, date, ttl);
     }
 
     @Override
     public boolean containsToken(String token) {
-        return redisConnector.exists(token);
+        return serviceRedisConnector.exists(token);
     }
 }

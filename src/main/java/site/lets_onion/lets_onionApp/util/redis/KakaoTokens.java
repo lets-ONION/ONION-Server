@@ -1,4 +1,4 @@
-package site.lets_onion.lets_onionApp.util.kakao;
+package site.lets_onion.lets_onionApp.util.redis;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -10,4 +10,9 @@ public class KakaoTokens {
     private String accessToken;
     @JsonProperty("refresh_token")
     private String refreshToken;
+
+    public KakaoTokens(String accessToken, String refreshToken) {
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+    }
 }

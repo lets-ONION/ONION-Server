@@ -43,6 +43,12 @@ public class MemberServiceImpl implements MemberService {
     private String kakaoCodeUri = "https://kauth.kakao.com/oauth/authorize?response_type=code";
     private final KakaoRequest kakaoRequest;
 
+
+    /**
+     * 유저의 접속 위치에 따라 적절한 리다이렉트 uri를 반환합니다.
+     * @param redirection
+     * @return
+     */
     @Override
     public String getRedirectUri(Redirection redirection) {
         return kakaoCodeUri + "&client_id=" + clientId +
@@ -51,6 +57,14 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
+    /**
+     * 카카오 인증서버와 통신하여 액세스 토큰을 발급 받고<br>
+     * 로그인한 유저를 가입 혹은 로그인시켜<br>
+     * 액세스 토큰을 발급합니다.
+     * @param code
+     * @param redirection
+     * @return
+     */
     @Override
     @Transactional
     public ResponseDTO<LoginDTO> login(String code, Redirection redirection) {
@@ -85,6 +99,14 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
+    /**
+     * 서비스 내에서 발급한 JWT 토큰과 카카오 인증 서버에서 발급 받은<br>
+     * JWT 토큰을 모두 폐기하여 로그아웃합니다.<br>
+     * 이 때, 해당 기기의 디바이스 토큰도 함께 삭제합니다.
+     * @param memberId
+     * @param logoutDTO
+     * @return
+     */
     @Override
     @Transactional
     public ResponseDTO<Boolean> logout(Long memberId, LogoutDTO logoutDTO) {
@@ -101,6 +123,12 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
+    /**
+     * 리프레시 토큰을 사용하여 새로운 액세스/리프레시 토큰을 발급합니다.<br>
+     * 기존 리프레시 토큰은 블랙리스트에 올립니다.
+     * @param refreshToken
+     * @return
+     */
     @Override
     public ResponseDTO<TokenDTO> tokenReissue(String refreshToken) {
         TokenDTO tokens = jwtProvider.refreshAccessToken(refreshToken);
@@ -108,6 +136,12 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
+    /**
+     * 상태메시지를 업데이트합니다.
+     * @param memberId
+     * @param message
+     * @return
+     */
     @Override
     @Transactional
     public ResponseDTO<StatusMessageDTO> updateStatusMessage(Long memberId, String message) {
@@ -117,6 +151,11 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
+    /**
+     * 상태메시지를 조회합니다.
+     * @param memberId
+     * @return
+     */
     @Override
     @Transactional
     public ResponseDTO<StatusMessageDTO> getStatusMessage(Long memberId) {
@@ -126,6 +165,12 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
+    /**
+     * 닉네임을 업데이트합니다.
+     * @param memberId
+     * @param nickname
+     * @return
+     */
     @Override
     @Transactional
     public ResponseDTO<MemberInfoDTO> updateNickname(Long memberId, String nickname) {
@@ -136,6 +181,11 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
+    /**
+     * 유저 정보를 조회합니다.
+     * @param memberId
+     * @return
+     */
     @Override
     public ResponseDTO<MemberInfoDTO> getMemberInfo(Long memberId) {
         Member member = findMember(memberId);
@@ -144,6 +194,12 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
+    /**
+     * 새로운 디바이스 토큰을 저장합니다.
+     * @param memberId
+     * @param deviceToken
+     * @return
+     */
     @Override
     @Transactional
     public ResponseDTO<Boolean> saveDeviceToken(Long memberId, String deviceToken) {
@@ -161,6 +217,12 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
+    /**
+     * 푸시 알림 설정을 수정합니다.
+     * @param memberId
+     * @param pushType
+     * @return
+     */
     @Override
     @Transactional
     public ResponseDTO<PushNotificationDTO> modifyPushSetting(Long memberId, PushType pushType) {
@@ -176,6 +238,12 @@ public class MemberServiceImpl implements MemberService {
                 , Responses.OK);
     }
 
+
+    /**
+     * 유저의 카카오 계정 동의 정보를 조회합니다.
+     * @param memberId
+     * @return
+     */
     @Override
     public ResponseDTO<KakaoScopesDTO> checkKakaoScopes(Long memberId) {
         Member member = findMember(memberId);
@@ -185,6 +253,11 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
+    /**
+     * 새로운 유저 데이터를 생성합니다.
+     * @param kakaoId
+     * @return
+     */
     /*새로운 유저 데이터 생성*/
     private Member createMember(Long kakaoId) {
         Member member = Member.builder().kakaoId(kakaoId).build();
@@ -192,6 +265,11 @@ public class MemberServiceImpl implements MemberService {
     }
 
 
+    /**
+     * 예외를 처리하며 유저를 조회합니다.
+     * @param memberId
+     * @return
+     */
     /*유저 조회*/
     private Member findMember(Long memberId) {
         return memberRepository.findById(memberId).orElseThrow(() ->

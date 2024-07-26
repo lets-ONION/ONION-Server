@@ -33,6 +33,12 @@ public class KakaoRequest {
     private final KakaoRedisConnector kakaoRedisConnector;
 
 
+    /**
+     * 카카오 인증서버와 통신하여 토큰을 발급받습니다.
+     * @param code
+     * @param redirection
+     * @return
+     */
     public KakaoTokenResponseDTO requestKakaoAuthToken(String code, Redirection redirection) {
         return tokenWebClient.post()
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -46,6 +52,11 @@ public class KakaoRequest {
     }
 
 
+    /**
+     * 카카오 인증 서버에 유저 정보를 요청합니다.
+     * @param token
+     * @return
+     */
     public KakaoMemberInfoDTO requestKakaoMemberInfo(String token) {
         return memberInfoWebClient.get()
                 .header("Authorization", "Bearer " + token)
@@ -54,6 +65,12 @@ public class KakaoRequest {
     }
 
 
+    /**
+     *
+     * 카카오 인증 서버에 로그아웃을 요청합니다.
+     * @param member
+     * @param token
+     */
     public void requestKakaoLogout(Member member, String token) {
         try {
             logoutWebClient.post().contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -75,6 +92,12 @@ public class KakaoRequest {
     }
 
 
+    /**
+     * 카카오 인증 서버에 유저 동의 정보를 요청합니다.
+     * @param member
+     * @param token
+     * @return
+     */
     public KakaoScopesDTO requestKakaoScopes(Member member, String token) {
 
         try {
@@ -97,7 +120,11 @@ public class KakaoRequest {
     }
 
 
-    /*카카오 토큰 리프레시*/
+    /**
+     * 카카오 인증 서버에 로그아웃을 요청합니다
+     * @param member
+     * @return
+     */
     private String kakaoTokenRefresh(Member member) {
         String refreshToken = kakaoRedisConnector.get(member.getId()).getRefreshToken();
         KakaoTokenResponseDTO response = kakaoTokenRefreshWebClient.post()

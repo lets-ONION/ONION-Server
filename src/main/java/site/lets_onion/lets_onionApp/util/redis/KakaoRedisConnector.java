@@ -21,7 +21,7 @@ public class KakaoRedisConnector {
 
     /*TTL과 함께 카카오 액세스 토큰 저장*/
     public void setWithTtl(Long memberId, KakaoTokens tokens, Long ttl){
-        redisTemplate.opsForValue().set("kakao_tokens_" + memberId.toString(), tokens, ttl, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(memberId.toString(), tokens, ttl, TimeUnit.SECONDS);
     }
 
 

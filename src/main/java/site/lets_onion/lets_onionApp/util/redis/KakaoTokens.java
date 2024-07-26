@@ -15,4 +15,7 @@ public class KakaoTokens {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
     }
+
+    public KakaoTokens() {
+    }
 }

@@ -19,7 +19,7 @@ public class KakaoScopesDTO {
         private String displayName;
         private String type;
         private boolean using;
-        private boolean agree;
+        private boolean agreed;
         private boolean revocable;
     }
 }

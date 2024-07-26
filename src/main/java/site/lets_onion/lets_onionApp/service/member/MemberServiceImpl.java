@@ -56,7 +56,8 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public String getRedirectUri(Redirection redirection) {
         return kakaoCodeUri + "&client_id=" + clientId +
-                "&redirect_uri=" + redirection.getRedirectUri();
+                "&redirect_uri=" + redirection.getRedirectUri() +
+                "&scope=friends,talk_message";
     }
 
     @Override
@@ -80,9 +81,6 @@ public class MemberServiceImpl implements MemberService {
                 jwtProvider.createRefreshToken(member.getId()),
                 existMember
         );
-        for (int i = 0; i < 100; i++) {
-            System.out.println("tokenResponse = " + tokenResponse);
-        }
         kakaoRedisConnector.setWithTtl(
                 member.getId(),
                 new KakaoTokens(tokenResponse.getAccessToken(), tokenResponse.getRefreshToken()),
@@ -182,16 +180,14 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public ResponseDTO<KakaoScopesDTO> checkKakaoScopes(Long memberId) {
         Member member = findMember(memberId);
-        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-        formData.add("target_id_type", "user_id");
-        formData.add("target_id", member.getKakaoId().toString());
+        String kakaoToken = kakaoRedisConnector.get(member.getId()).getAccessToken();
 
         KakaoScopesDTO response = scopeWebClient
                 .get().uri(URIBuilder -> URIBuilder
                         .queryParam("target_id_type", "user_id")
-                        .queryParam("target_id", "3629252493")
+                        .queryParam("target_id", member.getKakaoId().toString())
                         .build())
-                .header("Authorization", "KakaoAK " + adminKey )
+                .header("Authorization", "Bearer " + kakaoToken)
                 .retrieve().bodyToMono(KakaoScopesDTO.class).block();
         return new ResponseDTO<>(response, Responses.OK);
     }

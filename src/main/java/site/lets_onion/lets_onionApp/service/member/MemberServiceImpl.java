@@ -3,6 +3,7 @@ package site.lets_onion.lets_onionApp.service.member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +29,7 @@ import site.lets_onion.lets_onionApp.util.response.ResponseDTO;
 import site.lets_onion.lets_onionApp.util.response.Responses;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service @Slf4j
@@ -43,9 +45,12 @@ public class MemberServiceImpl implements MemberService {
 
     @Value("${kakao.apiKey}")
     private String clientId;
+    @Value("${kakao.adminKey}")
+    private String adminKey;
     private String kakaoCodeUri = "https://kauth.kakao.com/oauth/authorize?response_type=code";
     private WebClient tokenWebClient = WebClient.create("https://kauth.kakao.com/oauth/token");
     private WebClient memberInfoWebClient = WebClient.create("https://kapi.kakao.com/v2/user/me");
+    private WebClient logoutWebClient = WebClient.create("https://kapi.kakao.com/v1/user/logout");
 
     @Override
     public String getRedirectUri(Redirection redirection) {
@@ -94,6 +99,9 @@ public class MemberServiceImpl implements MemberService {
     public ResponseDTO<Boolean> logout(Long memberId, LogoutDTO logoutDTO) {
         jwtProvider.logout(logoutDTO.getAccessToken(), logoutDTO.getRefreshToken());
         deviceTokenRepository.deleteDeviceToken(memberId, logoutDTO.getDeviceToken());
+        if(!requestKakaoLogout(memberId)) {
+            throw new CustomException(Exceptions.KAKAO_LOGOUT_FAILED);
+        }
         return new ResponseDTO<>(Boolean.TRUE, Responses.OK);
     }
 
@@ -184,7 +192,6 @@ public class MemberServiceImpl implements MemberService {
                 .bodyValue(formData)
                 .retrieve().bodyToMono(KakaoTokenResponseDTO.class)
                 .block();
-//        return response.getAccessToken().toString();
         return Optional.ofNullable(response)
                 .orElseThrow(() -> new CustomException(Exceptions.KAKAO_AUTH_FAILED_WITH_TOKEN));
     }
@@ -204,6 +211,26 @@ public class MemberServiceImpl implements MemberService {
     private Member createMember(Long kakaoId) {
         Member member = Member.builder().kakaoId(kakaoId).build();
         return memberRepository.save(member);
+    }
+
+
+    /*카카오 인증 서버에 로그아웃 요청*/
+    private boolean requestKakaoLogout(Long memberId) {
+        Member member = findMember(memberId);
+        MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
+        formData.add("target_id_type", "user_id");
+        formData.add("target_id", member.getKakaoId().toString());
+
+        Map<String, Long> response = logoutWebClient.post().contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                .header("Authorization", "KakaoAK " + adminKey)
+                .bodyValue(formData).retrieve()
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Long>>() {})
+                .block();
+        if (!response.containsKey("id")) {
+            return false;
+        }
+        kakaoRedisConnector.remove(memberId);
+        return true;
     }
 
 

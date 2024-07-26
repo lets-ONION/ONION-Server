@@ -39,6 +39,10 @@ public enum Exceptions {
 
     /*500 INTERNAL_SERVER_ERROR*/
     FAILED_TO_SEND_PUSH_MESSAGE(500, "Failed To Send Push Message"),
+    KAKAO_LOGOUT_FAILED(500, """
+            Kakao Logout Failed.
+            However, The Service Was Successfully Logged Out.
+            """),
     INTERNAL_SERVER_ERROR(500, "Internal Server Error");
 
     private final int code;

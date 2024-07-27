@@ -17,7 +17,9 @@ import site.lets_onion.lets_onionApp.TestGenerator;
 import site.lets_onion.lets_onionApp.domain.friendship.Friendship;
 import site.lets_onion.lets_onionApp.domain.friendship.FriendshipStatus;
 import site.lets_onion.lets_onionApp.domain.member.Member;
+import site.lets_onion.lets_onionApp.dto.friendship.FriendDTO;
 import site.lets_onion.lets_onionApp.dto.friendship.FriendshipDTO;
+import site.lets_onion.lets_onionApp.dto.friendship.PendingFriendRequestDTO;
 import site.lets_onion.lets_onionApp.repository.friendship.FriendshipRepository;
 import site.lets_onion.lets_onionApp.repository.member.MemberRepository;
 import site.lets_onion.lets_onionApp.service.friendship.FriendshipService;
@@ -208,15 +210,11 @@ public class FriendshipServiceTest {
     List<Friendship> expected = friendshipRepository
         .findFriendsByMemberId(testMember.getId());
 
-    List<FriendshipDTO> result = friendshipService
+    List<FriendDTO> result = friendshipService
         .getFriendList(testMember.getId()).getData();
 
     /*then*/
     assertEquals(expected.size(), result.size());
-
-    for (FriendshipDTO dto : result) {
-      assertEquals(dto.getStatus(), FriendshipStatus.ACCEPT);
-    }
   }
 
 
@@ -284,15 +282,12 @@ public class FriendshipServiceTest {
       }
     }
 
-    List<FriendshipDTO> result = friendshipService
+    List<FriendDTO> result = friendshipService
         .getFriendList(testMember.getId())
         .getData();
 
     /*then*/
     assertEquals(friends, result.size());
-    for (FriendshipDTO dto : result) {
-      assertEquals(dto.getStatus(), FriendshipStatus.ACCEPT);
-    }
   }
 
 
@@ -359,13 +354,10 @@ public class FriendshipServiceTest {
       }
     }
 
-    List<FriendshipDTO> response = friendshipService
+    List<PendingFriendRequestDTO> response = friendshipService
         .getReceivedFriendRequestList(testMember.getId()).getData();
 
     /*then*/
     assertEquals(pending, response.size());
-    for (FriendshipDTO dto : response) {
-      assertEquals(dto.getStatus(), FriendshipStatus.PENDING);
-    }
   }
 }

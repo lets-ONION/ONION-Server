@@ -1,5 +1,6 @@
 package site.lets_onion.lets_onionApp.service.member;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +22,7 @@ import site.lets_onion.lets_onionApp.repository.member.MemberRepository;
 import site.lets_onion.lets_onionApp.util.exception.CustomException;
 import site.lets_onion.lets_onionApp.util.exception.Exceptions;
 import site.lets_onion.lets_onionApp.util.jwt.JwtProvider;
+import site.lets_onion.lets_onionApp.util.jwt.TokenType;
 import site.lets_onion.lets_onionApp.util.push.PushType;
 import site.lets_onion.lets_onionApp.util.redis.KakaoRedisConnector;
 import site.lets_onion.lets_onionApp.util.redis.KakaoTokens;
@@ -28,9 +30,6 @@ import site.lets_onion.lets_onionApp.util.redis.ServiceRedisConnector;
 import site.lets_onion.lets_onionApp.util.request.KakaoRequest;
 import site.lets_onion.lets_onionApp.util.response.ResponseDTO;
 import site.lets_onion.lets_onionApp.util.response.Responses;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service @Slf4j
 @Transactional(readOnly = true)
@@ -45,7 +44,6 @@ public class MemberServiceImpl implements MemberService {
 
     @Value("${kakao.apiKey}")
     private String clientId;
-    private String kakaoCodeUri = "https://kauth.kakao.com/oauth/authorize?response_type=code";
     private final KakaoRequest kakaoRequest;
 
 
@@ -56,45 +54,41 @@ public class MemberServiceImpl implements MemberService {
      */
     @Override
     public String getRedirectUri(Redirection redirection) {
-        return kakaoCodeUri + "&client_id=" + clientId +
-                "&redirect_uri=" + redirection.getRedirectUri() +
-                "&scope=friends,talk_message";
+          return "https://kauth.kakao.com/oauth/authorize"
+              + "?response_type=code&client_id=" + clientId +
+              "&redirect_uri=" + redirection.getRedirectUri() +
+              "&scope=friends,talk_message";
     }
 
 
-    /**
-     * 카카오 인증서버와 통신하여 액세스 토큰을 발급 받고<br>
-     * 로그인한 유저를 가입 혹은 로그인시켜<br>
-     * 액세스 토큰을 발급합니다.
-     * @param code
-     * @param redirection
-     * @return
-     */
     @Override
     @Transactional
     public ResponseDTO<LoginDTO> login(String code, Redirection redirection) {
-        KakaoTokenResponseDTO tokenResponse = kakaoRequest.requestKakaoAuthToken(code, redirection);
-        Long kakaoId = kakaoRequest.requestKakaoMemberInfo(tokenResponse.getAccessToken()).getKakaoId();
+        KakaoTokenResponseDTO tokenResponse = kakaoRequest
+            .requestKakaoAuthToken(code, redirection);
+        Long kakaoId = kakaoRequest.requestKakaoMemberInfo(
+            tokenResponse.getAccessToken()
+        ).getKakaoId();
 
-        Member member;
-        Optional<Member> searched = memberRepository.findByKakaoId(kakaoId);
+        Member member = memberRepository.findByKakaoId(kakaoId);
         boolean existMember;
-        if (searched.orElse(null) == null) {
-             member = createMember(kakaoId);
-             existMember = false;
+        if (member == null) {
+            member = createMember(kakaoId);
+            existMember = false;
         } else {
-            member = searched.get();
             existMember = true;
         }
         LoginDTO loginDTO = new LoginDTO(member,
-                jwtProvider.createAccessToken(member.getId()),
-                jwtProvider.createRefreshToken(member.getId()),
-                existMember
+            jwtProvider.createToken(member.getId(), TokenType.ACCESS),
+            jwtProvider.createToken(member.getId(), TokenType.REFRESH),
+            existMember
         );
         kakaoRedisConnector.setWithTtl(
-                member.getId(),
-                new KakaoTokens(tokenResponse.getAccessToken(), tokenResponse.getRefreshToken()),
-                (long) tokenResponse.getRefreshExpiresIn()
+            member.getId(), new KakaoTokens
+                (
+                    tokenResponse.getAccessToken(), tokenResponse.getRefreshToken()
+                ),
+            (long) tokenResponse.getRefreshExpiresIn()
         );
         if (existMember) {
             return new ResponseDTO<>(loginDTO, Responses.OK);
@@ -216,7 +210,7 @@ public class MemberServiceImpl implements MemberService {
                 throw new CustomException(Exceptions.ALREADY_REGISTERED);
             }
         }
-//        DeviceToken deviceTokenEntity = new DeviceToken(member, deviceToken);
+
         DeviceToken deviceTokenEntity =
             DeviceToken.builder()
                 .member(member)
@@ -237,15 +231,9 @@ public class MemberServiceImpl implements MemberService {
     @Transactional
     public ResponseDTO<PushNotificationDTO> modifyPushSetting(Long memberId, PushType pushType) {
         Member member = findMember(memberId);
-        if (pushType.equals(PushType.TRADE_REQUEST)) {
-            member.getPushNotification().changeTradeRequest();
-        } else if (pushType.equals(PushType.FRIEND_REQUEST)) {
-            member.getPushNotification().changeFriendRequest();
-        } else if (pushType.equals(PushType.ALL)) {
-            member.getPushNotification().changeEveryone();
-        }
-        return new ResponseDTO<>(new PushNotificationDTO(member)
-                , Responses.OK);
+        member.getPushNotification().updateNotification(pushType);
+        return new ResponseDTO<>(new PushNotificationDTO(member),
+            Responses.OK);
     }
 
 

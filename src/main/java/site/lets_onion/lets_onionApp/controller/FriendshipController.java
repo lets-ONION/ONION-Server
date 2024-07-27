@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import site.lets_onion.lets_onionApp.domain.friendship.FriendshipStatus;
+import site.lets_onion.lets_onionApp.dto.friendship.FriendDTO;
 import site.lets_onion.lets_onionApp.dto.friendship.FriendshipDTO;
+import site.lets_onion.lets_onionApp.dto.friendship.PendingFriendRequestDTO;
 import site.lets_onion.lets_onionApp.service.friendship.FriendshipService;
 import site.lets_onion.lets_onionApp.util.jwt.JwtProvider;
 import site.lets_onion.lets_onionApp.util.response.ResponseDTO;
@@ -96,11 +98,11 @@ public class FriendshipController {
       친구 목록을 조회하는 API입니다.
       """)
   @ApiResponse(responseCode = "200")
-  public ResponseEntity<ResponseDTO<List<FriendshipDTO>>> getFriendList(
+  public ResponseEntity<ResponseDTO<List<FriendDTO>>> getFriendList(
       HttpServletRequest request
   ) {
     Long memberId = jwtProvider.getMemberId(request);
-    ResponseDTO<List<FriendshipDTO>> response =
+    ResponseDTO<List<FriendDTO>> response =
         friendshipService.getFriendList(memberId);
 
     return ResponseEntity.ok(response);
@@ -114,11 +116,11 @@ public class FriendshipController {
       /request/response 를 통해 응답할 수 있습니다. 
       """)
   @ApiResponse(responseCode = "200")
-  public ResponseEntity<ResponseDTO<List<FriendshipDTO>>> getRequestList(
+  public ResponseEntity<ResponseDTO<List<PendingFriendRequestDTO>>> getRequestList(
       HttpServletRequest request
   ) {
     Long memberId = jwtProvider.getMemberId(request);
-    ResponseDTO<List<FriendshipDTO>> response =
+    ResponseDTO<List<PendingFriendRequestDTO>> response =
         friendshipService.getReceivedFriendRequestList(memberId);
 
     return ResponseEntity.ok(response);

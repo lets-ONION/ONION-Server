@@ -10,6 +10,7 @@ import site.lets_onion.lets_onionApp.domain.member.Member;
 @Data
 public class FriendshipDTO {
 
+  @JsonProperty("request_id")
   private Long id;
   @JsonProperty("from_member")
   private FriendMember fromMember;
@@ -31,6 +32,7 @@ public class FriendshipDTO {
   @Data
   static public class FriendMember {
 
+    @JsonProperty("member_id")
     private Long id;
     private String nickname;
 

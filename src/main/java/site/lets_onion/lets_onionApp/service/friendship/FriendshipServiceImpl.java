@@ -8,7 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import site.lets_onion.lets_onionApp.domain.friendship.Friendship;
 import site.lets_onion.lets_onionApp.domain.friendship.FriendshipStatus;
 import site.lets_onion.lets_onionApp.domain.member.Member;
+import site.lets_onion.lets_onionApp.dto.friendship.FriendDTO;
 import site.lets_onion.lets_onionApp.dto.friendship.FriendshipDTO;
+import site.lets_onion.lets_onionApp.dto.friendship.PendingFriendRequestDTO;
 import site.lets_onion.lets_onionApp.repository.friendship.FriendshipRepository;
 import site.lets_onion.lets_onionApp.repository.member.MemberRepository;
 import site.lets_onion.lets_onionApp.util.exception.CustomException;
@@ -103,28 +105,36 @@ public class FriendshipServiceImpl implements FriendshipService {
 
   /**
    * 자신의 친구 목록을 조회합니다.
+   *
    * @param memberId
    * @return
    */
   @Override
-  public ResponseDTO<List<FriendshipDTO>> getFriendList(Long memberId) {
-    List<FriendshipDTO> friendList = friendshipRepository.findFriendsByMemberId(memberId)
-        .stream().map(FriendshipDTO::new)
-        .toList();
+  public ResponseDTO<List<FriendDTO>> getFriendList(Long memberId) {
+    List<FriendDTO> friendList = friendshipRepository.findFriendsByMemberId(memberId)
+        .stream().map(o -> {
+              if (o.getFromMember().getId().equals(memberId)) {
+                return new FriendDTO(o.getToMember());
+              } else {
+                return new FriendDTO(o.getFromMember());
+              }
+            }
+        ).toList();
 
     return new ResponseDTO<>(friendList, Responses.OK);
   }
 
   /**
    * 받은 친구 요청 목록을 조회합니다.
+   *
    * @param memberId
    * @return
    */
   @Override
-  public ResponseDTO<List<FriendshipDTO>> getReceivedFriendRequestList(Long memberId) {
-    List<FriendshipDTO> receivedRequestList =
+  public ResponseDTO<List<PendingFriendRequestDTO>> getReceivedFriendRequestList(Long memberId) {
+    List<PendingFriendRequestDTO> receivedRequestList =
         friendshipRepository.findReceivedFriendRequestsByMemberId(memberId)
-            .stream().map(FriendshipDTO::new)
+            .stream().map(PendingFriendRequestDTO::new)
             .toList();
 
     return new ResponseDTO<>(receivedRequestList, Responses.OK);

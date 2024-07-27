@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
 import site.lets_onion.lets_onionApp.domain.friendship.Friendship;
+import site.lets_onion.lets_onionApp.domain.friendship.FriendshipStatus;
 import site.lets_onion.lets_onionApp.util.exception.CustomException;
 import site.lets_onion.lets_onionApp.util.exception.Exceptions;
 
@@ -34,6 +35,7 @@ public class BaseFriendshipRepositoryImpl implements BaseFriendshipRepository {
                 + " or f.toMember.id =:memberId)",
             Friendship.class)
         .setParameter("memberId", memberId)
+        .setParameter("ACCEPTED", FriendshipStatus.ACCEPTED)
         .getResultList();
   }
 
@@ -58,6 +60,7 @@ public class BaseFriendshipRepositoryImpl implements BaseFriendshipRepository {
                 + " and f.toMember.id =:memberId",
             Friendship.class)
         .setParameter("memberId", memberId)
+        .setParameter("PENDING", FriendshipStatus.PENDING)
         .getResultList();
   }
 
@@ -73,6 +76,27 @@ public class BaseFriendshipRepositoryImpl implements BaseFriendshipRepository {
             Friendship.class)
         .setParameter("memberId", memberId)
         .setParameter("friendId", friendId)
+        .getSingleResult();
+  }
+
+  @Override
+  public long countFriendByMemberId(Long memberId) {
+    return (Long) em.createQuery("select count(f) from Friendship f"
+            + " where f.status =:ACCEPTED"
+            + " and (f.fromMember.id =:memberId"
+            + " or f.toMember.id =:memberId)")
+        .setParameter("memberId", memberId)
+        .setParameter("ACCEPTED", FriendshipStatus.ACCEPTED)
+        .getSingleResult();
+  }
+
+  @Override
+  public long countReceivedFriendRequestsByMemberId(Long memberId) {
+    return (Long) em.createQuery("select count(f) from Friendship f"
+            + " where f.status =:PENDING"
+            + " and f.toMember.id =:memberId")
+        .setParameter("memberId", memberId)
+        .setParameter("PENDING", FriendshipStatus.PENDING)
         .getSingleResult();
   }
 }

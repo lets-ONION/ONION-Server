@@ -19,4 +19,10 @@ public interface BaseFriendshipRepository {
 
   /*두 유저 간의 Friendship 엔티티 조회*/
   Friendship findByMemberIdAndFriendId(Long memberId, Long friendId);
+
+  /*친구 수 조회*/
+  long countFriendByMemberId(Long memberId);
+
+  /*받은 친구 신청 목록 개수 조회*/
+  long countReceivedFriendRequestsByMemberId(Long memberId);
 }

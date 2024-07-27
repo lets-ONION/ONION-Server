@@ -1,0 +1,25 @@
+package site.lets_onion.lets_onionApp.dto.integration;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Data;
+
+import java.util.List;
+
+@Data
+public class KakaoScopesDTO {
+
+    @JsonProperty("id")
+    private Long kakaoId;
+    private List<Scope> scopes;
+
+    @Data
+    static public class Scope {
+        private String id;
+        @JsonProperty("display_name")
+        private String displayName;
+        private String type;
+        private boolean using;
+        private boolean agreed;
+        private boolean revocable;
+    }
+}

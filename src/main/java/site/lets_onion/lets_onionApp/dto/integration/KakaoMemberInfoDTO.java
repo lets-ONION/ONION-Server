@@ -1,4 +1,4 @@
-package site.lets_onion.lets_onionApp.dto.member;
+package site.lets_onion.lets_onionApp.dto.integration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

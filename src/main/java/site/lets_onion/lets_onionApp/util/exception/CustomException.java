@@ -12,8 +12,4 @@ public class CustomException extends RuntimeException {
     public int getCode() {
         return exceptions.getCode();
     }
-
-    public String getMsg() {
-        return exceptions.getMsg();
-    }
 }

@@ -112,7 +112,7 @@ public class JwtProvider {
 
 
     /*토큰 유효성, 만료일자 확인*/
-    public boolean validateToken(HttpServletRequest request) {
+    public String validateToken(HttpServletRequest request) {
         String token = this.resolveToken(request);
         Jws<Claims> claims = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token);
         if (claims.getPayload().getExpiration().before(new Date())) {
@@ -122,7 +122,7 @@ public class JwtProvider {
         } else if (claims.getPayload().getIssuedAt().after(new Date())) {
             throw new CustomException(Exceptions.INVALID_ISSUED_TIME);
         }
-        return true;
+        return token;
     }
 
 
@@ -136,7 +136,7 @@ public class JwtProvider {
 
     /*요청에서 유저 ID 추출*/
     public Long getMemberId(HttpServletRequest request) {
-        String token = resolveToken(request);
+        String token = validateToken(request);
         String memberId = Jwts.parser().verifyWith(secretKey)
                 .build().parseSignedClaims(token)
                 .getPayload().getSubject();

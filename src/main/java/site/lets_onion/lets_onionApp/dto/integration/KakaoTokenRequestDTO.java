@@ -1,10 +1,10 @@
-package site.lets_onion.lets_onionApp.dto.member;
+package site.lets_onion.lets_onionApp.dto.integration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class TokenRequestDTO {
+public class KakaoTokenRequestDTO {
 
     @JsonProperty("grant_type")
     private final String grantType = "authorization_code";
@@ -14,7 +14,7 @@ public class TokenRequestDTO {
     private final String redirectUri;
     private final String code;
 
-    public TokenRequestDTO(String clientId, String redirectUri, String code) {
+    public KakaoTokenRequestDTO(String clientId, String redirectUri, String code) {
         this.clientId = clientId;
         this.redirectUri = redirectUri;
         this.code = code;

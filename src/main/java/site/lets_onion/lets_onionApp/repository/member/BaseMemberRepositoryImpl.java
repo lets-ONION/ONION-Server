@@ -1,11 +1,12 @@
 package site.lets_onion.lets_onionApp.repository.member;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
-import site.lets_onion.lets_onionApp.domain.Member;
+import site.lets_onion.lets_onionApp.domain.member.Member;
 
-import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class BaseMemberRepositoryImpl implements BaseMemberRepository {
@@ -14,11 +15,15 @@ public class BaseMemberRepositoryImpl implements BaseMemberRepository {
     private EntityManager em;
 
     @Override
-    public List<Member> findByKakaoId(Long kakaoId) {
-        return em.createQuery("select m from Member m " +
-                " where m.kakaoId =:kakaoId", Member.class)
-                .setParameter("kakaoId", kakaoId)
-                .getResultList();
+    public Optional<Member> findByKakaoId(Long kakaoId) {
+        try {
+            return Optional.of(em.createQuery("select m from Member m " +
+                            " where m.kakaoId =:kakaoId", Member.class)
+                    .setParameter("kakaoId", kakaoId)
+                    .getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -30,9 +35,11 @@ public class BaseMemberRepositoryImpl implements BaseMemberRepository {
     }
 
     @Override
-    public Member updateNickname(Long memberId, String nickname) {
-        Member member = em.find(Member.class, memberId);
-        member.setNickname(nickname);
-        return member;
+    public Member findWithDeviceTokens(Long memberId) {
+        return em.createQuery("select m from Member m" +
+                " left join fetch m.deviceTokens" +
+                " where m.id =:memberId", Member.class)
+                .setParameter("memberId", memberId)
+                .getSingleResult();
     }
 }

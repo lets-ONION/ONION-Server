@@ -216,7 +216,12 @@ public class MemberServiceImpl implements MemberService {
                 throw new CustomException(Exceptions.ALREADY_REGISTERED);
             }
         }
-        DeviceToken deviceTokenEntity = new DeviceToken(member, deviceToken);
+//        DeviceToken deviceTokenEntity = new DeviceToken(member, deviceToken);
+        DeviceToken deviceTokenEntity =
+            DeviceToken.builder()
+                .member(member)
+                .deviceToken(deviceToken)
+                .build();
         deviceTokenRepository.save(deviceTokenEntity);
         return new ResponseDTO<>(Boolean.TRUE, Responses.OK);
     }

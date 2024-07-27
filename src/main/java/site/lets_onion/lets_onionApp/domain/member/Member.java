@@ -25,8 +25,10 @@ public class Member {
     private PushNotification pushNotification;
 
     @Builder
-    public Member(@NonNull Long kakaoId) {
+    public Member(Long id, @NonNull Long kakaoId, String nickname) {
+        this.id = id;
         this.kakaoId = kakaoId;
+        this.nickname = nickname;
         pushNotification = new PushNotification();
     }
 

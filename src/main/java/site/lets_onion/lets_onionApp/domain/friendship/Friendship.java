@@ -50,7 +50,8 @@ public class Friendship {
   private LocalDateTime acceptedAt;
 
   @Builder
-  public Friendship(Member fromMember, Member toMember) {
+  public Friendship(Long id, Member fromMember, Member toMember) {
+    this.id = id;
     this.fromMember = fromMember;
     this.toMember = toMember;
     status = FriendshipStatus.PENDING;

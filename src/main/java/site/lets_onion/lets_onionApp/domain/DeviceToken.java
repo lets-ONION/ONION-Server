@@ -2,6 +2,7 @@ package site.lets_onion.lets_onionApp.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -28,7 +29,9 @@ public class DeviceToken {
     @CreatedDate
     private LocalDateTime createdAT;
 
-    public DeviceToken(Member member, String deviceToken) {
+    @Builder
+    public DeviceToken(Long id, Member member, String deviceToken) {
+        this.id = id;
         this.member = member;
         this.deviceToken = deviceToken;
         this.member.getDeviceTokens().add(this);

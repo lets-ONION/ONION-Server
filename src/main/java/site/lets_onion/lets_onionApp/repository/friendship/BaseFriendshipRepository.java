@@ -17,7 +17,10 @@ public interface BaseFriendshipRepository {
   /*받은 친구 신청 목록 조회*/
   List<Friendship> findReceivedFriendRequestsByMemberId(Long memberId);
 
-  /*두 유저 간의 Friendship 엔티티 조회*/
+  /*
+  두 유저 간의 Friendship 엔티티 조회
+  주의: ACCEPTED가 아닌 모든 Friendship 엔티티를 조회합니다.
+   */
   Friendship findByMemberIdAndFriendId(Long memberId, Long friendId);
 
   /*친구 수 조회*/

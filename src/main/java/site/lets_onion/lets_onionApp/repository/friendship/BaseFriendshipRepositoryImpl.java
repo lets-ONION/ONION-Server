@@ -48,6 +48,7 @@ public class BaseFriendshipRepositoryImpl implements BaseFriendshipRepository {
                 + " and f.fromMember.id =:memberId",
             Friendship.class)
         .setParameter("memberId", memberId)
+        .setParameter("PENDING", FriendshipStatus.PENDING)
         .getResultList();
   }
 

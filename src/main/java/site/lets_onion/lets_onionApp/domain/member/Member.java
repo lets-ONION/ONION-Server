@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import site.lets_onion.lets_onionApp.domain.DeviceToken;
 
 @Entity @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

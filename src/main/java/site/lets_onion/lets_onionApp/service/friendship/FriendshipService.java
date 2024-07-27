@@ -2,7 +2,9 @@ package site.lets_onion.lets_onionApp.service.friendship;
 
 import java.util.List;
 import site.lets_onion.lets_onionApp.domain.friendship.FriendshipStatus;
+import site.lets_onion.lets_onionApp.dto.friendship.FriendDTO;
 import site.lets_onion.lets_onionApp.dto.friendship.FriendshipDTO;
+import site.lets_onion.lets_onionApp.dto.friendship.PendingFriendRequestDTO;
 import site.lets_onion.lets_onionApp.util.response.ResponseDTO;
 
 public interface FriendshipService {
@@ -17,8 +19,8 @@ public interface FriendshipService {
   ResponseDTO<Boolean> deleteFriend(Long memberId, Long friendId);
 
   /*친구 목록 조회*/
-  ResponseDTO<List<FriendshipDTO>> getFriendList(Long memberId);
+  ResponseDTO<List<FriendDTO>> getFriendList(Long memberId);
 
   /*받은 친구 신청 목록 조회*/
-  ResponseDTO<List<FriendshipDTO>> getReceivedFriendRequestList(Long memberId);
+  ResponseDTO<List<PendingFriendRequestDTO>> getReceivedFriendRequestList(Long memberId);
 }

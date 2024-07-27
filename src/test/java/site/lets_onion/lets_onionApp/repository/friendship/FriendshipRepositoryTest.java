@@ -1,6 +1,7 @@
 package site.lets_onion.lets_onionApp.repository.friendship;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.ArrayList;
@@ -16,6 +17,8 @@ import site.lets_onion.lets_onionApp.domain.friendship.Friendship;
 import site.lets_onion.lets_onionApp.domain.friendship.FriendshipStatus;
 import site.lets_onion.lets_onionApp.domain.member.Member;
 import site.lets_onion.lets_onionApp.repository.member.MemberRepository;
+import site.lets_onion.lets_onionApp.util.exception.CustomException;
+import site.lets_onion.lets_onionApp.util.exception.Exceptions;
 
 @SpringBootTest
 @Transactional
@@ -38,6 +41,23 @@ class FriendshipRepositoryTest {
         .build();
 
     testMember = memberRepository.save(testMember);
+  }
+
+
+  @Test
+  @Transactional
+  public void 친구_요청이_존재하지_않을_때() throws Exception {
+    /*given*/
+
+    /*when*/
+    Exception e = assertThrows(
+        CustomException.class,
+        () -> friendshipRepository.findByFriendshipId(1L)
+    );
+    /*then*/
+    assertEquals(
+        Exceptions.FRIENDSHIP_NOT_EXIST.getMsg(),
+        e.getMessage());
   }
 
 

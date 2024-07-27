@@ -14,7 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import site.lets_onion.lets_onionApp.dto.integration.FriendRequestDTO;
+import site.lets_onion.lets_onionApp.dto.integration.KakaoFriendRequestDTO;
 import site.lets_onion.lets_onionApp.dto.integration.KakaoScopesDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.LogoutDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.RefreshTokenDTO;
@@ -230,7 +230,7 @@ public class MemberController {
     자세한 내용은
     https://developers.kakao.com/docs/latest/ko/kakaotalk-social/rest-api#get-friends
     """)
-    public ResponseEntity<ResponseDTO<FriendRequestDTO>> requestKakaoFriends(
+    public ResponseEntity<ResponseDTO<KakaoFriendRequestDTO>> requestKakaoFriends(
             HttpServletRequest request,
             @RequestParam int offset
     ) {

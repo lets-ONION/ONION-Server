@@ -1,6 +1,6 @@
 package site.lets_onion.lets_onionApp.service.member;
 
-import site.lets_onion.lets_onionApp.dto.integration.FriendRequestDTO;
+import site.lets_onion.lets_onionApp.dto.integration.KakaoFriendRequestDTO;
 import site.lets_onion.lets_onionApp.dto.integration.KakaoScopesDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.LogoutDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.TokenDTO;
@@ -45,5 +45,5 @@ public interface MemberService {
     ResponseDTO<KakaoScopesDTO> checkKakaoScopes(Long memberId);
 
     /*유저의 카카오 친구 목록 조회*/
-    ResponseDTO<FriendRequestDTO> requestKakaoFriends(Long memberId, int offset);
+    ResponseDTO<KakaoFriendRequestDTO> requestKakaoFriends(Long memberId, int offset);
 }

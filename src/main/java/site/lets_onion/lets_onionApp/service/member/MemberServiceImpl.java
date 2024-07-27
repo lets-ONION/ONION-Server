@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.lets_onion.lets_onionApp.domain.DeviceToken;
 import site.lets_onion.lets_onionApp.domain.member.Member;
-import site.lets_onion.lets_onionApp.dto.integration.FriendRequestDTO;
+import site.lets_onion.lets_onionApp.dto.integration.KakaoFriendRequestDTO;
 import site.lets_onion.lets_onionApp.dto.integration.KakaoScopesDTO;
 import site.lets_onion.lets_onionApp.dto.integration.KakaoTokenResponseDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.LogoutDTO;
@@ -264,7 +264,7 @@ public class MemberServiceImpl implements MemberService {
      * @return
      */
     @Override
-    public ResponseDTO<FriendRequestDTO> requestKakaoFriends(Long memberId, int offset) {
+    public ResponseDTO<KakaoFriendRequestDTO> requestKakaoFriends(Long memberId, int offset) {
         Member member = findMember(memberId);
         String kakaoToken = kakaoRedisConnector.get(memberId).getAccessToken();
         return new ResponseDTO<>(

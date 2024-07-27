@@ -9,7 +9,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import site.lets_onion.lets_onionApp.domain.member.Member;
-import site.lets_onion.lets_onionApp.dto.integration.FriendRequestDTO;
+import site.lets_onion.lets_onionApp.dto.integration.KakaoFriendRequestDTO;
 import site.lets_onion.lets_onionApp.dto.integration.KakaoMemberInfoDTO;
 import site.lets_onion.lets_onionApp.dto.integration.KakaoScopesDTO;
 import site.lets_onion.lets_onionApp.dto.integration.KakaoTokenResponseDTO;
@@ -130,7 +130,7 @@ public class KakaoRequest {
      * @param offset
      * @return
      */
-    public FriendRequestDTO kakaoRequestFriends(Member member, String token, int offset) {
+    public KakaoFriendRequestDTO kakaoRequestFriends(Member member, String token, int offset) {
         try {
             return friendsWebClient.get()
                     .uri(URIBuilder -> URIBuilder
@@ -138,7 +138,7 @@ public class KakaoRequest {
                             .queryParam("offset", String.valueOf(offset))
                             .build())
                     .header("Authorization", "Bearer " + token)
-                    .retrieve().bodyToMono(FriendRequestDTO.class).block();
+                    .retrieve().bodyToMono(KakaoFriendRequestDTO.class).block();
         } catch (WebClientResponseException e) {
             if (e.getStatusCode().value() == 401) {
                 return kakaoRequestFriends(member, kakaoTokenRefresh(member), offset);

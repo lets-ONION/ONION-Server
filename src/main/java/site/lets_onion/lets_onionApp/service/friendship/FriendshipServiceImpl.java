@@ -66,7 +66,7 @@ public class FriendshipServiceImpl implements FriendshipService {
       FriendshipStatus toStatus) {
     Friendship friendRequest = friendshipRepository.findByFriendshipId(friendshipId);
     if (!friendRequest.getToMember().getId().equals(memberId)) {
-      throw new CustomException(Exceptions.NOT_REQUESTED_MEMBER);
+      throw new CustomException(Exceptions.ONLY_REQUESTED_MEMBER_CAN_RESPONSE);
     }
 
     friendRequest.updateStatus(toStatus);

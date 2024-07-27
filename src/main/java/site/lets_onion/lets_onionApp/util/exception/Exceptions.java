@@ -8,7 +8,7 @@ public enum Exceptions {
     /*400 BAD_REQUEST*/
     BAD_REQUEST(400, "Bad Request"),
     ALREADY_REGISTERED(400, "Already Registered"),
-    NOT_REQUESTED_MEMBER(400, "Not Requested Member"),
+    ONLY_REQUESTED_MEMBER_CAN_RESPONSE(400, "Only Requested Member Can Response"),
     NOT_FRIENDS_ALREADY(400, "Not Friends Already"),
 
     /*401 UNAUTHORIZED*/

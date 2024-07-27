@@ -59,7 +59,7 @@ public class Friendship {
 
   public void updateStatus(FriendshipStatus newStatus) {
     this.status = newStatus;
-    if (newStatus.equals(FriendshipStatus.ACCEPTED)) {
+    if (newStatus.equals(FriendshipStatus.ACCEPT)) {
       acceptedAt = LocalDateTime.now();
     }
   }

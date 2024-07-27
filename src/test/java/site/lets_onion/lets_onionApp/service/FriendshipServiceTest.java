@@ -77,7 +77,7 @@ public class FriendshipServiceTest {
   @Transactional
   public void 친구_요청에_응답() throws Exception {
     /*given*/
-    long expectedAccepted = 0;
+    long expectedAccept = 0;
     long expectedRejected = 0;
     List<Friendship> requests = new ArrayList<>();
     for (int i = 0; i < 100; i++) {
@@ -96,32 +96,32 @@ public class FriendshipServiceTest {
         friendshipService.updateFriendStatus(
             testMember.getId(),
             request.getId(),
-            FriendshipStatus.ACCEPTED
+            FriendshipStatus.ACCEPT
         );
-        expectedAccepted++;
+        expectedAccept++;
       } else {
         friendshipService.updateFriendStatus(
             testMember.getId(),
             request.getId(),
-            FriendshipStatus.REJECTED
+            FriendshipStatus.REJECT
         );
         expectedRejected++;
       }
     }
 
-    long resultAccepted = 0;
+    long resultAccept = 0;
     long resultRejected = 0;
 
     for (Friendship request : requests) {
-      if (request.getStatus().equals(FriendshipStatus.ACCEPTED)) {
-        resultAccepted++;
+      if (request.getStatus().equals(FriendshipStatus.ACCEPT)) {
+        resultAccept++;
       } else {
         resultRejected++;
       }
     }
 
     /*then*/
-    assertEquals(expectedAccepted, resultAccepted);
+    assertEquals(expectedAccept, resultAccept);
     assertEquals(expectedRejected, resultRejected);
   }
 
@@ -163,7 +163,7 @@ public class FriendshipServiceTest {
     friendshipService.updateFriendStatus(
         friend.getId(),
         friendship.getId(),
-        FriendshipStatus.ACCEPTED
+        FriendshipStatus.ACCEPT
     );
 
     /*when*/
@@ -191,7 +191,7 @@ public class FriendshipServiceTest {
             .createFriendship(testMember, generator.createMember());
         if (generator.generateRandomBoolean()) {
           /*친구가 된 경우*/
-          request.updateStatus(FriendshipStatus.ACCEPTED);
+          request.updateStatus(FriendshipStatus.ACCEPT);
         }
       } else {
         /*내가 친구 요청을 받은 경우*/
@@ -199,7 +199,7 @@ public class FriendshipServiceTest {
             .createFriendship(generator.createMember(), testMember);
         if (generator.generateRandomBoolean()) {
           /*친구가 된 경우*/
-          request.updateStatus(FriendshipStatus.ACCEPTED);
+          request.updateStatus(FriendshipStatus.ACCEPT);
         }
       }
     }
@@ -215,7 +215,7 @@ public class FriendshipServiceTest {
     assertEquals(expected.size(), result.size());
 
     for (FriendshipDTO dto : result) {
-      assertEquals(dto.getStatus(), FriendshipStatus.ACCEPTED);
+      assertEquals(dto.getStatus(), FriendshipStatus.ACCEPT);
     }
   }
 
@@ -239,7 +239,7 @@ public class FriendshipServiceTest {
           friendshipService.updateFriendStatus(
               testMember.getId(),
               friendshipId,
-              FriendshipStatus.ACCEPTED
+              FriendshipStatus.ACCEPT
           );
           friends++;
         } else {
@@ -251,7 +251,7 @@ public class FriendshipServiceTest {
           friendshipService.updateFriendStatus(
               testMember.getId(),
               friendshipId,
-              FriendshipStatus.REJECTED
+              FriendshipStatus.REJECT
           );
         }
       } else {
@@ -266,7 +266,7 @@ public class FriendshipServiceTest {
           friendshipService.updateFriendStatus(
               friend.getId(),
               friendshipId,
-              FriendshipStatus.ACCEPTED
+              FriendshipStatus.ACCEPT
           );
           friends++;
         } else {
@@ -278,7 +278,7 @@ public class FriendshipServiceTest {
           friendshipService.updateFriendStatus(
               friend.getId(),
               friendshipId,
-              FriendshipStatus.REJECTED
+              FriendshipStatus.REJECT
           );
         }
       }
@@ -291,7 +291,7 @@ public class FriendshipServiceTest {
     /*then*/
     assertEquals(friends, result.size());
     for (FriendshipDTO dto : result) {
-      assertEquals(dto.getStatus(), FriendshipStatus.ACCEPTED);
+      assertEquals(dto.getStatus(), FriendshipStatus.ACCEPT);
     }
   }
 
@@ -315,7 +315,7 @@ public class FriendshipServiceTest {
           friendshipService.updateFriendStatus(
               testMember.getId(),
               friendshipId,
-              FriendshipStatus.ACCEPTED
+              FriendshipStatus.ACCEPT
           );
         } else {
           if (generator.generateRandomBoolean()) {
@@ -326,7 +326,7 @@ public class FriendshipServiceTest {
             friendshipService.updateFriendStatus(
                 testMember.getId(),
                 friendshipId,
-                FriendshipStatus.REJECTED
+                FriendshipStatus.REJECT
             );
           }
         }
@@ -342,7 +342,7 @@ public class FriendshipServiceTest {
           friendshipService.updateFriendStatus(
               friend.getId(),
               friendshipId,
-              FriendshipStatus.ACCEPTED
+              FriendshipStatus.ACCEPT
           );
         } else {
           if (generator.generateRandomBoolean()) {
@@ -353,7 +353,7 @@ public class FriendshipServiceTest {
           friendshipService.updateFriendStatus(
               friend.getId(),
               friendshipId,
-              FriendshipStatus.REJECTED
+              FriendshipStatus.REJECT
           );
         }
       }

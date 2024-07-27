@@ -70,7 +70,7 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     friendRequest.updateStatus(toStatus);
-    if (toStatus.equals(FriendshipStatus.ACCEPTED)) {
+    if (toStatus.equals(FriendshipStatus.ACCEPT)) {
       pushProvider.sendPushToOne(
           friendRequest.getToMember(),
           friendRequest.getFromMember(),
@@ -93,7 +93,7 @@ public class FriendshipServiceImpl implements FriendshipService {
     Friendship friendRequest = friendshipRepository
         .findByMemberIdAndFriendId(memberId, friendId);
 
-    if (!friendRequest.getStatus().equals(FriendshipStatus.ACCEPTED)) {
+    if (!friendRequest.getStatus().equals(FriendshipStatus.ACCEPT)) {
       throw new CustomException(Exceptions.NOT_FRIENDS_ALREADY);
     }
 

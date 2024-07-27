@@ -19,7 +19,7 @@ public interface BaseFriendshipRepository {
 
   /*
   두 유저 간의 Friendship 엔티티 조회
-  주의: ACCEPTED가 아닌 모든 Friendship 엔티티를 조회합니다.
+  주의: ACCEPT가 아닌 모든 Friendship 엔티티를 조회합니다.
    */
   Friendship findByMemberIdAndFriendId(Long memberId, Long friendId);
 

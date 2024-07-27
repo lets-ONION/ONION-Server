@@ -184,7 +184,7 @@ class FriendshipRepositoryTest {
             .createFriendship(testMember, generator.createMember());
         if (generator.generateRandomBoolean()) {
           /*친구가 된 경우*/
-          request.updateStatus(FriendshipStatus.ACCEPTED);
+          request.updateStatus(FriendshipStatus.ACCEPT);
           friends++;
         }
       } else {
@@ -193,7 +193,7 @@ class FriendshipRepositoryTest {
             .createFriendship(generator.createMember(), testMember);
         if (generator.generateRandomBoolean()) {
           /*친구가 된 경우*/
-          request.updateStatus(FriendshipStatus.ACCEPTED);
+          request.updateStatus(FriendshipStatus.ACCEPT);
           friends++;
         }
       }
@@ -221,7 +221,7 @@ class FriendshipRepositoryTest {
             .createFriendship(testMember, generator.createMember());
         if (generator.generateRandomBoolean()) {
           /*친구가 된 경우*/
-          request.updateStatus(FriendshipStatus.ACCEPTED);
+          request.updateStatus(FriendshipStatus.ACCEPT);
           friendships.add(request);
         }
       } else {
@@ -230,7 +230,7 @@ class FriendshipRepositoryTest {
             .createFriendship(generator.createMember(), testMember);
         if (generator.generateRandomBoolean()) {
           /*친구가 된 경우*/
-          request.updateStatus(FriendshipStatus.ACCEPTED);
+          request.updateStatus(FriendshipStatus.ACCEPT);
           friendships.add(request);
         }
       }

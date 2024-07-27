@@ -30,12 +30,12 @@ public class BaseFriendshipRepositoryImpl implements BaseFriendshipRepository {
     return em.createQuery("select f from Friendship f"
                 + " left join fetch f.fromMember"
                 + " left join fetch f.toMember"
-                + " where f.status =:ACCEPTED"
+                + " where f.status =:ACCEPT"
                 + " and (f.fromMember.id =:memberId"
                 + " or f.toMember.id =:memberId)",
             Friendship.class)
         .setParameter("memberId", memberId)
-        .setParameter("ACCEPTED", FriendshipStatus.ACCEPTED)
+        .setParameter("ACCEPT", FriendshipStatus.ACCEPT)
         .getResultList();
   }
 
@@ -83,11 +83,11 @@ public class BaseFriendshipRepositoryImpl implements BaseFriendshipRepository {
   @Override
   public long countFriendByMemberId(Long memberId) {
     return (Long) em.createQuery("select count(f) from Friendship f"
-            + " where f.status =:ACCEPTED"
+            + " where f.status =:ACCEPT"
             + " and (f.fromMember.id =:memberId"
             + " or f.toMember.id =:memberId)")
         .setParameter("memberId", memberId)
-        .setParameter("ACCEPTED", FriendshipStatus.ACCEPTED)
+        .setParameter("ACCEPT", FriendshipStatus.ACCEPT)
         .getSingleResult();
   }
 

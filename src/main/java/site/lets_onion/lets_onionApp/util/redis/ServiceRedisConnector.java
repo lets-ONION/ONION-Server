@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
-public class RedisConnector {
+public class ServiceRedisConnector {
 
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -38,9 +38,6 @@ public class RedisConnector {
 
     /*데이터 존재 여부 확인*/
     public boolean exists(String key){
-        if (redisTemplate.opsForValue().get(key) != null) {
-            return true;
-        }
-        return false;
+        return redisTemplate.opsForValue().get(key) != null;
     }
 }

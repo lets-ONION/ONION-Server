@@ -2,7 +2,7 @@ package site.lets_onion.lets_onionApp.dto.member;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import site.lets_onion.lets_onionApp.domain.Member;
+import site.lets_onion.lets_onionApp.domain.member.Member;
 
 @Data
 public class MemberInfoDTO {

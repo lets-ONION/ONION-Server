@@ -2,6 +2,7 @@ package site.lets_onion.lets_onionApp.util.exception;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -15,6 +16,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import java.nio.file.AccessDeniedException;
 
 @RestControllerAdvice
+@Slf4j
 public class ExceptionAdviceHandler {
 
     /*개발자가 직접 예외처리*/
@@ -96,7 +98,8 @@ public class ExceptionAdviceHandler {
 
     /*WebClient 예외*/
     @ExceptionHandler(WebClientResponseException.class)
-    public ResponseEntity handleWebClientResponseException(WebClientResponseException e) {
-        return new ResponseEntity<>(e.getResponseBodyAs(String.class), e.getStatusCode());
+    public ResponseEntity<String> handleWebClientResponseException(WebClientResponseException e) {
+        log.error(e.getResponseBodyAsString());
+        return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
     }
 }

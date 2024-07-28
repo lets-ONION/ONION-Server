@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -38,15 +37,12 @@ public class FriendshipController {
       **target_id**는 친구 요청을 보낼 유저의 ID입니다.
       """)
   @ApiResponse(responseCode = "200")
-  public ResponseEntity<ResponseDTO<FriendshipDTO>> requestFriendship(
+  public ResponseDTO<FriendshipDTO> requestFriendship(
       HttpServletRequest request,
       @RequestParam(name = "target_id") Long targetId
   ) {
     Long memberId = jwtProvider.getMemberId(request);
-    ResponseDTO<FriendshipDTO> response = friendshipService.sendFriendRequest(
-        memberId, targetId);
-
-    return ResponseEntity.ok(response);
+    return friendshipService.sendFriendRequest(memberId, targetId);
   }
 
 
@@ -60,17 +56,14 @@ public class FriendshipController {
       **REJECT** : 거절<br><br>
       """)
   @ApiResponse(responseCode = "200")
-  public ResponseEntity<ResponseDTO<Boolean>> requestFriendshipResponse(
+  public ResponseDTO<Boolean> requestFriendshipResponse(
       HttpServletRequest request,
       @RequestParam(name = "target_id") Long targetId,
       @Parameter(schema = @Schema(allowableValues = {"ACCEPT", "REJECT"}))
       @RequestParam(name = "response") FriendshipStatus status
   ) {
     Long memberId = jwtProvider.getMemberId(request);
-    ResponseDTO<Boolean> response = friendshipService.updateFriendStatus(
-        memberId, targetId, status
-    );
-    return ResponseEntity.ok(response);
+    return friendshipService.updateFriendStatus(memberId, targetId, status);
   }
 
 
@@ -80,16 +73,12 @@ public class FriendshipController {
       **friend_id**는 삭제할 친구의 ID입니다.
       """)
   @ApiResponse(responseCode = "200")
-  public ResponseEntity<ResponseDTO<Boolean>> deleteFriendship(
+  public ResponseDTO<Boolean> deleteFriendship(
       HttpServletRequest request,
       @RequestParam(name = "friend_id") Long friendId
   ) {
     Long memberId = jwtProvider.getMemberId(request);
-    ResponseDTO<Boolean> response = friendshipService.deleteFriend(
-        memberId, friendId
-    );
-
-    return ResponseEntity.ok(response);
+    return friendshipService.deleteFriend(memberId, friendId);
   }
 
 
@@ -98,14 +87,11 @@ public class FriendshipController {
       친구 목록을 조회하는 API입니다.
       """)
   @ApiResponse(responseCode = "200")
-  public ResponseEntity<ResponseDTO<List<FriendDTO>>> getFriendList(
+  public ResponseDTO<List<FriendDTO>> getFriendList(
       HttpServletRequest request
   ) {
     Long memberId = jwtProvider.getMemberId(request);
-    ResponseDTO<List<FriendDTO>> response =
-        friendshipService.getFriendList(memberId);
-
-    return ResponseEntity.ok(response);
+    return friendshipService.getFriendList(memberId);
   }
 
 
@@ -116,13 +102,10 @@ public class FriendshipController {
       /request/response 를 통해 응답할 수 있습니다. 
       """)
   @ApiResponse(responseCode = "200")
-  public ResponseEntity<ResponseDTO<List<PendingFriendRequestDTO>>> getRequestList(
+  public ResponseDTO<List<PendingFriendRequestDTO>> getRequestList(
       HttpServletRequest request
   ) {
     Long memberId = jwtProvider.getMemberId(request);
-    ResponseDTO<List<PendingFriendRequestDTO>> response =
-        friendshipService.getReceivedFriendRequestList(memberId);
-
-    return ResponseEntity.ok(response);
+    return friendshipService.getReceivedFriendRequestList(memberId);
   }
 }

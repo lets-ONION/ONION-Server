@@ -78,7 +78,7 @@ public class MemberController {
             """)))
     @ApiResponse(responseCode = "40x", description = "에러",
             content = @Content(schema = @Schema(implementation = ExceptionDTO.class)))
-    public ResponseEntity<ResponseDTO<LoginDTO>> localLogin(
+    public ResponseDTO<LoginDTO> localLogin(
             HttpServletRequest request,
             @Parameter(description = "카카오 서버에서 발급 받은 인가코드입니다.")
             @RequestParam String code)
@@ -90,12 +90,7 @@ public class MemberController {
         } else {
             redirection = Redirection.SERVER;
         }
-        ResponseDTO<LoginDTO> response = memberService.login(code, redirection);
-        if (!response.getData().isExistUser()) {
-            return new ResponseEntity<>(response, HttpStatus.CREATED);
-        } else {
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
+        return memberService.login(code, redirection);
     }
 
 
@@ -105,37 +100,32 @@ public class MemberController {
     @ApiResponse(responseCode = "200", description = "토큰 리프레시 성공")
     @ApiResponse(responseCode = "40x", description = "에러", content = @Content(schema =
     @Schema(implementation = ExceptionDTO.class)))
-    public ResponseEntity<ResponseDTO<TokenDTO>> tokenReissue(
+    public ResponseDTO<TokenDTO> tokenReissue(
             @RequestBody RefreshTokenDTO request)
     {
-        return new ResponseEntity<>(
-                memberService.tokenReissue(request.getRefreshToken()),
-                HttpStatus.OK);
+        return memberService.tokenReissue(request.getRefreshToken());
     }
 
 
     @PostMapping("/auth/logout")
     @Operation(summary = "로그아웃", description = "로그아웃을 처리하는 API입니다.")
     @ApiResponse(responseCode = "200", description = "로그아웃 성공")
-    public ResponseEntity<ResponseDTO<Boolean>> logout(HttpServletRequest request
+    public ResponseDTO<Boolean> logout(HttpServletRequest request
     , @RequestBody LogoutDTO logoutDTO)
     {
         Long memberId = jwtProvider.getMemberId(request);
-        return new ResponseEntity<>(
-                memberService.logout(memberId, logoutDTO), HttpStatus.OK);
+        return memberService.logout(memberId, logoutDTO);
     }
 
 
     @PutMapping("/nickname/update")
     @Operation(summary = "닉네임 수정", description = "닉네임을 수정하는 API입니다.")
     @ApiResponse(responseCode = "200", description = "닉네임 수정 성공")
-    public ResponseEntity<ResponseDTO<MemberInfoDTO>> updateNickname(
+    public ResponseDTO<MemberInfoDTO> updateNickname(
             HttpServletRequest request, @RequestBody NicknameDTO dto)
     {
         Long memberId = jwtProvider.getMemberId(request);
-        return new ResponseEntity<>(
-                memberService.updateNickname(memberId, dto.getNickname()),
-                HttpStatus.OK);
+        return memberService.updateNickname(memberId, dto.getNickname());
     }
 
 
@@ -143,13 +133,12 @@ public class MemberController {
     @Operation(summary = "상태메시지 수정",
             description = "상태메시지를 작성하는 API입니다.24시간 후 삭제됩니다.")
     @ApiResponse(responseCode = "200", description = "상태메시지 작성 성공")
-    public ResponseEntity<ResponseDTO<StatusMessageDTO>> updateStatusMessage(
+    public ResponseDTO<StatusMessageDTO> updateStatusMessage(
             HttpServletRequest request, @RequestBody StatusMessageDTO dto
     ) {
         Long memberId = jwtProvider.getMemberId(request);
-        return new ResponseEntity<>(memberService
-                .updateStatusMessage(memberId,dto.getStatusMessage()),
-                HttpStatus.OK);
+        return memberService
+            .updateStatusMessage(memberId,dto.getStatusMessage());
     }
 
 
@@ -157,7 +146,7 @@ public class MemberController {
     @Operation(summary = "상태메시지 조회",
     description = "상태메시지를 조회하는 API입니다. 쿼리파라미터가 없으면 자신의 상태메시지를 조회합니다.")
     @ApiResponse(responseCode = "200", description = "상태메시지 조회 성공")
-    public ResponseEntity<ResponseDTO<StatusMessageDTO>> getStatusMessage(
+    public ResponseDTO<StatusMessageDTO> getStatusMessage(
             HttpServletRequest request,
             @Nullable @RequestParam(name = "member_id") Long memberId
     ) {
@@ -167,8 +156,7 @@ public class MemberController {
         } else {
             id = memberId;
         }
-        return new ResponseEntity<>(memberService.getStatusMessage(id),
-                HttpStatus.OK);
+        return memberService.getStatusMessage(id);
     }
 
 
@@ -176,7 +164,7 @@ public class MemberController {
     @Operation(summary = "유저 정보 조회",
     description = "유저 정보를 조회하는 API입니다. 쿼리파라미터가 없으면 자신의 정보를 조회합니다.")
     @ApiResponse(responseCode = "200", description = "유저 정보 조회 성공")
-    public ResponseEntity<ResponseDTO<MemberInfoDTO>> getMemberInfo(
+    public ResponseDTO<MemberInfoDTO> getMemberInfo(
             HttpServletRequest request,
             @Nullable @RequestParam(name = "member_id") Long memberId
     ) {
@@ -186,8 +174,7 @@ public class MemberController {
         } else {
             id = memberId;
         }
-        return new ResponseEntity<>(memberService.getMemberInfo(id),
-                HttpStatus.OK);
+        return memberService.getMemberInfo(id);
     }
 
 
@@ -195,15 +182,12 @@ public class MemberController {
     @Operation(summary = "디바이스 토큰 업데이트",
             description = "디바이스 토큰을 서버에 전송하는 API입니다. 기존 토큰과 같을 시 200이 응답됩니다.")
     @ApiResponse(responseCode = "200", description = "디바이스 토큰 업데이트 성공")
-    public ResponseEntity<ResponseDTO<Boolean>> updateDeviceToken(
+    public ResponseDTO<Boolean> updateDeviceToken(
             HttpServletRequest request,
             @RequestBody DeviceTokenRequestDTO dto)
     {
         Long memberId = jwtProvider.getMemberId(request);
-        return new ResponseEntity<>(
-                memberService.saveDeviceToken(
-                        memberId, dto.getDeviceToken()
-                ),HttpStatus.OK);
+        return memberService.saveDeviceToken(memberId, dto.getDeviceToken());
     }
 
     @GetMapping("/kakao/scope")
@@ -213,13 +197,11 @@ public class MemberController {
     자세한 내용은
     https://developers.kakao.com/docs/latest/ko/kakaologin/rest-api#check-consent-response-body-scope
     """)
-    public ResponseEntity<ResponseDTO<KakaoScopesDTO>> kakaoTest(
+    public ResponseDTO<KakaoScopesDTO> kakaoTest(
             HttpServletRequest request
     ) {
         Long memberId = jwtProvider.getMemberId(request);
-        return new ResponseEntity<>(
-                memberService.checkKakaoScopes(memberId),
-                HttpStatus.OK);
+        return memberService.checkKakaoScopes(memberId);
     }
 
 
@@ -230,13 +212,11 @@ public class MemberController {
     자세한 내용은
     https://developers.kakao.com/docs/latest/ko/kakaotalk-social/rest-api#get-friends
     """)
-    public ResponseEntity<ResponseDTO<KakaoFriendRequestDTO>> requestKakaoFriends(
+    public ResponseDTO<KakaoFriendRequestDTO> requestKakaoFriends(
             HttpServletRequest request,
             @RequestParam int offset
     ) {
         Long memberId = jwtProvider.getMemberId(request);
-        return new ResponseEntity<>(
-                memberService.requestKakaoFriends(memberId,offset),
-                HttpStatus.OK);
+        return memberService.requestKakaoFriends(memberId, offset);
     }
 }

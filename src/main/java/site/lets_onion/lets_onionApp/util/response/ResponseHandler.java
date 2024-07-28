@@ -13,7 +13,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 @RestControllerAdvice
 @Component
-public class ResponseHandlerAspect implements ResponseBodyAdvice<Object>{
+public class ResponseHandler implements ResponseBodyAdvice<Object> {
 
   @Override
   public boolean supports(MethodParameter returnType,
@@ -30,7 +30,6 @@ public class ResponseHandlerAspect implements ResponseBodyAdvice<Object>{
     if (body instanceof ResponseDTO<?> responseDTO) {
       HttpStatus status = HttpStatus.valueOf(responseDTO.getCode());
       response.setStatusCode(status);
-//      return new ResponseEntity<>(responseDTO, status);
       return responseDTO;
     }
     return body;

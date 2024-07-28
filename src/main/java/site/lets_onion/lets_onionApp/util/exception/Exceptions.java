@@ -21,6 +21,7 @@ public enum Exceptions {
     NOT_ACCESS_TOKEN(401, "Not Access Token"),
     TOKEN_NOT_FOUND(401, "Token Not Found"),
     EXPIRED_TOKEN(401, "Expired Token"),
+    PREMATURE_TOKEN(401, "Premature Token"),
 
     /*403 FORBIDDEN*/
     FORBIDDEN(403, "Forbidden"),

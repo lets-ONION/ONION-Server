@@ -98,8 +98,8 @@ public class JwtProvider {
     }
 
 
-    /*토큰 유효성, 만료일자 확인*/
-    public String validateToken(HttpServletRequest request) {
+    /*토큰 유효성 확인 및 유저 ID 추출*/
+    public Long getMemberId(HttpServletRequest request) {
         String token = this.resolveToken(request);
         Claims claims = Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload();
         Date now = new Date();
@@ -109,10 +109,11 @@ public class JwtProvider {
         } else if (claims.getExpiration().before(now)) {
             throw new CustomException(Exceptions.EXPIRED_TOKEN);
         } else if (claims.getIssuedAt().after(new Date())) {
-            throw new CustomException(Exceptions.INVALID_ISSUED_TIME);
+            throw new CustomException(Exceptions.PREMATURE_TOKEN);
         } else if (!claims.get("type").equals(TokenType.ACCESS.name())) {
             throw new CustomException(Exceptions.NOT_ACCESS_TOKEN);
-        } return token;
+        }
+        return Long.parseLong(claims.getSubject());
     }
 
 
@@ -120,15 +121,5 @@ public class JwtProvider {
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
         return bearerToken.replace("Bearer ", "");
-    }
-
-
-    /*요청에서 유저 ID 추출*/
-    public Long getMemberId(HttpServletRequest request) {
-        String token = validateToken(request);
-        String memberId = Jwts.parser().verifyWith(secretKey)
-                .build().parseSignedClaims(token)
-                .getPayload().getSubject();
-        return Long.parseLong(memberId);
     }
 }

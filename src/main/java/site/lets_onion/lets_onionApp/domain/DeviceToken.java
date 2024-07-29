@@ -1,13 +1,15 @@
-package site.lets_onion.lets_onionApp.domain.member;
+package site.lets_onion.lets_onionApp.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import site.lets_onion.lets_onionApp.domain.member.Member;
 
 @Entity @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,7 +29,9 @@ public class DeviceToken {
     @CreatedDate
     private LocalDateTime createdAT;
 
-    public DeviceToken(Member member, String deviceToken) {
+    @Builder
+    public DeviceToken(Long id, Member member, String deviceToken) {
+        this.id = id;
         this.member = member;
         this.deviceToken = deviceToken;
         this.member.getDeviceTokens().add(this);

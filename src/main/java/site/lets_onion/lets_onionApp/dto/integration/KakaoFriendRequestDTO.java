@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class FriendRequestDTO {
+public class KakaoFriendRequestDTO {
     @JsonProperty("total_count")
     private int totalCount;
     @JsonProperty("Friend")

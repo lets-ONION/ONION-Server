@@ -4,9 +4,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import site.lets_onion.lets_onionApp.dto.push.PushNotificationDTO;
 import site.lets_onion.lets_onionApp.dto.push.PushTestRequestDTO;
 import site.lets_onion.lets_onionApp.dto.push.PushTestResponseDTO;
@@ -30,18 +33,18 @@ public class PushController {
             """
             푸시 알림을 설정하는 API입니다.<br>
             pushType은 다음과 같습니다.<br>
-            **TRADING**: 교환<br>
             **FRIEND_REQUEST**: 친구 요청<br>
-            **ALL**: 전체 유저 푸시
+            **FRIEND_RESPONSE**: 상대방의 친구 수락<br>
+            **TRADE_REQUEST**: 교환 신청<br>
+            **TRADE_RESPONSE**: 상대방의 교환 수락<br>
+            **WATERING_TIME**: 양파에 물 주는 시간
             """)
     @ApiResponse(responseCode = "200", description = "수정 성공")
-    public ResponseEntity<ResponseDTO<PushNotificationDTO>> modifyPushConfiguration(
+    public ResponseDTO<PushNotificationDTO> modifyPushConfiguration(
             HttpServletRequest request, @RequestParam PushType type)
     {
         Long memberId = jwtProvider.getMemberId(request);
-        return new ResponseEntity<>(
-                memberService.modifyPushSetting(memberId, type),
-                HttpStatus.OK);
+        return memberService.modifyPushSetting(memberId, type);
     }
 
 
@@ -49,12 +52,11 @@ public class PushController {
     @Operation(summary = "푸시 메시지를 테스트하는 API입니다.",
     description = "백엔드쪽에서 테스트할 수 있는 방법이 없어서 우선 " +
             "받는 요청은 그대로 다 돌려보내도록 했습니다ㅜ")
-    public ResponseEntity<ResponseDTO<PushTestResponseDTO>> pushTest(
+    public ResponseDTO<PushTestResponseDTO> pushTest(
             HttpServletRequest request,
             @RequestBody PushTestRequestDTO pushTestRequestDTO)
     {
         Long memberId = jwtProvider.getMemberId(request);
-        return new ResponseEntity<>(
-                pushProvider.pushTest(memberId, pushTestRequestDTO), HttpStatus.OK);
+        return pushProvider.pushTest(memberId, pushTestRequestDTO);
     }
 }

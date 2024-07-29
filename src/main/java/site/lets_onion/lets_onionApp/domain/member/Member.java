@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import site.lets_onion.lets_onionApp.domain.DeviceToken;
 
 @Entity @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -24,8 +25,10 @@ public class Member {
     private PushNotification pushNotification;
 
     @Builder
-    public Member(@NonNull Long kakaoId) {
+    public Member(Long id, @NonNull Long kakaoId, String nickname) {
+        this.id = id;
         this.kakaoId = kakaoId;
+        this.nickname = nickname;
         pushNotification = new PushNotification();
     }
 

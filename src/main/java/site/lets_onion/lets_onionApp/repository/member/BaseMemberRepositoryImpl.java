@@ -3,10 +3,11 @@ package site.lets_onion.lets_onionApp.repository.member;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
+import java.util.Optional;
 import org.springframework.stereotype.Repository;
 import site.lets_onion.lets_onionApp.domain.member.Member;
-
-import java.util.Optional;
+import site.lets_onion.lets_onionApp.util.exception.CustomException;
+import site.lets_onion.lets_onionApp.util.exception.Exceptions;
 
 @Repository
 public class BaseMemberRepositoryImpl implements BaseMemberRepository {
@@ -15,12 +16,22 @@ public class BaseMemberRepositoryImpl implements BaseMemberRepository {
     private EntityManager em;
 
     @Override
+    public Member findByMemberId(Long memberId) {
+        return Optional.ofNullable(em.find(
+                Member.class, memberId
+            )
+        ).orElseThrow(() ->
+            new CustomException(Exceptions.MEMBER_NOT_EXIST));
+    }
+
+
+    @Override
     public Optional<Member> findByKakaoId(Long kakaoId) {
         try {
-            return Optional.of(em.createQuery("select m from Member m " +
-                            " where m.kakaoId =:kakaoId", Member.class)
-                    .setParameter("kakaoId", kakaoId)
-                    .getSingleResult());
+            return Optional.ofNullable(em.createQuery("select m from Member m"
+                + " where m.kakaoId =:kakaoId", Member.class)
+                .setParameter("kakaoId", kakaoId)
+                .getSingleResult());
         } catch (NoResultException e) {
             return Optional.empty();
         }

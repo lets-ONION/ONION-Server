@@ -1,6 +1,7 @@
 package site.lets_onion.lets_onionApp.service.member;
 
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,18 +67,20 @@ public class MemberServiceImpl implements MemberService {
     public ResponseDTO<LoginDTO> login(String code, Redirection redirection) {
         KakaoTokenResponseDTO tokenResponse = kakaoRequest
             .requestKakaoAuthToken(code, redirection);
+
         Long kakaoId = kakaoRequest.requestKakaoMemberInfo(
             tokenResponse.getAccessToken()
         ).getKakaoId();
 
-        Member member = memberRepository.findByKakaoId(kakaoId);
+        Optional<Member> searchedMember = memberRepository.findByKakaoId(kakaoId);
         boolean existMember;
-        if (member == null) {
-            member = createMember(kakaoId);
+        if (searchedMember.isEmpty()) {
+            searchedMember = Optional.of(createMember(kakaoId));
             existMember = false;
         } else {
             existMember = true;
         }
+        Member member = searchedMember.get();
         LoginDTO loginDTO = new LoginDTO(member,
             jwtProvider.createToken(member.getId(), TokenType.ACCESS),
             jwtProvider.createToken(member.getId(), TokenType.REFRESH),

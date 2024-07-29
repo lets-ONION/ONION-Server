@@ -1,5 +1,6 @@
 package site.lets_onion.lets_onionApp.repository.member;
 
+import java.util.Optional;
 import site.lets_onion.lets_onionApp.domain.member.Member;
 
 public interface BaseMemberRepository {
@@ -8,7 +9,7 @@ public interface BaseMemberRepository {
   Member findByMemberId(Long memberId);
 
   /*로그인 시 카카오 ID로 조회*/
-  Member findByKakaoId(Long kakaoId);
+  Optional<Member> findByKakaoId(Long kakaoId);
 
   /*닉네임으로 조회*/
   Member findByNickname(String nickname);

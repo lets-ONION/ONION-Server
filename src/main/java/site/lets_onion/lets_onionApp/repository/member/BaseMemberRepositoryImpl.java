@@ -1,8 +1,8 @@
 package site.lets_onion.lets_onionApp.repository.member;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.stereotype.Repository;
 import site.lets_onion.lets_onionApp.domain.member.Member;
@@ -26,14 +26,15 @@ public class BaseMemberRepositoryImpl implements BaseMemberRepository {
 
 
     @Override
-    public Member findByKakaoId(Long kakaoId) {
-        List<Member> result = em.createQuery("select m from Member m " +
-                " where m.kakaoId =:kakaoId", Member.class)
-            .setParameter("kakaoId", kakaoId)
-            .setMaxResults(1)
-            .getResultList();
-
-        return result.isEmpty() ? null : result.get(0);
+    public Optional<Member> findByKakaoId(Long kakaoId) {
+        try {
+            return Optional.ofNullable(em.createQuery("select m from Member m"
+                + " where m.kakaoId =:kakaoId", Member.class)
+                .setParameter("kakaoId", kakaoId)
+                .getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

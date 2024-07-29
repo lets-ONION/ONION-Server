@@ -106,7 +106,7 @@ public class TradeServiceImpl implements TradeService{
         TradeRequest tradeRequest = tradeRepository.findById(tradeId);
 
         validateDuplicateRequest(tradeRequest);
-        tradeRequest.updateStatus(TradeStatus.REFUSE);
+        tradeRequest.updateStatus(TradeStatus.REJECT);
 
         OnionType fromOnionType = tradeRequest.getFromOnion();
         Member fromOnionMember = tradeRequest.getFromMember();

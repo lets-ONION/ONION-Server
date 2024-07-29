@@ -1,14 +1,14 @@
-package site.lets_onion.lets_onionApp.domain;
+package site.lets_onion.lets_onionApp.domain.onionBook;
 
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import site.lets_onion.lets_onionApp.domain.member.Member;
 
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
-@Table(name = "OnionsBook")
 public class OnionBook {
 
     @Id @GeneratedValue
@@ -19,7 +19,9 @@ public class OnionBook {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    //양파 도감들
+    /**
+     * 양파 도감들
+     */
     @OneToOne(fetch = LAZY)
     @JoinColumn(name = "onion_ggang")
     private Onion onionGgang;

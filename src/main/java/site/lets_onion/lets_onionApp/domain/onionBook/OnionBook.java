@@ -62,4 +62,32 @@ public class OnionBook {
     @JoinColumn(name = "onion_grilled")
     private Onion onionGrilled;
 
+
+    //조회 메서드
+    //이거로 하려니 가져오는 로직이 너무 복잡해서 주석처리함
+//    Onion getOnion(OnionType onionType) {
+//        switch (onionType) {
+//            case OnionType.ONION_GGANG:
+//                return this.onionGgang;
+//            case OnionType.ONION_RING:
+//                return this.onionRing;
+//            case OnionType.ONION_RAW:
+//                return this.onionRaw;
+//            case OnionType.ONION_PILLED:
+//                return this.onionPilled;
+//            case OnionType.ONION_FRIED:
+//                return this.onionFried;
+//            case OnionType.ONION_PICKLE:
+//                return this.onionPickle;
+//            case OnionType.ONION_SUSHI:
+//                return this.onionSushi;
+//            case OnionType.ONION_KIMCHI:
+//                return this.onionKimchi;
+//            case OnionType.ONION_SOUP:
+//                return this.onionSoup;
+//            case OnionType.ONION_GRILLED:
+//                return this.onionGrilled;
+//        }
+//    }
+
 }

@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import site.lets_onion.lets_onionApp.domain.onionBook.Onion;
 import site.lets_onion.lets_onionApp.domain.trade.TradeRequest;
 import site.lets_onion.lets_onionApp.domain.trade.TradeStatus;
+import site.lets_onion.lets_onionApp.repository.onionBook.OnionBookRepository;
 import site.lets_onion.lets_onionApp.repository.onionBook.OnionRepository;
 import site.lets_onion.lets_onionApp.repository.trade.TradeRepository;
 
@@ -18,6 +19,7 @@ public class TradeServiceImpl implements TradeService{
     private final BaseMemberRepository memberRepository;
     private final OnionRepository onionRepository;
     private final TradeRepository tradeRepository;
+    private final OnionBookRepository onionBookRepository;
 
     /**
      * 검증
@@ -30,13 +32,13 @@ public class TradeServiceImpl implements TradeService{
     }
     public void validateDuplicateRequest(TradeRequest tradeRequest) {
 
-        if (tradeRequest.status != TradeStatus.PENDING) {
+        if (tradeRequest.getStatus() != TradeStatus.PENDING) {
             throw new IllegalStateException("중복된 요청입니다");
         }
     }
 
-    @Transactional
     @Override
+    @Transactional
     public Long sendRequest(Long fromMemberId, Long toMemberId, OnionType fromOnionType, OnionType toOnionType) {
 
         Member fromMember = memberRepository.findByMemberId(fromMemberId);
@@ -45,7 +47,7 @@ public class TradeServiceImpl implements TradeService{
         TradeRequest tradeRequest = TradeRequest.createTradeRequest(fromMember, toMember, fromOnion, toOnion);
 
         // 교환 요청한 유저의 교환 요청 양파 개수 -1
-        Onion fromOnionOfFromMember = onionRepository.findByMemberIdAndOniontype(fromMemberId, fromOnionType);
+        Onion fromOnionOfFromMember = onionRepository.findByMemberIdAndOnionType(fromMemberId, fromOnionType);
         validateOnionQuantity(fromOnionOfFromMember);
         fromOnionOfFromMember.decreaseQuantity(1); //이런애들 저장 안해도 되나?
 
@@ -54,8 +56,8 @@ public class TradeServiceImpl implements TradeService{
         return tradeRequest.getId();
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void cancelRequest(Long tradeId) {
 
         TradeRequest tradeRequest = tradeRepository.findById(tradeId);
@@ -66,13 +68,13 @@ public class TradeServiceImpl implements TradeService{
         OnionType fromOnionType = tradeRequest.getFromOnion();
         Member fromOnionMember = tradeRequest.getFromMember();
 
-        Onion fromOnionOfFromMember = onionRepository.findByMemberIdAndOniontype(fromOnionMember.getId(), fromOnionType);
+        Onion fromOnionOfFromMember = onionRepository.findByMemberIdAndOnionType(fromOnionMember.getId(), fromOnionType);
         fromOnionOfFromMember.increaseQuantity(1);
 
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void acceptRequest(Long tradeId) {
 
         TradeRequest tradeRequest = tradeRepository.findById(tradeId);
@@ -85,20 +87,20 @@ public class TradeServiceImpl implements TradeService{
         Member fromOnionMember = tradeRequest.getFromMember();
         Member toOnionMember = tradeRequest.getToMember();
 
-        Onion toOnionOfToMember = onionRepository.findByMemberIdAndOniontype(toOnionMember.getId(), toOnionType);
+        Onion toOnionOfToMember = onionRepository.findByMemberIdAndOnionType(toOnionMember.getId(), toOnionType);
         validateOnionQuantity(toOnionOfToMember);
         toOnionOfToMember.decreaseQuantity(1);
 
-        Onion fromOnionOfToMember = onionRepository.findByMemberIdAndOniontype(toOnionMember.getId(), fromOnionType);
+        Onion fromOnionOfToMember = onionRepository.findByMemberIdAndOnionType(toOnionMember.getId(), fromOnionType);
         fromOnionOfToMember.increaseQuantity(1);
 
-        Onion toOnionOfFromMember = onionRepository.findByMemberIdAndOniontype(fromOnionMember.getId(), toOnionType);
+        Onion toOnionOfFromMember = onionRepository.findByMemberIdAndOnionType(fromOnionMember.getId(), toOnionType);
         toOnionOfFromMember.increaseQuantity(1);
 
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void refuseRequest(Long tradeId) {
 
         TradeRequest tradeRequest = tradeRepository.findById(tradeId);
@@ -109,7 +111,7 @@ public class TradeServiceImpl implements TradeService{
         OnionType fromOnionType = tradeRequest.getFromOnion();
         Member fromOnionMember = tradeRequest.getFromMember();
 
-        Onion fromOnionOfFromMember = onionRepository.findByMemberIdAndOniontype(fromOnionMember.getId(), fromOnionType);
+        Onion fromOnionOfFromMember = onionRepository.findByMemberIdAndOnionType(fromOnionMember.getId(), fromOnionType);
         fromOnionOfFromMember.increaseQuantity(1);
 
     }

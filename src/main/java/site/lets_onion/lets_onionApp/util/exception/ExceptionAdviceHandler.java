@@ -1,7 +1,11 @@
 package site.lets_onion.lets_onionApp.util.exception;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.PrematureJwtException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
+import java.nio.file.AccessDeniedException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +16,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-
-import java.nio.file.AccessDeniedException;
 
 @RestControllerAdvice
 @Slf4j
@@ -101,5 +103,25 @@ public class ExceptionAdviceHandler {
     public ResponseEntity<String> handleWebClientResponseException(WebClientResponseException e) {
         log.error(e.getResponseBodyAsString());
         return new ResponseEntity<>(e.getMessage(), e.getStatusCode());
+    }
+
+    /*JJWT 예외*/
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<ExceptionDTO> handleJwtException(JwtException e) {
+        log.error(e.getMessage());
+        Exceptions exceptions;
+        if (e instanceof ExpiredJwtException) {
+            exceptions = Exceptions.EXPIRED_TOKEN;
+        } else if (e instanceof PrematureJwtException) {
+            exceptions = Exceptions.PREMATURE_TOKEN;
+        } else {
+            exceptions = Exceptions.INVALID_TOKEN;
+        }
+        CustomException ce = new CustomException(exceptions);
+
+        return new ResponseEntity<>(
+            new ExceptionDTO(ce),
+            HttpStatus.valueOf(ce.getCode())
+        );
     }
 }

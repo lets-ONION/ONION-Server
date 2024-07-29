@@ -8,7 +8,8 @@ public enum Exceptions {
     /*400 BAD_REQUEST*/
     BAD_REQUEST(400, "Bad Request"),
     ALREADY_REGISTERED(400, "Already Registered"),
-    MEMBER_NOT_EXIST(400, "Member Not Exist"),
+    ONLY_REQUESTED_MEMBER_CAN_RESPONSE(400, "Only Requested Member Can Response"),
+    NOT_FRIENDS_ALREADY(400, "Not Friends Already"),
 
     /*401 UNAUTHORIZED*/
     KAKAO_AUTH_FAILED_WITH_TOKEN(401, "Kakao Auth Failed With Token"),
@@ -20,12 +21,15 @@ public enum Exceptions {
     NOT_ACCESS_TOKEN(401, "Not Access Token"),
     TOKEN_NOT_FOUND(401, "Token Not Found"),
     EXPIRED_TOKEN(401, "Expired Token"),
+    PREMATURE_TOKEN(401, "Premature Token"),
 
     /*403 FORBIDDEN*/
     FORBIDDEN(403, "Forbidden"),
 
     /*404 NOT_FOUND*/
     NOT_FOUND(404, "Not Found"),
+    MEMBER_NOT_EXIST(404, "Member Not Exist"),
+    FRIENDSHIP_NOT_EXIST(404, "Friendship Not Exist"),
     KAKAO_TOKEN_NOT_FOUND(404, """
             Kakao Token Not Found.
             Maybe Expired.

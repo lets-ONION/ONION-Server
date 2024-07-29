@@ -66,6 +66,7 @@ public class PushProvider {
 
     /*FCM을 통해 푸시 알림 전송*/
     private void sendPushByFcm(Notification notification, List<String> deviceTokens) {
+        if (deviceTokens.isEmpty()) {return;}
         MulticastMessage pushes = MulticastMessage.builder()
                 .setNotification(notification)
                 .addAllTokens(deviceTokens)

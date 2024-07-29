@@ -1,4 +1,4 @@
-package site.lets_onion.lets_onionApp.domain.onionBook;
+package site.lets_onion.lets_onionApp.domain.trade;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;

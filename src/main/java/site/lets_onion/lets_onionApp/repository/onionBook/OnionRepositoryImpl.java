@@ -1,7 +1,6 @@
 package site.lets_onion.lets_onionApp.repository.onionBook;
 
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.PersistenceContext;
 import org.springframework.stereotype.Repository;
 import site.lets_onion.lets_onionApp.domain.onionBook.Onion;

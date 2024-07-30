@@ -21,7 +21,7 @@ public class GrowingOnion {
 
     private String name;
 
-    private boolean posOrNeg;
+    private boolean isPos;
 
     private int growthStage;
 
@@ -30,21 +30,12 @@ public class GrowingOnion {
     private int generation;
 
     @Builder
-    public GrowingOnion(Member member, String name, boolean posOrNeg) {
+    public GrowingOnion(Member member, String name, boolean isPos) {
         this.member = member;
         this.name = name;
-        this.posOrNeg = posOrNeg;
+        this.isPos = isPos;
         this.growthStage = 0;
         this.onionLevel = OnionLevel.ZERO;
         this.generation = 1;
     }
-
-    public void waterOnion(Long id){
-        ++this.growthStage;
-        if (this.growthStage == 7){
-            this.growthStage = 0;
-
-        }
-    }
-
 }

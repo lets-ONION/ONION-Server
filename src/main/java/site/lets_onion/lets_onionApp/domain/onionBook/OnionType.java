@@ -1,5 +1,8 @@
 package site.lets_onion.lets_onionApp.domain.onionBook;
 
+import lombok.Getter;
+
+@Getter
 public enum OnionType {
 
     ONION_GGANG("양파깡", "https://imgur.com/s8D57zC"),

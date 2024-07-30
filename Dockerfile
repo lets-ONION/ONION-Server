@@ -11,5 +11,5 @@ COPY --from=build /app/build/libs/*.jar app.jar
 
 VOLUME /tmp
 VOLUME /logs
-EXPOSE 8081
+EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -44,12 +44,12 @@ public class TradeServiceImpl implements TradeService{
         Member fromMember = memberRepository.findByMemberId(fromMemberId);
         Member toMember = memberRepository.findByMemberId(toMemberId);
 
-        TradeRequest tradeRequest = TradeRequest.createTradeRequest(fromMember, toMember, fromOnion, toOnion);
+        TradeRequest tradeRequest = new TradeRequest(fromMember, toMember, fromOnionType, toOnionType);
 
         // 교환 요청한 유저의 교환 요청 양파 개수 -1
         Onion fromOnionOfFromMember = onionRepository.findByMemberIdAndOnionType(fromMemberId, fromOnionType);
         validateOnionQuantity(fromOnionOfFromMember);
-        fromOnionOfFromMember.decreaseQuantity(1); //이런애들 저장 안해도 되나?
+        fromOnionOfFromMember.decreaseQuantity(); //이런애들 저장 안해도 되나?
 
         tradeRepository.save(tradeRequest);
 
@@ -69,7 +69,7 @@ public class TradeServiceImpl implements TradeService{
         Member fromOnionMember = tradeRequest.getFromMember();
 
         Onion fromOnionOfFromMember = onionRepository.findByMemberIdAndOnionType(fromOnionMember.getId(), fromOnionType);
-        fromOnionOfFromMember.increaseQuantity(1);
+        fromOnionOfFromMember.increaseQuantity();
 
     }
 
@@ -89,13 +89,13 @@ public class TradeServiceImpl implements TradeService{
 
         Onion toOnionOfToMember = onionRepository.findByMemberIdAndOnionType(toOnionMember.getId(), toOnionType);
         validateOnionQuantity(toOnionOfToMember);
-        toOnionOfToMember.decreaseQuantity(1);
+        toOnionOfToMember.decreaseQuantity();
 
         Onion fromOnionOfToMember = onionRepository.findByMemberIdAndOnionType(toOnionMember.getId(), fromOnionType);
-        fromOnionOfToMember.increaseQuantity(1);
+        fromOnionOfToMember.increaseQuantity();
 
         Onion toOnionOfFromMember = onionRepository.findByMemberIdAndOnionType(fromOnionMember.getId(), toOnionType);
-        toOnionOfFromMember.increaseQuantity(1);
+        toOnionOfFromMember.increaseQuantity();
 
     }
 
@@ -112,7 +112,7 @@ public class TradeServiceImpl implements TradeService{
         Member fromOnionMember = tradeRequest.getFromMember();
 
         Onion fromOnionOfFromMember = onionRepository.findByMemberIdAndOnionType(fromOnionMember.getId(), fromOnionType);
-        fromOnionOfFromMember.increaseQuantity(1);
+        fromOnionOfFromMember.increaseQuantity();
 
     }
 }

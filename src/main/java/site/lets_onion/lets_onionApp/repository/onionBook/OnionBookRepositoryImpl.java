@@ -16,14 +16,39 @@ public class OnionBookRepositoryImpl implements OnionBookRepository{
 
     @Override
     public OnionBook findById(Long id) { //Onion 객체들까지 다 불러오는지 봐야함
-        return em.find(OnionBook.class, id);
+        return em.createQuery("select ob from OnionBook ob"
+                                + " left fetch join ob.onionGgang"
+                                + " left fetch join ob.onionRing"
+                                + " left fetch join ob.onionRaw"
+                                + " left fetch join ob.onionPilled"
+                                + " left fetch join ob.onionFried"
+                                + " left fetch join ob.onionPickle"
+                                + " left fetch join ob.onionSushi"
+                                + " left fetch join ob.onionKimchi"
+                                + " left fetch join ob.onionSoup"
+                                + " left fetch join ob.onionGrilled"
+                                + " where ob.id = :id",
+                        OnionBook.class)
+                .setParameter("id", id)
+                .getSingleResult();
     }
+
 
     @Override
     public OnionBook findByMemberId(Long memberId) {
         return em.createQuery("select ob from OnionBook ob"
-                        + "where ob.member = :memberId",
-                OnionBook.class)
+                                + " left fetch join ob.onionGgang"
+                                + " left fetch join ob.onionRing"
+                                + " left fetch join ob.onionRaw"
+                                + " left fetch join ob.onionPilled"
+                                + " left fetch join ob.onionFried"
+                                + " left fetch join ob.onionPickle"
+                                + " left fetch join ob.onionSushi"
+                                + " left fetch join ob.onionKimchi"
+                                + " left fetch join ob.onionSoup"
+                                + " left fetch join ob.onionGrilled"
+                                + " where ob.member = :memberId",
+                        OnionBook.class)
                 .setParameter("memberId", memberId)
                 .getSingleResult();
     }

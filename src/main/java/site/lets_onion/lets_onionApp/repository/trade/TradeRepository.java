@@ -10,10 +10,10 @@ public interface TradeRepository {
     TradeRequest findById(Long tradeId);
 
     //유저가 보낸 요청 전체 조회
-    List<TradeRequest> findListByFromMemberId(Long memberId);
+    List<TradeRequest> findAllByFromMemberId(Long memberId);
 
     //유저가 받은 요청 전체 조회
-    List<TradeRequest> findListByToMemberId(Long memberId);
+    List<TradeRequest> findAllByToMemberId(Long memberId);
 
     //교환 요청 생성
     void save(TradeRequest tradeRequest);

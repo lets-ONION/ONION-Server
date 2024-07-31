@@ -19,18 +19,20 @@ public class TradeRepositoryImpl implements TradeRepository{
     }
 
     @Override
-    public List<TradeRequest> findListByFromMemberId(Long memberId) {
+    public List<TradeRequest> findAllByFromMemberId(Long memberId) {
         return em.createQuery("select t from TradeRequest t"
-                        + " where t.fromMemberId = :memberId",
+                        + " left fetch join t.fromMember fm"
+                        + " where fm.id = :memberId",
                         TradeRequest.class)
                 .setParameter("memberId", memberId)
                 .getResultList();
     }
 
     @Override
-    public List<TradeRequest> findListByToMemberId(Long memberId) {
+    public List<TradeRequest> findAllByToMemberId(Long memberId) {
         return em.createQuery("select t from TradeRequest t"
-                        + " where t.toMemberId = :memberId",
+                        + " left fetch join t.toMember tm"
+                        + " where tm.id = :memberId",
                         TradeRequest.class)
                 .setParameter("memberId", memberId)
                 .getResultList();

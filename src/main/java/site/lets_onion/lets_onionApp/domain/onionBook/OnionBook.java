@@ -2,64 +2,56 @@ package site.lets_onion.lets_onionApp.domain.onionBook;
 
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import site.lets_onion.lets_onionApp.domain.member.Member;
 
 import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OnionBook {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "onions_book_id")
     private Long id;
 
-    @OneToOne(fetch = LAZY)
-    @JoinColumn(name = "member_id")
+    @OneToOne(mappedBy = "onionBook", fetch = LAZY)
     private Member member;
 
     /**
      * 양파 도감들
      */
-    @OneToOne(fetch = LAZY)
-    @JoinColumn(name = "onion_ggang")
+    @Embedded
     private Onion onionGgang;
 
-    @OneToOne(fetch = LAZY)
-    @JoinColumn(name = "onion_ring")
+    @Embedded
     private Onion onionRing;
 
-    @OneToOne(fetch = LAZY)
-    @JoinColumn(name = "onion_raw")
+    @Embedded
     private Onion onionRaw;
 
-    @OneToOne(fetch = LAZY)
-    @JoinColumn(name = "onion_pilled")
+    @Embedded
     private Onion onionPilled;
 
-    @OneToOne(fetch = LAZY)
-    @JoinColumn(name = "onion_fried")
+    @Embedded
     private Onion onionFried;
 
-    @OneToOne(fetch = LAZY)
-    @JoinColumn(name = "onion_pickle")
+    @Embedded
     private Onion onionPickle;
 
-    @OneToOne(fetch = LAZY)
-    @JoinColumn(name = "onion_sushi")
+    @Embedded
     private Onion onionSushi;
 
-    @OneToOne(fetch = LAZY)
-    @JoinColumn(name = "onion_kimchi")
+    @Embedded
     private Onion onionKimchi;
 
-    @OneToOne(fetch = LAZY)
-    @JoinColumn(name = "onion_soup")
+    @Embedded
     private Onion onionSoup;
 
-    @OneToOne(fetch = LAZY)
-    @JoinColumn(name = "onion_grilled")
+    @Embedded
     private Onion onionGrilled;
 
 

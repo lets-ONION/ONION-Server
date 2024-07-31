@@ -2,18 +2,23 @@ package site.lets_onion.lets_onionApp.domain.trade;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import site.lets_onion.lets_onionApp.domain.member.Member;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EntityListeners(AuditingEntityListener.class)
 public class TradeRequest {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "trade_request_id")
     private Long id;
 
@@ -34,24 +39,16 @@ public class TradeRequest {
     @Enumerated(EnumType.STRING)
     private OnionType toOnion;
 
-    private LocalDate requestAt;
+    @CreatedDate
+    private LocalDateTime requestAt;
 
-    //생성메서드
-    public static TradeRequest createTradeRequest(Member fromMember, Member toMember, OnionType fromOnionType, OnionType toOnionType) {
-        TradeRequest tradeRequest = new TradeRequest();
-
-        tradeRequest.fromMember = fromMember; //setter로 해야하나..?
-        tradeRequest.toMember = toMember;
-        tradeRequest.fromOnion = fromOnionType;
-        tradeRequest.toOnion = toOnionType;
-
-        tradeRequest.status = TradeStatus.PENDING; //디폴트값
-        tradeRequest.requestAt = LocalDate.now();
-
-        //fromMember의 fromOnion 개수 감소 -> TradeService에.
-
-        return tradeRequest;
-
+    @Builder
+    public TradeRequest(Member fromMember, Member toMember, OnionType fromOnionType, OnionType toOnionType) {
+        this.fromMember = fromMember; //setter로 해야하나..?
+        this.toMember = toMember;
+        this.fromOnion = fromOnionType;
+        this.toOnion = toOnionType;
+        this.status = TradeStatus.PENDING; //디폴트값
     }
 
     //비즈니스로직

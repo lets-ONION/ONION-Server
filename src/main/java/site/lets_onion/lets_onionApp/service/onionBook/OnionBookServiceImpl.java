@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.lets_onion.lets_onionApp.domain.onionBook.Onion;
 import site.lets_onion.lets_onionApp.domain.onionBook.OnionBook;
+import site.lets_onion.lets_onionApp.domain.onionBook.OnionType;
 import site.lets_onion.lets_onionApp.dto.onionBook.OnionBookDTO;
 import site.lets_onion.lets_onionApp.dto.onionBook.OnionDTO;
 import site.lets_onion.lets_onionApp.repository.onionBook.OnionBookRepository;
@@ -38,7 +39,7 @@ public class OnionBookServiceImpl implements OnionBookService{
 
         //1개 이상 모인 양파 리스트
         List<OnionDTO> onionsCollected = new ArrayList<>();
-        for (OnionType onionType: OnionType.values()) { //map으로 변환하기
+        for (OnionType onionType: OnionType.values()) { //map으로 변환하기!
             Onion onion = onionBook.getOnion(onionType);
             if (onion.getCollectedQuantity() == 0) {
                 continue;

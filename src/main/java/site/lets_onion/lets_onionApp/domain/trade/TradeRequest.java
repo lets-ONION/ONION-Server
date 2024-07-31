@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import site.lets_onion.lets_onionApp.domain.member.Member;
+import site.lets_onion.lets_onionApp.domain.onionBook.OnionType;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -44,11 +44,11 @@ public class TradeRequest {
 
     @Builder
     public TradeRequest(Member fromMember, Member toMember, OnionType fromOnionType, OnionType toOnionType) {
-        this.fromMember = fromMember; //setter로 해야하나..?
+        this.fromMember = fromMember;
         this.toMember = toMember;
         this.fromOnion = fromOnionType;
         this.toOnion = toOnionType;
-        this.status = TradeStatus.PENDING; //디폴트값
+        this.status = TradeStatus.PENDING;
     }
 
     //비즈니스로직

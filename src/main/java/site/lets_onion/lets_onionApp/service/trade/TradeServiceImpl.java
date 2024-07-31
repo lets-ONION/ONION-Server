@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import site.lets_onion.lets_onionApp.domain.member.Member;
 import site.lets_onion.lets_onionApp.domain.onionBook.Onion;
 import site.lets_onion.lets_onionApp.domain.onionBook.OnionBook;
+import site.lets_onion.lets_onionApp.domain.onionBook.OnionType;
 import site.lets_onion.lets_onionApp.domain.trade.TradeRequest;
 import site.lets_onion.lets_onionApp.domain.trade.TradeStatus;
 import site.lets_onion.lets_onionApp.dto.trade.ReceivedTradeRequestDTO;
@@ -13,6 +14,8 @@ import site.lets_onion.lets_onionApp.dto.trade.SentTradeRequestDTO;
 import site.lets_onion.lets_onionApp.repository.member.BaseMemberRepository;
 import site.lets_onion.lets_onionApp.repository.onionBook.OnionBookRepository;
 import site.lets_onion.lets_onionApp.repository.trade.TradeRepository;
+import site.lets_onion.lets_onionApp.util.exception.CustomException;
+import site.lets_onion.lets_onionApp.util.exception.Exceptions;
 import site.lets_onion.lets_onionApp.util.response.ResponseDTO;
 import site.lets_onion.lets_onionApp.util.response.Responses;
 
@@ -34,7 +37,7 @@ public class TradeServiceImpl implements TradeService{
     // 교환 가능한지 체크
     public void validateOnionQuantity(Onion onion) {
         if (onion.getCollectedQuantity() <= 1) {
-            throw new NotEnoughQuantityException("양파 개수가 부족합니다.");
+            throw new CustomException(Exceptions.NOT_ENOUGH_QUANTITY);
         }
     }
     //중복된 요청 체크
@@ -155,22 +158,23 @@ public class TradeServiceImpl implements TradeService{
         //교환 상태를 ACCEPT로 바꿈.
         tradeRequest.updateStatus(TradeStatus.ACCEPT);
 
-        //교환 성사된 유저들의 교환 양파 개수 조정
-        OnionType fromOnionType = tradeRequest.getFromOnion();
         OnionType toOnionType = tradeRequest.getToOnion();
-        Member fromOnionMember = tradeRequest.getFromMember();
         Member toOnionMember = tradeRequest.getToMember();
-        OnionBook fromMemberOnionBook = onionBookRepository.findByMemberId(fromOnionMember.getId());
         OnionBook toMemberOnionBook = onionBookRepository.findByMemberId(toOnionMember.getId());
-
         Onion toOnionOfToMember = toMemberOnionBook.getOnion(toOnionType);
-        validateOnionQuantity(toOnionOfToMember); //남은 양파 개수 검증
-        toOnionOfToMember.decreaseQuantity();
 
+        //교환을 수락하는 유저의 남은 양파 개수 검증
+        validateOnionQuantity(toOnionOfToMember);
+
+        //교환 성사된 유저들의 교환 양파 개수 조정
+        Member fromOnionMember = tradeRequest.getFromMember();
+        OnionType fromOnionType = tradeRequest.getFromOnion();
+        OnionBook fromMemberOnionBook = onionBookRepository.findByMemberId(fromOnionMember.getId());
         Onion fromOnionOfToMember = toMemberOnionBook.getOnion(fromOnionType);
-        fromOnionOfToMember.increaseQuantity();
-
         Onion toOnionOfFromMember = fromMemberOnionBook.getOnion(toOnionType);
+
+        toOnionOfToMember.decreaseQuantity();
+        fromOnionOfToMember.increaseQuantity();
         toOnionOfFromMember.increaseQuantity();
 
         return new ResponseDTO<>(Boolean.TRUE, Responses.OK);

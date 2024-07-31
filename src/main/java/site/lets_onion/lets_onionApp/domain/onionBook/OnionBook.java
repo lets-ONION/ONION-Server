@@ -56,28 +56,30 @@ public class OnionBook {
 
 
     //조회 메서드
-    //이거로 하려니 가져오는 로직이 너무 복잡해서 주석처리함
+    /**
+     * onionType에 맞는 필드 조회
+     */
     public Onion getOnion(OnionType onionType) {
         switch (onionType) {
-            case OnionType.ONION_GGANG:
+            case ONION_GGANG:
                 return this.onionGgang;
-            case OnionType.ONION_RING:
+            case ONION_RING:
                 return this.onionRing;
-            case OnionType.ONION_RAW:
+            case ONION_RAW:
                 return this.onionRaw;
-            case OnionType.ONION_PILLED:
+            case ONION_PILLED:
                 return this.onionPilled;
-            case OnionType.ONION_FRIED:
+            case ONION_FRIED:
                 return this.onionFried;
-            case OnionType.ONION_PICKLE:
+            case ONION_PICKLE:
                 return this.onionPickle;
-            case OnionType.ONION_SUSHI:
+            case ONION_SUSHI:
                 return this.onionSushi;
-            case OnionType.ONION_KIMCHI:
+            case ONION_KIMCHI:
                 return this.onionKimchi;
-            case OnionType.ONION_SOUP:
+            case ONION_SOUP:
                 return this.onionSoup;
-            case OnionType.ONION_GRILLED:
+            case ONION_GRILLED:
                 return this.onionGrilled;
         }
     }

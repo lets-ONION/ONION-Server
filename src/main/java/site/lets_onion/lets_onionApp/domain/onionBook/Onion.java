@@ -2,6 +2,8 @@ package site.lets_onion.lets_onionApp.domain.onionBook;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import site.lets_onion.lets_onionApp.util.exception.CustomException;
+import site.lets_onion.lets_onionApp.util.exception.Exceptions;
 
 @Embeddable
 @Getter
@@ -19,7 +21,7 @@ public class Onion {
     public void decreaseQuantity() {
         int restQuantity = this.collectedQuantity - 1;
         if (restQuantity < 1) { //1개 미만으로는 제거하지 않음.
-            throw new NotEnoughQuantityException("더이상 삭제할 수 없습니다.");
+            throw new CustomException(Exceptions.NOT_ENOUGH_QUANTITY);
         }
         this.collectedQuantity = restQuantity;
     }

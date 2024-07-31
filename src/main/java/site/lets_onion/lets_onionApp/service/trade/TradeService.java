@@ -1,5 +1,6 @@
 package site.lets_onion.lets_onionApp.service.trade;
 
+import site.lets_onion.lets_onionApp.domain.onionBook.OnionType;
 import site.lets_onion.lets_onionApp.dto.trade.ReceivedTradeRequestDTO;
 import site.lets_onion.lets_onionApp.dto.trade.SentTradeRequestDTO;
 import site.lets_onion.lets_onionApp.util.response.ResponseDTO;

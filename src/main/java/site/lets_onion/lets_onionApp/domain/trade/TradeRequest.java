@@ -40,7 +40,7 @@ public class TradeRequest {
     private OnionType toOnion;
 
     @CreatedDate
-    private LocalDateTime requestAt;
+    private LocalDateTime requestedAt;
 
     @Builder
     public TradeRequest(Member fromMember, Member toMember, OnionType fromOnionType, OnionType toOnionType) {

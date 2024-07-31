@@ -6,8 +6,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import site.lets_onion.lets_onionApp.domain.member.Member;
+import site.lets_onion.lets_onionApp.domain.member.PushNotification;
 
 @Entity @Getter
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"is_pos"}))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GrowingOnion {
 
@@ -19,23 +21,39 @@ public class GrowingOnion {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    private String name;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "name", column = @Column(name = "pos_onion_name")),
+            @AttributeOverride(name = "isPos", column = @Column(name = "pos_onion_is_pos")),
+            @AttributeOverride(name = "growthStage", column = @Column(name = "pos_onion_growth_stage")),
+            @AttributeOverride(name = "onionLevel", column = @Column(name = "pos_onion_level")),
+            @AttributeOverride(name = "generation", column = @Column(name = "pos_onion_generation"))
+    })
+    private BabyOnion posOnion;
 
-    private boolean isPos;
-
-    private int growthStage;
-
-    private OnionLevel onionLevel;
-
-    private int generation;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "name", column = @Column(name = "neg_onion_name")),
+            @AttributeOverride(name = "isPos", column = @Column(name = "neg_onion_is_pos")),
+            @AttributeOverride(name = "growthStage", column = @Column(name = "neg_onion_growth_stage")),
+            @AttributeOverride(name = "onionLevel", column = @Column(name = "neg_onion_level")),
+            @AttributeOverride(name = "generation", column = @Column(name = "neg_onion_generation"))
+    })
+    private BabyOnion negOnion;
 
     @Builder
-    public GrowingOnion(Member member, String name, boolean isPos) {
+    public GrowingOnion(Member member) {
         this.member = member;
-        this.name = name;
-        this.isPos = isPos;
-        this.growthStage = 0;
-        this.onionLevel = OnionLevel.ZERO;
-        this.generation = 1;
+    }
+
+    public void createOnions(String posName, String negName){
+        this.posOnion = BabyOnion.builder()
+                .name(posName)
+                .isPos(true)
+                .build();
+        this.negOnion = BabyOnion.builder()
+                .name(negName)
+                .isPos(false)
+                .build();
     }
 }

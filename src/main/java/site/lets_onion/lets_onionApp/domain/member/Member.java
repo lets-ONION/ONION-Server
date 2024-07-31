@@ -25,23 +25,20 @@ public class Member {
     @Embedded
     private PushNotification pushNotification;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "member")
-    private GrowingOnion posOnion;
-
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "member")
-    private GrowingOnion negOnion;
+    @OneToOne(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private GrowingOnion onions;
 
     @Builder
-    public Member(Long id, @NonNull Long kakaoId, String nickname, GrowingOnion posOnion, GrowingOnion negOnion) {
+    public Member(Long id, @NonNull Long kakaoId, String nickname) {
         this.id = id;
         this.kakaoId = kakaoId;
         this.nickname = nickname;
-        this.posOnion = posOnion;
-        this.negOnion = negOnion;
         pushNotification = new PushNotification();
+        this.onions = GrowingOnion.builder().member(this).build();
     }
 
     public void updateNickname(String nickname) {
         this.nickname = nickname;
     }
+
 }

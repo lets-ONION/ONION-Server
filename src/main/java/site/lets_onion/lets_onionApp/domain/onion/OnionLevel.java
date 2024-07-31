@@ -1,6 +1,8 @@
 package site.lets_onion.lets_onionApp.domain.onion;
 
 import lombok.Getter;
+import site.lets_onion.lets_onionApp.util.exception.CustomException;
+import site.lets_onion.lets_onionApp.util.exception.Exceptions;
 
 @Getter
 public enum OnionLevel {
@@ -22,5 +24,14 @@ public enum OnionLevel {
         this.value = value;
         this.posImageUrl = posImageUrl;
         this.negImageUrl = negImageUrl;
+    }
+
+    public static OnionLevel fromValue(int value){
+        for (OnionLevel level : OnionLevel.values()){
+            if (level.getValue() == value){
+                return level;
+            }
+        }
+        throw new CustomException(Exceptions.NOT_VALID_ONION_LEVEL);
     }
 }

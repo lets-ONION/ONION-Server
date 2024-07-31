@@ -6,6 +6,7 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 import site.lets_onion.lets_onionApp.domain.DeviceToken;
+import site.lets_onion.lets_onionApp.domain.onion.GrowingOnion;
 
 @Entity @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -24,11 +25,19 @@ public class Member {
     @Embedded
     private PushNotification pushNotification;
 
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "member")
+    private GrowingOnion posOnion;
+
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "member")
+    private GrowingOnion negOnion;
+
     @Builder
-    public Member(Long id, @NonNull Long kakaoId, String nickname) {
+    public Member(Long id, @NonNull Long kakaoId, String nickname, GrowingOnion posOnion, GrowingOnion negOnion) {
         this.id = id;
         this.kakaoId = kakaoId;
         this.nickname = nickname;
+        this.posOnion = posOnion;
+        this.negOnion = negOnion;
         pushNotification = new PushNotification();
     }
 

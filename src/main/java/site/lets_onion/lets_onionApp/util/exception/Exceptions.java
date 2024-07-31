@@ -10,6 +10,7 @@ public enum Exceptions {
     ALREADY_REGISTERED(400, "Already Registered"),
     ONLY_REQUESTED_MEMBER_CAN_RESPONSE(400, "Only Requested Member Can Response"),
     NOT_FRIENDS_ALREADY(400, "Not Friends Already"),
+    NOT_VALID_ONION_LEVEL(400, "Onion Level is not in range(0, 7)."),
 
     /*401 UNAUTHORIZED*/
     KAKAO_AUTH_FAILED_WITH_TOKEN(401, "Kakao Auth Failed With Token"),
@@ -30,6 +31,9 @@ public enum Exceptions {
     NOT_FOUND(404, "Not Found"),
     MEMBER_NOT_EXIST(404, "Member Not Exist"),
     FRIENDSHIP_NOT_EXIST(404, "Friendship Not Exist"),
+    MONTH_NOT_EXIST(404, "Month Not Exist"),
+    DAY_NOT_EXIST(404, "Day Not Exist"),
+    GROWING_ONION_NOT_EXIST(404, "GrowingOnion Not Exist"),
     KAKAO_TOKEN_NOT_FOUND(404, """
             Kakao Token Not Found.
             Maybe Expired.

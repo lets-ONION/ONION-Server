@@ -1,4 +1,4 @@
-package site.lets_onion.lets_onionApp.service.onion;
+package site.lets_onion.lets_onionApp.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +15,7 @@ import site.lets_onion.lets_onionApp.repository.calendar.MonthRepository;
 import site.lets_onion.lets_onionApp.repository.member.MemberRepository;
 import site.lets_onion.lets_onionApp.repository.onion.GrowingOnionRepository;
 import site.lets_onion.lets_onionApp.repository.onion.OnionHistoryRepository;
+import site.lets_onion.lets_onionApp.service.onion.OnionService;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
@@ -48,7 +49,8 @@ class OnionServiceTest {
                 .id(1L).kakaoId(1L)
                 .nickname("test_member")
                 .build();
-        testMember.getOnions().createOnions("냥냥이", "멍멍이");
+        testMember.getOnions().getPosOnion().updateOnionName("냥냥이");
+        testMember.getOnions().getNegOnion().updateOnionName("냥냥이");
         testMember = memberRepository.save(testMember);
     }
 

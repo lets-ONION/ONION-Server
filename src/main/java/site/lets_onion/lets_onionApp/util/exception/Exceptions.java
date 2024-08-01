@@ -11,6 +11,7 @@ public enum Exceptions {
     ONLY_REQUESTED_MEMBER_CAN_RESPONSE(400, "Only Requested Member Can Response"),
     NOT_FRIENDS_ALREADY(400, "Not Friends Already"),
     NOT_VALID_ONION_LEVEL(400, "Onion Level is not in range(0, 7)."),
+    ONION_LEVEL_UNDER_7(400, "Onion Level is not enough to evolve."),
 
     /*401 UNAUTHORIZED*/
     KAKAO_AUTH_FAILED_WITH_TOKEN(401, "Kakao Auth Failed With Token"),

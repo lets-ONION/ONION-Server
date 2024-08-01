@@ -17,8 +17,7 @@ public class Onion {
     private int generation;
 
     @Builder
-    public Onion(String name, boolean isPos) {
-        this.name = name;
+    public Onion(boolean isPos) {
         this.isPos = isPos;
         this.growthStage = 0;
         this.onionLevel = OnionLevel.ZERO;

@@ -1,13 +1,17 @@
 package site.lets_onion.lets_onionApp.dto.onion;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import site.lets_onion.lets_onionApp.domain.member.Member;
 
 @Data
 public class BabyOnionsDTO {
 
+    @JsonProperty("pos_onion")
     private PosOnionDTO posOnion;
+    @JsonProperty("neg_onion")
     private NegOnionDTO negOnion;
+    @JsonProperty("is_spoken")
     private boolean isSpoken;
 
     public BabyOnionsDTO(Member member, boolean isSpoken) {

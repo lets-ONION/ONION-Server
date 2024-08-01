@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import site.lets_onion.lets_onionApp.domain.member.Member;
 
 @Entity @Getter
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"is_pos"}))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class GrowingOnion {
 
@@ -43,16 +42,12 @@ public class GrowingOnion {
     @Builder
     public GrowingOnion(Member member) {
         this.member = member;
-    }
-
-    public void createOnions(String posName, String negName){
         this.posOnion = Onion.builder()
-                .name(posName)
                 .isPos(true)
                 .build();
         this.negOnion = Onion.builder()
-                .name(negName)
                 .isPos(false)
                 .build();
     }
+
 }

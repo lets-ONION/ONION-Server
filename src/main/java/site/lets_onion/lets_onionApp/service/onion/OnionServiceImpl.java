@@ -8,7 +8,7 @@ import site.lets_onion.lets_onionApp.domain.calendar.DayData;
 import site.lets_onion.lets_onionApp.domain.calendar.MonthData;
 import site.lets_onion.lets_onionApp.domain.calendar.OnionHistory;
 import site.lets_onion.lets_onionApp.domain.member.Member;
-import site.lets_onion.lets_onionApp.domain.onion.BabyOnion;
+import site.lets_onion.lets_onionApp.domain.onion.Onion;
 import site.lets_onion.lets_onionApp.domain.onion.GrowingOnion;
 import site.lets_onion.lets_onionApp.domain.onionBook.OnionType;
 import site.lets_onion.lets_onionApp.dto.calendar.PosNoteDTO;
@@ -40,21 +40,23 @@ public class OnionServiceImpl implements OnionService{
 
     @Override
     @Transactional(readOnly = true)
-    public ResponseDTO<BabyOnionsDTO> getMainPage(Long memberId) {
+    public ResponseDTO<OnionsDTO> getMainPage(Long memberId) {
         boolean isSpoken = isSpoken(memberId);
         Member member = findMember(memberId);
-        BabyOnionsDTO babyOnionsDTO = new BabyOnionsDTO(member, isSpoken);
-        return new ResponseDTO<>(babyOnionsDTO, Responses.OK);
+        OnionsDTO onionsDTO = new OnionsDTO(member, isSpoken);
+        return new ResponseDTO<>(onionsDTO, Responses.OK);
     }
 
     @Override
-    public ResponseDTO<BabyOnionsDTO> saveOnionName(Long memberId, NamingOnionsDTO namingOnionsDTO) {
+    public ResponseDTO<OnionsDTO> saveOnionName(Long memberId, NamingOnionsDTO namingOnionsDTO) {
         Member member = findMember(memberId);
+        String onionName = namingOnionsDTO.getOnionName();
         GrowingOnion growingOnion = member.getOnions();
-        growingOnion.createOnions(namingOnionsDTO.getPosOnionName(), namingOnionsDTO.getNegOnionName());
+        growingOnion.getPosOnion().updateOnionName(onionName);
+        growingOnion.getNegOnion().updateOnionName(onionName);
 
-        BabyOnionsDTO babyOnionsDTO = new BabyOnionsDTO(member, false);
-        return new ResponseDTO<>(babyOnionsDTO, Responses.OK);
+        OnionsDTO onionsDTO = new OnionsDTO(member, false);
+        return new ResponseDTO<>(onionsDTO, Responses.OK);
     }
 
     @Override
@@ -66,29 +68,30 @@ public class OnionServiceImpl implements OnionService{
     }
 
     @Override
-    public ResponseDTO<PosOnionDTO> waterPosOnion(Long memberId) {
+    public ResponseDTO<PosOnionWithEvolvableDTO> waterPosOnion(Long memberId) {
+        checkAndCreateDay(memberId);
         Member member = findMember(memberId);
-        BabyOnion posOnion = member.getOnions().getPosOnion();
+        Onion posOnion = member.getOnions().getPosOnion();
         posOnion.waterOnion();
 
-        PosOnionDTO posOnionDTO = new PosOnionDTO(posOnion);
+        PosOnionWithEvolvableDTO posOnionDTO = new PosOnionWithEvolvableDTO(posOnion);
         return new ResponseDTO<>(posOnionDTO, Responses.OK);
     }
 
     @Override
-    public ResponseDTO<NegOnionDTO> waterNegOnion(Long memberId) {
+    public ResponseDTO<NegOnionWithEvolvableDTO> waterNegOnion(Long memberId) {
         checkAndCreateDay(memberId);
         Member member = findMember(memberId);
-        BabyOnion negOnion = member.getOnions().getNegOnion();
+        Onion negOnion = member.getOnions().getNegOnion();
         negOnion.waterOnion();
-        NegOnionDTO negOnionDTO = new NegOnionDTO(negOnion);
+        NegOnionWithEvolvableDTO negOnionDTO = new NegOnionWithEvolvableDTO(negOnion);
         return new ResponseDTO<>(negOnionDTO, Responses.OK);
     }
 
     @Override
     public ResponseDTO<EvolvedOnionDTO> evolveOnion(Long memberId, boolean isPos) {
         GrowingOnion growingOnion = growingOnionRepository.findByMemberId(memberId);
-        BabyOnion onion = (isPos) ? growingOnion.getPosOnion() : growingOnion.getNegOnion();
+        Onion onion = (isPos) ? growingOnion.getPosOnion() : growingOnion.getNegOnion();
         String onionName = onion.getName() + " " + onion.getGeneration() + "세";
 
         OnionType onionType = OnionType.randomType();
@@ -124,15 +127,8 @@ public class OnionServiceImpl implements OnionService{
     /*오늘의 말하기 여부 체크*/
     private boolean isSpoken(Long memberId){
         Optional<MonthData> month = monthRepository.findByMemberIdAndYearMonth(memberId, YearMonth.now());
-        MonthData monthData;
-        if (month.isEmpty()) {
-            Member member = findMember(memberId);
-            MonthData monthData1 = MonthData.builder()
-                    .member(member).build();
-            monthRepository.save(monthData1);
-            monthData = monthData1;
-        } else {monthData = month.get();}
-        Optional<DayData> day = dayRepository.findByMonthIdAndLocalDate(monthData.getId(), LocalDate.now());
+        if (month.isEmpty()) {return false;}
+        Optional<DayData> day = dayRepository.findByMonthIdAndLocalDate(month.get().getId(), LocalDate.now());
         return day.isPresent();
     }
 
@@ -154,10 +150,16 @@ public class OnionServiceImpl implements OnionService{
     private void checkAndCreateDay(Long memberId){
         if (!isSpoken(memberId)){
             Optional<MonthData> month = monthRepository.findByMemberIdAndYearMonth(memberId, YearMonth.now());
+            MonthData monthData;
             if (month.isEmpty()) {
-                throw new CustomException(Exceptions.MONTH_NOT_EXIST);}
+                Member member = findMember(memberId);
+                MonthData monthData1 = MonthData.builder()
+                        .member(member).build();
+                monthRepository.save(monthData1);
+                monthData = monthData1;
+            } else {monthData = month.get();}
             DayData dayData = DayData.builder()
-                    .month(month.get())
+                    .month(monthData)
                     .build();
             dayRepository.save(dayData);
         }

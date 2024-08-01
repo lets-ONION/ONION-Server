@@ -19,12 +19,12 @@ public class MainOnionController {
     private final OnionService onionService;
     private final JwtProvider jwtProvider;
 
-    @GetMapping("/")
+    @GetMapping("")
     @Operation(summary = "메인페이지", description = """
       메인페이지를 조회하는 API입니다.
       """)
     @ApiResponse(responseCode = "200")
-    public ResponseDTO<BabyOnionsDTO> getMainPage(
+    public ResponseDTO<OnionsDTO> getMainPage(
             HttpServletRequest request
     ) {
         Long memberId = jwtProvider.getMemberId(request);
@@ -36,7 +36,7 @@ public class MainOnionController {
       양파 이름들을 지정하는 API입니다.
       """)
     @ApiResponse(responseCode = "200")
-    public ResponseDTO<BabyOnionsDTO> namingOnions(
+    public ResponseDTO<OnionsDTO> namingOnions(
             HttpServletRequest request,
             @RequestBody NamingOnionsDTO namingOnionsDTO
     ) {
@@ -62,7 +62,7 @@ public class MainOnionController {
       긍정양파를 한 단계 성장시키는 API입니다.
       """)
     @ApiResponse(responseCode = "200")
-    public ResponseDTO<PosOnionDTO> waterPosOnion(
+    public ResponseDTO<PosOnionWithEvolvableDTO> waterPosOnion(
             HttpServletRequest request
     ){
         Long memberId = jwtProvider.getMemberId(request);
@@ -74,14 +74,14 @@ public class MainOnionController {
       부정양파를 한 단계 성장시키는 API입니다.
       """)
     @ApiResponse(responseCode = "200")
-    public ResponseDTO<NegOnionDTO> waterNegOnion(
+    public ResponseDTO<NegOnionWithEvolvableDTO> waterNegOnion(
             HttpServletRequest request
     ){
         Long memberId = jwtProvider.getMemberId(request);
         return onionService.waterNegOnion(memberId);
     }
 
-    @PostMapping("/grow/{onionId}")
+    @PostMapping("/grow/{isPos}")
     @Operation(summary = "양파 진화 정보 리턴", description = """
       양파의 진화 정보를 저장하고 보여주는 API입니다.
       """)
@@ -91,7 +91,7 @@ public class MainOnionController {
             @PathVariable int isPos
     ){
         Long memberId = jwtProvider.getMemberId(request);
-        boolean isPosBool = (isPos == 1) ? true : false;
+        boolean isPosBool = isPos == 1;
         return onionService.evolveOnion(memberId, isPosBool);
     }
 

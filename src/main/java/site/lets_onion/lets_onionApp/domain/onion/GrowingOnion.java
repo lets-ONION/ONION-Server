@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import site.lets_onion.lets_onionApp.domain.member.Member;
-import site.lets_onion.lets_onionApp.domain.member.PushNotification;
 
 @Entity @Getter
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"is_pos"}))
@@ -29,7 +28,7 @@ public class GrowingOnion {
             @AttributeOverride(name = "onionLevel", column = @Column(name = "pos_onion_level")),
             @AttributeOverride(name = "generation", column = @Column(name = "pos_onion_generation"))
     })
-    private BabyOnion posOnion;
+    private Onion posOnion;
 
     @Embedded
     @AttributeOverrides({
@@ -39,7 +38,7 @@ public class GrowingOnion {
             @AttributeOverride(name = "onionLevel", column = @Column(name = "neg_onion_level")),
             @AttributeOverride(name = "generation", column = @Column(name = "neg_onion_generation"))
     })
-    private BabyOnion negOnion;
+    private Onion negOnion;
 
     @Builder
     public GrowingOnion(Member member) {
@@ -47,11 +46,11 @@ public class GrowingOnion {
     }
 
     public void createOnions(String posName, String negName){
-        this.posOnion = BabyOnion.builder()
+        this.posOnion = Onion.builder()
                 .name(posName)
                 .isPos(true)
                 .build();
-        this.negOnion = BabyOnion.builder()
+        this.negOnion = Onion.builder()
                 .name(negName)
                 .isPos(false)
                 .build();

@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 
 @Embeddable @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class BabyOnion {
+public class Onion {
 
     private String name;
     private boolean isPos;
@@ -17,7 +17,7 @@ public class BabyOnion {
     private int generation;
 
     @Builder
-    public BabyOnion(String name, boolean isPos) {
+    public Onion(String name, boolean isPos) {
         this.name = name;
         this.isPos = isPos;
         this.growthStage = 0;

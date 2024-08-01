@@ -7,7 +7,7 @@ import site.lets_onion.lets_onionApp.util.exception.Exceptions;
 
 @Embeddable
 @Getter
-public class Onion {
+public class CollectedOnion {
 
     @Enumerated(EnumType.STRING)
     private OnionType onionType;

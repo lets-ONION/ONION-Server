@@ -18,48 +18,89 @@ public class OnionBook {
     @Column(name = "onions_book_id")
     private Long id;
 
-    @OneToOne(mappedBy = "onionBook", fetch = LAZY)
+    @OneToOne(fetch = LAZY)
+    @JoinColumn(name = "member_id")
     private Member member;
 
     /**
      * 양파 도감들
      */
     @Embedded
-    private Onion onionGgang;
+    @AttributeOverrides({
+            @AttributeOverride(name = "collectedQuantity", column = @Column(name = "onion_ggang_quantity")),
+            @AttributeOverride(name = "onionType", column = @Column(name = "onion_ggang_type")),
+    })
+    private CollectedOnion onionGgang;
 
     @Embedded
-    private Onion onionRing;
+    @AttributeOverrides({
+            @AttributeOverride(name = "collectedQuantity", column = @Column(name = "onion_ring_quantity")),
+            @AttributeOverride(name = "onionType", column = @Column(name = "onion_ring_type")),
+    })
+    private CollectedOnion onionRing;
 
     @Embedded
-    private Onion onionRaw;
+    @AttributeOverrides({
+            @AttributeOverride(name = "collectedQuantity", column = @Column(name = "onion_raw_quantity")),
+            @AttributeOverride(name = "onionType", column = @Column(name = "onion_raw_type")),
+    })
+    private CollectedOnion onionRaw;
 
     @Embedded
-    private Onion onionPilled;
+    @AttributeOverrides({
+            @AttributeOverride(name = "collectedQuantity", column = @Column(name = "onion_pilled_quantity")),
+            @AttributeOverride(name = "onionType", column = @Column(name = "onion_pilled_type")),
+    })
+    private CollectedOnion onionPilled;
 
     @Embedded
-    private Onion onionFried;
+    @AttributeOverrides({
+            @AttributeOverride(name = "collectedQuantity", column = @Column(name = "onion_fried_quantity")),
+            @AttributeOverride(name = "onionType", column = @Column(name = "onion_fried_type")),
+    })
+    private CollectedOnion onionFried;
 
     @Embedded
-    private Onion onionPickle;
+    @AttributeOverrides({
+            @AttributeOverride(name = "collectedQuantity", column = @Column(name = "onion_pickle_quantity")),
+            @AttributeOverride(name = "onionType", column = @Column(name = "onion_pickle_type")),
+    })
+    private CollectedOnion onionPickle;
 
     @Embedded
-    private Onion onionSushi;
+    @AttributeOverrides({
+            @AttributeOverride(name = "collectedQuantity", column = @Column(name = "onion_sushi_quantity")),
+            @AttributeOverride(name = "onionType", column = @Column(name = "onion_sushi_type")),
+    })
+    private CollectedOnion onionSushi;
 
     @Embedded
-    private Onion onionKimchi;
+    @AttributeOverrides({
+            @AttributeOverride(name = "collectedQuantity", column = @Column(name = "onion_kimchi_quantity")),
+            @AttributeOverride(name = "onionType", column = @Column(name = "onion_kimchi_type")),
+    })
+    private CollectedOnion onionKimchi;
 
     @Embedded
-    private Onion onionSoup;
+    @AttributeOverrides({
+            @AttributeOverride(name = "collectedQuantity", column = @Column(name = "onion_soup_quantity")),
+            @AttributeOverride(name = "onionType", column = @Column(name = "onion_soup_type")),
+    })
+    private CollectedOnion onionSoup;
 
     @Embedded
-    private Onion onionGrilled;
+    @AttributeOverrides({
+            @AttributeOverride(name = "collectedQuantity", column = @Column(name = "onion_grilled_quantity")),
+            @AttributeOverride(name = "onionType", column = @Column(name = "onion_grilled_type")),
+    })
+    private CollectedOnion onionGrilled;
 
 
     //조회 메서드
     /**
      * onionType에 맞는 필드 조회
      */
-    public Onion getOnion(OnionType onionType) {
+    public CollectedOnion getOnion(OnionType onionType) {
         switch (onionType) {
             case ONION_GGANG:
                 return this.onionGgang;
@@ -81,6 +122,8 @@ public class OnionBook {
                 return this.onionSoup;
             case ONION_GRILLED:
                 return this.onionGrilled;
+            default:
+                throw new IllegalArgumentException("Unknown OnionType");
         }
     }
 

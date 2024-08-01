@@ -9,7 +9,7 @@ import site.lets_onion.lets_onionApp.dto.friendship.FriendDTO;
 import java.time.LocalDateTime;
 
 @Data
-public class SentTradeRequestDTO {
+public class SentTradeDTO {
 
     @JsonProperty("id")
     private Long id;
@@ -29,7 +29,7 @@ public class SentTradeRequestDTO {
     @JsonProperty("requested_at")
     private LocalDateTime requestedAt;
 
-    public SentTradeRequestDTO(TradeRequest tradeRequest) {
+    public SentTradeDTO(TradeRequest tradeRequest) {
         this.id = tradeRequest.getId();
         this.resMember = new FriendDTO(tradeRequest.getToMember());
         this.requestOnion = tradeRequest.getFromOnion().getOnionName();

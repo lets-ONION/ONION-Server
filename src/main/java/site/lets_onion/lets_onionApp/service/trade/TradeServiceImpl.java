@@ -4,15 +4,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.lets_onion.lets_onionApp.domain.member.Member;
-import site.lets_onion.lets_onionApp.domain.onionBook.Onion;
+import site.lets_onion.lets_onionApp.domain.onionBook.CollectedOnion;
 import site.lets_onion.lets_onionApp.domain.onionBook.OnionBook;
 import site.lets_onion.lets_onionApp.domain.onionBook.OnionType;
 import site.lets_onion.lets_onionApp.domain.trade.TradeRequest;
 import site.lets_onion.lets_onionApp.domain.trade.TradeStatus;
-import site.lets_onion.lets_onionApp.dto.trade.ReceivedTradeRequestDTO;
-import site.lets_onion.lets_onionApp.dto.trade.SentTradeRequestDTO;
+import site.lets_onion.lets_onionApp.dto.trade.ReceivedTradeDTO;
+import site.lets_onion.lets_onionApp.dto.trade.SentTradeDTO;
 import site.lets_onion.lets_onionApp.repository.member.BaseMemberRepository;
 import site.lets_onion.lets_onionApp.repository.onionBook.OnionBookRepository;
+import site.lets_onion.lets_onionApp.repository.onionBook.OnionTypeRepository;
 import site.lets_onion.lets_onionApp.repository.trade.TradeRepository;
 import site.lets_onion.lets_onionApp.util.exception.CustomException;
 import site.lets_onion.lets_onionApp.util.exception.Exceptions;
@@ -30,13 +31,14 @@ public class TradeServiceImpl implements TradeService{
     private final BaseMemberRepository memberRepository;
     private final TradeRepository tradeRepository;
     private final OnionBookRepository onionBookRepository;
+    private final OnionTypeRepository onionTypeRepository;
 
     /**
      * 검증
      */
     // 교환 가능한지 체크
-    public void validateOnionQuantity(Onion onion) {
-        if (onion.getCollectedQuantity() <= 1) {
+    public void validateOnionQuantity(CollectedOnion collectedOnion) {
+        if (collectedOnion.getCollectedQuantity() <= 1) {
             throw new CustomException(Exceptions.NOT_ENOUGH_QUANTITY);
         }
     }
@@ -53,10 +55,10 @@ public class TradeServiceImpl implements TradeService{
      * @return
      */
     @Override
-    public ResponseDTO<List<SentTradeRequestDTO>> getSentTradeRequestList(Long memberId) {
+    public ResponseDTO<List<SentTradeDTO>> getSentTradeRequestList(Long memberId) {
         List<TradeRequest> findRequests = tradeRepository.findAllByFromMemberId(memberId);
-        List<SentTradeRequestDTO> sentTradeRequests = findRequests.stream()
-                .map(tr -> new SentTradeRequestDTO(tr))
+        List<SentTradeDTO> sentTradeRequests = findRequests.stream()
+                .map(tr -> new SentTradeDTO(tr))
                 .collect(Collectors.toList());
         return new ResponseDTO<>(
                 sentTradeRequests,
@@ -70,10 +72,10 @@ public class TradeServiceImpl implements TradeService{
      * @return
      */
     @Override
-    public ResponseDTO<List<ReceivedTradeRequestDTO>> getReceivedTradeRequestList(Long memberId) {
+    public ResponseDTO<List<ReceivedTradeDTO>> getReceivedTradeRequestList(Long memberId) {
         List<TradeRequest> findRequests = tradeRepository.findAllByToMemberId(memberId);
-        List<ReceivedTradeRequestDTO> receivedTradeRequests = findRequests.stream()
-                .map(tr -> new ReceivedTradeRequestDTO(tr))
+        List<ReceivedTradeDTO> receivedTradeRequests = findRequests.stream()
+                .map(tr -> new ReceivedTradeDTO(tr))
                 .collect(Collectors.toList());
         return new ResponseDTO<>(
                 receivedTradeRequests,
@@ -85,17 +87,19 @@ public class TradeServiceImpl implements TradeService{
      * 교환 요청을 전송합니다
      * @param fromMemberId
      * @param toMemberId
-     * @param fromOnionType
-     * @param toOnionType
+     * @param fromOnionName
+     * @param toOnionName
      * @return
      */
     @Override
     @Transactional
-    public ResponseDTO<SentTradeRequestDTO> sendRequest(Long fromMemberId, Long toMemberId, OnionType fromOnionType, OnionType toOnionType) {
+    public ResponseDTO<SentTradeDTO> sendRequest(Long fromMemberId, Long toMemberId, String fromOnionName, String toOnionName) {
         Member fromMember = memberRepository.findByMemberId(fromMemberId);
         Member toMember = memberRepository.findByMemberId(toMemberId);
+        OnionType fromOnionType = OnionType.getByOnionName(fromOnionName);
+        OnionType toOnionType = OnionType.getByOnionName(toOnionName);
         OnionBook fromMemberOnionBook = onionBookRepository.findByMemberId(fromMemberId);
-        Onion fromOnionOfFromMember = fromMemberOnionBook.getOnion(fromOnionType);
+        CollectedOnion fromOnionOfFromMember = fromMemberOnionBook.getOnion(fromOnionType);
 
         //남은 양파 개수 검증
         validateOnionQuantity(fromOnionOfFromMember);
@@ -113,7 +117,7 @@ public class TradeServiceImpl implements TradeService{
         fromOnionOfFromMember.decreaseQuantity();
 
         return new ResponseDTO<>(
-                new SentTradeRequestDTO(tradeRequest),
+                new SentTradeDTO(tradeRequest),
                 Responses.CREATED);
     }
 
@@ -136,7 +140,7 @@ public class TradeServiceImpl implements TradeService{
         OnionType fromOnionType = tradeRequest.getFromOnion();
         Member fromOnionMember = tradeRequest.getFromMember();
         OnionBook fromMemberOnionBook = onionBookRepository.findByMemberId(fromOnionMember.getId());
-        Onion fromOnionOfFromMember = fromMemberOnionBook.getOnion(fromOnionType);
+        CollectedOnion fromOnionOfFromMember = fromMemberOnionBook.getOnion(fromOnionType);
         fromOnionOfFromMember.increaseQuantity();
 
         return new ResponseDTO<>(Boolean.TRUE, Responses.OK);
@@ -161,7 +165,7 @@ public class TradeServiceImpl implements TradeService{
         OnionType toOnionType = tradeRequest.getToOnion();
         Member toOnionMember = tradeRequest.getToMember();
         OnionBook toMemberOnionBook = onionBookRepository.findByMemberId(toOnionMember.getId());
-        Onion toOnionOfToMember = toMemberOnionBook.getOnion(toOnionType);
+        CollectedOnion toOnionOfToMember = toMemberOnionBook.getOnion(toOnionType);
 
         //교환을 수락하는 유저의 남은 양파 개수 검증
         validateOnionQuantity(toOnionOfToMember);
@@ -170,8 +174,8 @@ public class TradeServiceImpl implements TradeService{
         Member fromOnionMember = tradeRequest.getFromMember();
         OnionType fromOnionType = tradeRequest.getFromOnion();
         OnionBook fromMemberOnionBook = onionBookRepository.findByMemberId(fromOnionMember.getId());
-        Onion fromOnionOfToMember = toMemberOnionBook.getOnion(fromOnionType);
-        Onion toOnionOfFromMember = fromMemberOnionBook.getOnion(toOnionType);
+        CollectedOnion fromOnionOfToMember = toMemberOnionBook.getOnion(fromOnionType);
+        CollectedOnion toOnionOfFromMember = fromMemberOnionBook.getOnion(toOnionType);
 
         toOnionOfToMember.decreaseQuantity();
         fromOnionOfToMember.increaseQuantity();
@@ -199,7 +203,7 @@ public class TradeServiceImpl implements TradeService{
         OnionType fromOnionType = tradeRequest.getFromOnion();
         Member fromOnionMember = tradeRequest.getFromMember();
         OnionBook fromMemberOnionBook = onionBookRepository.findByMemberId(fromOnionMember.getId());
-        Onion fromOnionOfFromMember = fromMemberOnionBook.getOnion(fromOnionType);
+        CollectedOnion fromOnionOfFromMember = fromMemberOnionBook.getOnion(fromOnionType);
         fromOnionOfFromMember.increaseQuantity();
 
         return new ResponseDTO<>(Boolean.TRUE, Responses.OK);

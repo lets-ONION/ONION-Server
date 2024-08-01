@@ -1,8 +1,8 @@
 package site.lets_onion.lets_onionApp.service.trade;
 
 import site.lets_onion.lets_onionApp.domain.onionBook.OnionType;
-import site.lets_onion.lets_onionApp.dto.trade.ReceivedTradeRequestDTO;
-import site.lets_onion.lets_onionApp.dto.trade.SentTradeRequestDTO;
+import site.lets_onion.lets_onionApp.dto.trade.ReceivedTradeDTO;
+import site.lets_onion.lets_onionApp.dto.trade.SentTradeDTO;
 import site.lets_onion.lets_onionApp.util.response.ResponseDTO;
 
 import java.util.List;
@@ -10,13 +10,13 @@ import java.util.List;
 public interface TradeService {
 
     //보낸 교환 요청 리스트 조회
-    ResponseDTO<List<SentTradeRequestDTO>> getSentTradeRequestList(Long memberId);
+    ResponseDTO<List<SentTradeDTO>> getSentTradeRequestList(Long memberId);
 
     //받은 교환 요청 리스트 조회
-    ResponseDTO<List<ReceivedTradeRequestDTO>> getReceivedTradeRequestList(Long memberId);
+    ResponseDTO<List<ReceivedTradeDTO>> getReceivedTradeRequestList(Long memberId);
 
     //교환 요청 생성
-    ResponseDTO<SentTradeRequestDTO> sendRequest(Long fromMemberId, Long toMemberId, OnionType fromOnionType, OnionType toOnionType);
+    ResponseDTO<SentTradeDTO> sendRequest(Long fromMemberId, Long toMemberId, String fromOnionName, String toOnionName);
 
     //교환 요청 취소
     ResponseDTO<Boolean> cancelRequest(Long tradeId);

@@ -48,6 +48,8 @@ dependencies {
 	runtimeOnly "io.jsonwebtoken:jjwt-impl:${JJWT_VERSION}"
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	implementation 'io.netty:netty-all:4.1.73.Final'
+
 }
 
 tasks.named('test') {

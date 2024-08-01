@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import site.lets_onion.lets_onionApp.domain.trade.TradeRequest;
 import site.lets_onion.lets_onionApp.dto.trade.ReceivedTradeDTO;
 import site.lets_onion.lets_onionApp.dto.trade.SentTradeDTO;
 import site.lets_onion.lets_onionApp.dto.trade.TradeRequestDTO;
@@ -48,5 +49,39 @@ public class TradeController {
     ) {
         Long toMemberId = jwtProvider.getMemberId(request);
         return tradeService.sendRequest(fromMemberId, toMemberId, dto.getRequestOnion(), dto.getResponseOnion());
+    }
+
+    //교환 요청 수락.. 거절...
+    @PatchMapping("/cancel/{tradeId}")
+    @Operation(summary = "교환 요청 취소", description = "**tradeId**에 해당하는 요청을 보낸 유저가 요청을 취소합니다.")
+    @ApiResponse(responseCode = "200")
+    public ResponseDTO<Boolean> cancelTradeRequest(
+            HttpServletRequest request,
+            @PathVariable("tradeId") Long tradeId
+    ) {
+        return tradeService.cancelRequest(tradeId);
+    }
+
+    @PatchMapping("/accept/{tradeId}")
+    @Operation(summary = "교환 요청 수락", description = """
+        **tradeId**에 해당하는 요청을 받은 유저가 요청을 수락합니다.<br>
+        만약 요청을 수락한 유저의 양파 수가 충분하지 않으면 에러가 발생합니다.
+        """)
+    @ApiResponse(responseCode = "200")
+    public ResponseDTO<Boolean> acceptTradeRequest(
+            HttpServletRequest request,
+            @PathVariable("tradeId") Long tradeId
+    ) {
+        return tradeService.acceptRequest(tradeId);
+    }
+
+    @PatchMapping("/reject/{tradeId}")
+    @Operation(summary = "교환 요청 거절", description = "**tradeId**에 해당하는 요청을 받은 유저가 요청을 거절합니다.")
+    @ApiResponse(responseCode = "200")
+    public ResponseDTO<Boolean> rejectTradeRequest(
+            HttpServletRequest request,
+            @PathVariable("tradeId") Long tradeId
+    ) {
+        return tradeService.rejectRequest(tradeId);
     }
 }

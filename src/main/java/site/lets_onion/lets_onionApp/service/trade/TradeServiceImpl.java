@@ -190,7 +190,7 @@ public class TradeServiceImpl implements TradeService{
      */
     @Override
     @Transactional
-    public ResponseDTO<Boolean> refuseRequest(Long tradeId) {
+    public ResponseDTO<Boolean> rejectRequest(Long tradeId) {
         TradeRequest tradeRequest = tradeRepository.findById(tradeId);
 
         //중복 요청 검증

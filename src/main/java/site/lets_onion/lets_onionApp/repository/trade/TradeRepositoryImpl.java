@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import site.lets_onion.lets_onionApp.domain.trade.TradeRequest;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class TradeRepositoryImpl implements TradeRepository{

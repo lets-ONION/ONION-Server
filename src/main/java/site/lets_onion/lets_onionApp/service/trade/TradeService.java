@@ -25,5 +25,5 @@ public interface TradeService {
     ResponseDTO<Boolean> acceptRequest(Long tradeId);
 
     //교환 요청 거절
-    ResponseDTO<Boolean> refuseRequest(Long tradeId);
+    ResponseDTO<Boolean> rejectRequest(Long tradeId);
 }

@@ -3,6 +3,7 @@ package site.lets_onion.lets_onionApp.domain.onionBook;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import site.lets_onion.lets_onionApp.domain.member.Member;
@@ -94,6 +95,38 @@ public class OnionBook {
             @AttributeOverride(name = "onionType", column = @Column(name = "onion_grilled_type")),
     })
     private CollectedOnion onionGrilled;
+
+
+    @Builder
+    public OnionBook(Member member) {
+        this.member = member;
+        this.onionGgang = CollectedOnion.builder().onionType(OnionType.ONION_GGANG).build();
+        this.onionRing = CollectedOnion.builder().onionType(OnionType.ONION_RING).build();
+        this.onionRaw = CollectedOnion.builder().onionType(OnionType.ONION_RAW).build();
+        this.onionPilled = CollectedOnion.builder().onionType(OnionType.ONION_PILLED).build();
+        this.onionFried = CollectedOnion.builder().onionType(OnionType.ONION_FRIED).build();
+        this.onionPickle = CollectedOnion.builder().onionType(OnionType.ONION_PICKLE).build();
+        this.onionSushi = CollectedOnion.builder().onionType(OnionType.ONION_SUSHI).build();
+        this.onionKimchi = CollectedOnion.builder().onionType(OnionType.ONION_KIMCHI).build();
+        this.onionSoup = CollectedOnion.builder().onionType(OnionType.ONION_SOUP).build();
+        this.onionGrilled = CollectedOnion.builder().onionType(OnionType.ONION_GRILLED).build();
+    }
+
+    //테스트용
+    @Builder(builderClassName = "TestOnionBookBuilder", builderMethodName = "testBuilder")
+    public OnionBook(Member member, int ggang, int ring, int raw, int pilled, int fried, int pickle, int sushi, int kimchi, int soup, int grilled) {
+        this.member = member;
+        this.onionGgang = CollectedOnion.testBuilder().onionType(OnionType.ONION_GGANG).collectedQuantity(ggang).build();
+        this.onionRing = CollectedOnion.testBuilder().onionType(OnionType.ONION_RING).collectedQuantity(ring).build();
+        this.onionRaw = CollectedOnion.testBuilder().onionType(OnionType.ONION_RAW).collectedQuantity(raw).build();
+        this.onionPilled = CollectedOnion.testBuilder().onionType(OnionType.ONION_PILLED).collectedQuantity(pilled).build();
+        this.onionFried = CollectedOnion.testBuilder().onionType(OnionType.ONION_FRIED).collectedQuantity(fried).build();
+        this.onionPickle = CollectedOnion.testBuilder().onionType(OnionType.ONION_PICKLE).collectedQuantity(pickle).build();
+        this.onionSushi = CollectedOnion.testBuilder().onionType(OnionType.ONION_SUSHI).collectedQuantity(sushi).build();
+        this.onionKimchi = CollectedOnion.testBuilder().onionType(OnionType.ONION_KIMCHI).collectedQuantity(kimchi).build();
+        this.onionSoup = CollectedOnion.testBuilder().onionType(OnionType.ONION_SOUP).collectedQuantity(soup).build();
+        this.onionGrilled = CollectedOnion.testBuilder().onionType(OnionType.ONION_GRILLED).collectedQuantity(grilled).build();
+    }
 
 
     //조회 메서드

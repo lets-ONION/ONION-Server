@@ -3,6 +3,7 @@ package site.lets_onion.lets_onionApp.repository.trade;
 import site.lets_onion.lets_onionApp.domain.trade.TradeRequest;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TradeRepository {
 

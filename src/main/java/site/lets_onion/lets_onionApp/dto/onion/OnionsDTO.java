@@ -5,7 +5,7 @@ import lombok.Data;
 import site.lets_onion.lets_onionApp.domain.member.Member;
 
 @Data
-public class BabyOnionsDTO {
+public class OnionsDTO {
 
     @JsonProperty("pos_onion")
     private PosOnionDTO posOnion;
@@ -14,7 +14,7 @@ public class BabyOnionsDTO {
     @JsonProperty("is_spoken")
     private boolean isSpoken;
 
-    public BabyOnionsDTO(Member member, boolean isSpoken) {
+    public OnionsDTO(Member member, boolean isSpoken) {
         this.posOnion = new PosOnionDTO(member.getOnions().getPosOnion());
         this.negOnion = new NegOnionDTO(member.getOnions().getNegOnion());
         this.isSpoken = isSpoken;

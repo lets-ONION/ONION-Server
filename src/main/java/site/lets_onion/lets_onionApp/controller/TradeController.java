@@ -24,7 +24,7 @@ public class TradeController {
     private final TradeService tradeService;
 
     @GetMapping("/get/sent")
-    @Operation(summary = "보낸 교환 요청 조회", description = "내가 보낸 교환 요청 리스트를 조회합니다.")
+    @Operation(summary = "보낸 교환 요청 조회", description = "내가 보낸 교환 요청 리스트를 조회합니다. 대기(PENDING) 상태의 요청만 조회합니다.")
     @ApiResponse(responseCode = "200")
     public ResponseDTO<List<SentTradeDTO>> getSentTradeRequests(HttpServletRequest request) {
         Long memberId = jwtProvider.getMemberId(request);
@@ -32,7 +32,7 @@ public class TradeController {
     }
 
     @GetMapping("/get/received")
-    @Operation(summary = "받은 교환 요청 조회", description = "내가 받은 교한 요청 리스트를 조회합니다.")
+    @Operation(summary = "받은 교환 요청 조회", description = "내가 받은 교환 요청 리스트를 조회합니다. 대기(PENDING) 상태의 요청만 조회합니다.")
     @ApiResponse(responseCode = "200")
     public ResponseDTO<List<ReceivedTradeDTO>> getReceivedTradeRequests(HttpServletRequest request) {
         Long memberId = jwtProvider.getMemberId(request);

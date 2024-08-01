@@ -10,11 +10,11 @@ public interface TradeRepository {
     //id에 맞는 요청 단일 조회
     TradeRequest findById(Long tradeId);
 
-    //유저가 보낸 요청 전체 조회
-    List<TradeRequest> findAllByFromMemberId(Long memberId);
+    //유저가 보낸 요청 중 PENDING 상태인 것 전체 조회
+    List<TradeRequest> findAllByFromMemberIdIfPending(Long memberId);
 
     //유저가 받은 요청 전체 조회
-    List<TradeRequest> findAllByToMemberId(Long memberId);
+    List<TradeRequest> findAllByToMemberIdIfPending(Long memberId);
 
     //교환 요청 생성
     void save(TradeRequest tradeRequest);

@@ -26,8 +26,9 @@ public class OnionBookController {
 
     @GetMapping("")
     @Operation(summary = "양파 도감 조회", description = """
-            유저의 양파 도감을 조회하는 API입니다. 쿼리파라미터가 없으면 자신의 도감을 조회합니다. <br>
-            1개 이상 모은 양파의 리스트와 상태메세지를 조회합니다.
+            친구 유저의 양파 도감을 조회하는 API입니다. 쿼리파라미터가 없으면 자신의 도감을 조회합니다. <br>
+            1개 이상 모은 양파의 리스트와 상태메세지를 조회합니다.<br>
+            **can_trade = true**인 경우 해당 양파는 개수가 2개 이상으로 교환이 가능합니다.
             """)
     @ApiResponse(responseCode = "200")
     public ResponseDTO<OnionBookDTO> getOnionBook(

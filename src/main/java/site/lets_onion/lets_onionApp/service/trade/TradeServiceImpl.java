@@ -13,7 +13,6 @@ import site.lets_onion.lets_onionApp.dto.trade.ReceivedTradeDTO;
 import site.lets_onion.lets_onionApp.dto.trade.SentTradeDTO;
 import site.lets_onion.lets_onionApp.repository.member.BaseMemberRepository;
 import site.lets_onion.lets_onionApp.repository.onionBook.OnionBookRepository;
-import site.lets_onion.lets_onionApp.repository.onionBook.OnionTypeRepository;
 import site.lets_onion.lets_onionApp.repository.trade.TradeRepository;
 import site.lets_onion.lets_onionApp.util.exception.CustomException;
 import site.lets_onion.lets_onionApp.util.exception.Exceptions;
@@ -31,7 +30,6 @@ public class TradeServiceImpl implements TradeService{
     private final BaseMemberRepository memberRepository;
     private final TradeRepository tradeRepository;
     private final OnionBookRepository onionBookRepository;
-    private final OnionTypeRepository onionTypeRepository;
 
     /**
      * 검증
@@ -56,7 +54,7 @@ public class TradeServiceImpl implements TradeService{
      */
     @Override
     public ResponseDTO<List<SentTradeDTO>> getSentTradeRequestList(Long memberId) {
-        List<TradeRequest> findRequests = tradeRepository.findAllByFromMemberId(memberId);
+        List<TradeRequest> findRequests = tradeRepository.findAllByFromMemberIdIfPending(memberId);
         List<SentTradeDTO> sentTradeRequests = findRequests.stream()
                 .map(tr -> new SentTradeDTO(tr))
                 .collect(Collectors.toList());
@@ -73,7 +71,7 @@ public class TradeServiceImpl implements TradeService{
      */
     @Override
     public ResponseDTO<List<ReceivedTradeDTO>> getReceivedTradeRequestList(Long memberId) {
-        List<TradeRequest> findRequests = tradeRepository.findAllByToMemberId(memberId);
+        List<TradeRequest> findRequests = tradeRepository.findAllByToMemberIdIfPending(memberId);
         List<ReceivedTradeDTO> receivedTradeRequests = findRequests.stream()
                 .map(tr -> new ReceivedTradeDTO(tr))
                 .collect(Collectors.toList());

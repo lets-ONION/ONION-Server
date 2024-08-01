@@ -7,5 +7,3 @@ spring:
 springdoc:
   swagger-ui:
     path: /api-docs
-chatgpt:
-  api-key: sk-proj-wxwk2sPkB6dy4IyT4yKMT3BlbkFJEajMg3lvkV9ChRrQytGI

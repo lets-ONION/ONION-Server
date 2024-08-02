@@ -2,6 +2,8 @@ package site.lets_onion.lets_onionApp.domain.onionBook;
 
 import lombok.Getter;
 
+import java.util.Random;
+
 @Getter
 public enum OnionType {
 
@@ -23,5 +25,12 @@ public enum OnionType {
     OnionType(String onionName, String imageUrl) {
         this.onionName = onionName;
         this.imageUrl = imageUrl;
+    }
+
+    private static final Random idx = new Random();
+
+    public static OnionType randomType(){
+        OnionType[] onionTypes = values();
+        return onionTypes[idx.nextInt(onionTypes.length)];
     }
 }

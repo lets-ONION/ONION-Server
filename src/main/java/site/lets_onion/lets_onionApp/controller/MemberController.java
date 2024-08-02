@@ -23,10 +23,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import site.lets_onion.lets_onionApp.dto.integration.KakaoFriendRequestDTO;
 import site.lets_onion.lets_onionApp.dto.integration.KakaoScopesDTO;
-import site.lets_onion.lets_onionApp.dto.integration.KakaoTokenResponseDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.LogoutDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.RefreshTokenDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.TokenDTO;
+import site.lets_onion.lets_onionApp.dto.member.AppLoginDTO;
 import site.lets_onion.lets_onionApp.dto.member.LoginDTO;
 import site.lets_onion.lets_onionApp.dto.member.MemberInfoDTO;
 import site.lets_onion.lets_onionApp.dto.member.NicknameDTO;
@@ -107,7 +107,7 @@ public class MemberController {
     @Operation(summary = "앱 로그인", description = "앱에서 로그인하는 API입니다.")
     @ApiResponse(responseCode = "200", description = "로그인 성공")
     public ResponseDTO<LoginDTO> loginInApp(
-            @RequestBody KakaoTokenResponseDTO request)
+            @RequestBody AppLoginDTO request)
     {
         return memberService.loginInApp(request);
     }

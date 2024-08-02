@@ -23,12 +23,14 @@ import java.util.Map;
 public class CheckOnionServiceImpl implements CheckOnionService {
 
     @Value("${chatgpt.apiKey}")
-    private static String API_KEY; //숨겨야함
+    private String API_KEY;
     private static final String ENDPOINT = "https://api.openai.com/v1/chat/completions";
 
 
     @Transactional
     public ResponseDTO<PosCheckResult> checkPosNote(String posNote) {
+        System.out.println("CheckOnionServiceImpl.checkPosNote.apikeyyyyyyyy");
+        System.out.println("apikey = " + API_KEY);
         String gptResponse = getGptResponse(posNote);
         switch (gptResponse) {
             case "0":

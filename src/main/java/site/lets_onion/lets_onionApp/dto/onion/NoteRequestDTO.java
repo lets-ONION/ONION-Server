@@ -15,6 +15,4 @@ public class NoteRequestDTO {
         this.note = note;
     }
 
-    public NoteRequestDTO(){}
-
 }

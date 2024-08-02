@@ -23,7 +23,10 @@ public class NoteCheckController {
     private final CheckOnionService checkOnionService;
 
     @PostMapping("/test")
-    @Operation(summary = "chatgpt api 테스트용 api", description = "chatgpt 응답 결과를 반환하는 테스트 api입니다.")
+    @Operation(summary = "chatgpt api 테스트용 api", description = """
+            chatgpt 응답 결과를 반환하는 테스트 api입니다.<br>
+            0 = 긍정, 1 = 부정, 2 = 판단불가
+            """)
     @ApiResponse(responseCode = "200")
     public ResponseDTO<String> test(
             HttpServletRequest request,

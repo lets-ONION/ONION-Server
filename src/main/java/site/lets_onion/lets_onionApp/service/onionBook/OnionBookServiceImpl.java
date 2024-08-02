@@ -45,10 +45,8 @@ public class OnionBookServiceImpl implements OnionBookService{
         }
 
         //상태메세지
-        String message;
-        try {
-            message = serviceRedisConnector.get(memberId.toString());
-        } catch (Exception e) {
+        String message = serviceRedisConnector.get(memberId.toString());
+        if (message == null) {
             message = "";
         }
 

@@ -12,17 +12,28 @@ import java.io.IOException;
 @Configuration
 public class FirebaseConfig {
 
-    @Bean
-    public FirebaseApp initFirebase() throws IOException{
-        String firebaseConfigPath = "firebase/firebase-key.json";
-
-        FirebaseOptions options = new FirebaseOptions.Builder()
-                .setCredentials(GoogleCredentials.fromStream(
-                        new ClassPathResource(
-                                firebaseConfigPath).getInputStream()
-                        )
-                ).build();
-
-        return FirebaseApp.initializeApp(options);
+  @Bean
+  public FirebaseApp initFirebase() throws IOException {
+    if (!FirebaseApp.getApps().isEmpty()) {
+      return FirebaseApp.getInstance();
     }
+    String firebaseConfigPath = "firebase/firebase-key.json";
+
+//        FirebaseOptions options = new FirebaseOptions.Builder()
+//                .setCredentials(GoogleCredentials.fromStream(
+//                        new ClassPathResource(
+//                                firebaseConfigPath).getInputStream()
+//                        )
+//                ).build();
+
+    FirebaseOptions options = FirebaseOptions.builder()
+        .setCredentials(GoogleCredentials.fromStream
+            (
+                new ClassPathResource(firebaseConfigPath)
+                    .getInputStream()
+            )
+        ).build();
+
+    return FirebaseApp.initializeApp(options);
+  }
 }

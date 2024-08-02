@@ -4,7 +4,10 @@ import site.lets_onion.lets_onionApp.dto.integration.KakaoFriendRequestDTO;
 import site.lets_onion.lets_onionApp.dto.integration.KakaoScopesDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.LogoutDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.TokenDTO;
-import site.lets_onion.lets_onionApp.dto.member.*;
+import site.lets_onion.lets_onionApp.dto.member.AppLoginDTO;
+import site.lets_onion.lets_onionApp.dto.member.LoginDTO;
+import site.lets_onion.lets_onionApp.dto.member.MemberInfoDTO;
+import site.lets_onion.lets_onionApp.dto.member.StatusMessageDTO;
 import site.lets_onion.lets_onionApp.dto.push.PushNotificationDTO;
 import site.lets_onion.lets_onionApp.util.push.PushType;
 import site.lets_onion.lets_onionApp.util.response.ResponseDTO;
@@ -16,6 +19,9 @@ public interface MemberService {
 
     /*유저 로그인*/
     ResponseDTO<LoginDTO> login(String code, Redirection redirection);
+
+    /*앱에서 로그인*/
+    ResponseDTO<LoginDTO> loginInApp(AppLoginDTO request);
 
     /*로그아웃*/
     ResponseDTO<Boolean> logout(Long memberId, LogoutDTO logoutDTO);

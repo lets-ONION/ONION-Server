@@ -1,13 +1,17 @@
 package site.lets_onion.lets_onionApp;
 
 import java.security.SecureRandom;
+
+import org.assertj.core.internal.ChronoZonedDateTimeByInstantComparator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import site.lets_onion.lets_onionApp.domain.friendship.Friendship;
 import site.lets_onion.lets_onionApp.domain.member.Member;
+import site.lets_onion.lets_onionApp.domain.onionBook.OnionBook;
 import site.lets_onion.lets_onionApp.repository.friendship.FriendshipRepository;
 import site.lets_onion.lets_onionApp.repository.member.MemberRepository;
+import site.lets_onion.lets_onionApp.repository.onionBook.OnionBookRepository;
 
 /**
  * 테스트에 사용할 객체 생성기입니다..
@@ -22,6 +26,8 @@ public class TestGenerator {
   private MemberRepository memberRepository;
   @Autowired
   private FriendshipRepository friendshipRepository;
+  @Autowired
+  private OnionBookRepository onionBookRepository;
 
   /**
    * 랜덤 문자열 생성기
@@ -102,6 +108,23 @@ public class TestGenerator {
         .fromMember(fromMember)
         .toMember(toMember)
         .build());
+  }
+
+  @Transactional
+  public OnionBook createOnionBook(Member member) {
+    return onionBookRepository.save(OnionBook.testBuilder()
+            .ggang(generateRandomInt(5, 2))
+            .ring(generateRandomInt(5, 2))
+            .raw(generateRandomInt(5, 2))
+            .pilled(generateRandomInt(5, 2))
+            .fried(generateRandomInt(5, 2))
+            .pickle(generateRandomInt(5, 2))
+            .sushi(generateRandomInt(5, 2))
+            .kimchi(generateRandomInt(5, 2))
+            .soup(generateRandomInt(5, 2))
+            .grilled(generateRandomInt(5, 2))
+            .member(member)
+            .build());
   }
 
 }

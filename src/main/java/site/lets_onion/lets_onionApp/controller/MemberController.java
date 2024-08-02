@@ -9,25 +9,34 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.http.HttpServletRequest;
+import java.net.URI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import site.lets_onion.lets_onionApp.dto.integration.KakaoFriendRequestDTO;
 import site.lets_onion.lets_onionApp.dto.integration.KakaoScopesDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.LogoutDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.RefreshTokenDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.TokenDTO;
-import site.lets_onion.lets_onionApp.dto.member.*;
+import site.lets_onion.lets_onionApp.dto.member.AppLoginDTO;
+import site.lets_onion.lets_onionApp.dto.member.LoginDTO;
+import site.lets_onion.lets_onionApp.dto.member.MemberInfoDTO;
+import site.lets_onion.lets_onionApp.dto.member.NicknameDTO;
+import site.lets_onion.lets_onionApp.dto.member.StatusMessageDTO;
 import site.lets_onion.lets_onionApp.dto.push.DeviceTokenRequestDTO;
 import site.lets_onion.lets_onionApp.service.member.MemberService;
 import site.lets_onion.lets_onionApp.service.member.Redirection;
 import site.lets_onion.lets_onionApp.util.exception.ExceptionDTO;
 import site.lets_onion.lets_onionApp.util.jwt.JwtProvider;
 import site.lets_onion.lets_onionApp.util.response.ResponseDTO;
-
-import java.net.URI;
 
 @RestController
 @RequiredArgsConstructor
@@ -91,6 +100,16 @@ public class MemberController {
             redirection = Redirection.SERVER;
         }
         return memberService.login(code, redirection);
+    }
+
+
+    @PostMapping("/oauth/kakao/login/v2")
+    @Operation(summary = "앱 로그인", description = "앱에서 로그인하는 API입니다.")
+    @ApiResponse(responseCode = "200", description = "로그인 성공")
+    public ResponseDTO<LoginDTO> loginInApp(
+            @RequestBody AppLoginDTO request)
+    {
+        return memberService.loginInApp(request);
     }
 
 

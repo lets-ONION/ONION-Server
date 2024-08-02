@@ -2,6 +2,8 @@ package site.lets_onion.lets_onionApp.domain.onionBook;
 
 import lombok.Getter;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 @Getter
@@ -25,6 +27,19 @@ public enum OnionType {
     OnionType(String onionName, String imageUrl) {
         this.onionName = onionName;
         this.imageUrl = imageUrl;
+    }
+
+    /**
+     * onionName으로 OnionType 조회
+     */
+    private static final Map<String, OnionType> ONION_NAME_MAP = new HashMap<>();
+    static {
+        for (OnionType onionType : values()) {
+            ONION_NAME_MAP.put(onionType.onionName, onionType);
+        }
+    }
+    public static OnionType getByOnionName(String onionName) {
+        return ONION_NAME_MAP.get(onionName);
     }
 
     private static final Random idx = new Random();

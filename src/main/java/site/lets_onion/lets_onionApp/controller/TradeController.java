@@ -44,10 +44,10 @@ public class TradeController {
     @ApiResponse(responseCode = "201")
     public ResponseDTO<SentTradeDTO> postTradeRequest(
             HttpServletRequest request,
-            @PathVariable("receiverId") Long fromMemberId,
+            @PathVariable("receiverId") Long toMemberId,
             @RequestBody TradeRequestDTO dto
     ) {
-        Long toMemberId = jwtProvider.getMemberId(request);
+        Long fromMemberId = jwtProvider.getMemberId(request);
         return tradeService.sendRequest(fromMemberId, toMemberId, dto.getRequestOnion(), dto.getResponseOnion());
     }
 

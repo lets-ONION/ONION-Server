@@ -25,7 +25,7 @@ public enum Exceptions {
     TOKEN_NOT_FOUND(401, "Token Not Found"),
     EXPIRED_TOKEN(401, "Expired Token"),
     PREMATURE_TOKEN(401, "Premature Token"),
-    NOT_ENOUGH_QUANTITY(401, "Cannot decrease quantity"),
+    NOT_ENOUGH_QUANTITY(401, "Cannot Decrease Onion Quantity"),
 
     /*403 FORBIDDEN*/
     FORBIDDEN(403, "Forbidden"),

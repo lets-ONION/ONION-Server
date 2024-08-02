@@ -2,6 +2,7 @@ package site.lets_onion.lets_onionApp.service.member;
 
 import site.lets_onion.lets_onionApp.dto.integration.KakaoFriendRequestDTO;
 import site.lets_onion.lets_onionApp.dto.integration.KakaoScopesDTO;
+import site.lets_onion.lets_onionApp.dto.integration.KakaoTokenResponseDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.LogoutDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.TokenDTO;
 import site.lets_onion.lets_onionApp.dto.member.*;
@@ -16,6 +17,9 @@ public interface MemberService {
 
     /*유저 로그인*/
     ResponseDTO<LoginDTO> login(String code, Redirection redirection);
+
+    /*앱에서 로그인*/
+    ResponseDTO<LoginDTO> loginInApp(KakaoTokenResponseDTO request);
 
     /*로그아웃*/
     ResponseDTO<Boolean> logout(Long memberId, LogoutDTO logoutDTO);

@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import site.lets_onion.lets_onionApp.domain.member.Member;
+import site.lets_onion.lets_onionApp.util.exception.CustomException;
+import site.lets_onion.lets_onionApp.util.exception.Exceptions;
 
 import static jakarta.persistence.FetchType.LAZY;
 
@@ -156,7 +158,7 @@ public class OnionBook {
             case ONION_GRILLED:
                 return this.onionGrilled;
             default:
-                throw new IllegalArgumentException("Unknown OnionType");
+                throw new CustomException(Exceptions.ONION_TYPE_NOT_EXIST);
         }
     }
 

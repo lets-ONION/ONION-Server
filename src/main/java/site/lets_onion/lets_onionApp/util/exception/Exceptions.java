@@ -13,6 +13,7 @@ public enum Exceptions {
     NOT_VALID_ONION_LEVEL(400, "Onion Level is not in range(0, 7)."),
     ONION_LEVEL_UNDER_7(400, "Onion Level is not enough to evolve."),
 
+
     /*401 UNAUTHORIZED*/
     KAKAO_AUTH_FAILED_WITH_TOKEN(401, "Kakao Auth Failed With Token"),
     KAKAO_AUTH_FAILED_WITH_ID(401, "Kakao Auth Failed With Id"),
@@ -40,6 +41,7 @@ public enum Exceptions {
             Kakao Token Not Found.
             Maybe Expired.
             """),
+    ONION_TYPE_NOT_EXIST(404, "OnionType Not Exist"),
 
     /*405 METHOD_NOT_ALLOWED*/
     METHOD_NOT_ALLOWED(405, "Method Not Allowed"),

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import site.lets_onion.lets_onionApp.domain.onion.NegCheckResult;
 import site.lets_onion.lets_onionApp.domain.onion.PosCheckResult;
 import site.lets_onion.lets_onionApp.dto.onion.NoteRequestDTO;
+import site.lets_onion.lets_onionApp.service.onion.CheckOnionService;
 import site.lets_onion.lets_onionApp.service.onion.CheckOnionServiceImpl;
 import site.lets_onion.lets_onionApp.util.response.ResponseDTO;
 
@@ -19,7 +20,17 @@ import site.lets_onion.lets_onionApp.util.response.ResponseDTO;
 @RequestMapping("/main/check")
 public class NoteCheckController {
 
-    private final CheckOnionServiceImpl checkOnionService;
+    private final CheckOnionService checkOnionService;
+
+    @PostMapping("/test")
+    @Operation(summary = "chatgpt api 테스트용 api", description = "chatgpt 응답 결과를 반환하는 테스트 api입니다.")
+    @ApiResponse(responseCode = "200")
+    public ResponseDTO<String> test(
+            HttpServletRequest request,
+            @RequestBody NoteRequestDTO dto
+    ) {
+        return checkOnionService.test(dto.getNote());
+    }
 
     @PostMapping("/pos")
     @Operation(summary = "긍정 양파 일기 검증", description = """

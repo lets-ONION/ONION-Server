@@ -11,4 +11,7 @@ public interface CheckOnionService {
 
     //부정양파 일기 검토
     ResponseDTO<NegCheckResult> checkNegNote(String negNote);
+
+    //테스트
+    ResponseDTO<String> test(String note);
 }

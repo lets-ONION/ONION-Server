@@ -2,6 +2,7 @@ package site.lets_onion.lets_onionApp.service.onion;
 
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +22,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class CheckOnionServiceImpl implements CheckOnionService {
 
-    private String API_KEY = ""; //숨겨야함
+    @Value("${chatgpt.apiKey}")
+    private static String API_KEY; //숨겨야함
     private static final String ENDPOINT = "https://api.openai.com/v1/chat/completions";
 
 
@@ -53,6 +55,11 @@ public class CheckOnionServiceImpl implements CheckOnionService {
             default:
                 return new ResponseDTO<>(NegCheckResult.FAIL, Responses.OK);
         }
+    }
+
+    @Override
+    public ResponseDTO<String> test(String note) {
+        return new ResponseDTO<>(getGptResponse(note), Responses.OK);
     }
 
 

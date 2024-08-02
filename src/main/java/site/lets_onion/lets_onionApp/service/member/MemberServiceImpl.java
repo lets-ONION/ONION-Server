@@ -14,6 +14,7 @@ import site.lets_onion.lets_onionApp.dto.integration.KakaoScopesDTO;
 import site.lets_onion.lets_onionApp.dto.integration.KakaoTokenResponseDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.LogoutDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.TokenDTO;
+import site.lets_onion.lets_onionApp.dto.member.AppLoginDTO;
 import site.lets_onion.lets_onionApp.dto.member.LoginDTO;
 import site.lets_onion.lets_onionApp.dto.member.MemberInfoDTO;
 import site.lets_onion.lets_onionApp.dto.member.StatusMessageDTO;
@@ -70,43 +71,41 @@ public class MemberServiceImpl implements MemberService {
     KakaoTokenResponseDTO tokenResponse = kakaoRequest
         .requestKakaoAuthToken(code, redirection);
 
-    return loginWithKakao(tokenResponse);
+    Long kakaoId = kakaoRequest.requestKakaoMemberInfo(
+        tokenResponse.getAccessToken()
+    ).getKakaoId();
 
-//    Long kakaoId = kakaoRequest.requestKakaoMemberInfo(
-//        tokenResponse.getAccessToken()
-//    ).getKakaoId();
-//
-//    Optional<Member> searchedMember = memberRepository.findByKakaoId(kakaoId);
-//    boolean existMember;
-//    if (searchedMember.isEmpty()) {
-//      searchedMember = Optional.of(createMember(kakaoId));
-//      existMember = false;
-//    } else {
-//      existMember = true;
-//    }
-//    Member member = searchedMember.get();
-//    LoginDTO loginDTO = new LoginDTO(member,
-//        jwtProvider.createToken(member.getId(), TokenType.ACCESS),
-//        jwtProvider.createToken(member.getId(), TokenType.REFRESH),
-//        existMember
-//    );
-//    kakaoRedisConnector.setWithTtl(
-//        member.getId(), new KakaoTokens
-//            (
-//                tokenResponse.getAccessToken(), tokenResponse.getRefreshToken()
-//            ),
-//        (long) tokenResponse.getRefreshExpiresIn()
-//    );
-//    if (existMember) {
-//      return new ResponseDTO<>(loginDTO, Responses.OK);
-//    } else {
-//      return new ResponseDTO<>(loginDTO, Responses.CREATED);
-//    }
+    Optional<Member> searchedMember = memberRepository.findByKakaoId(kakaoId);
+    boolean existMember;
+    if (searchedMember.isEmpty()) {
+      searchedMember = Optional.of(createMember(kakaoId));
+      existMember = false;
+    } else {
+      existMember = true;
+    }
+    Member member = searchedMember.get();
+    LoginDTO loginDTO = new LoginDTO(member,
+        jwtProvider.createToken(member.getId(), TokenType.ACCESS),
+        jwtProvider.createToken(member.getId(), TokenType.REFRESH),
+        existMember
+    );
+    kakaoRedisConnector.setWithTtl(
+        member.getId(), new KakaoTokens
+            (
+                tokenResponse.getAccessToken(), tokenResponse.getRefreshToken()
+            ),
+        (long) tokenResponse.getRefreshExpiresIn()
+    );
+    if (existMember) {
+      return new ResponseDTO<>(loginDTO, Responses.OK);
+    } else {
+      return new ResponseDTO<>(loginDTO, Responses.CREATED);
+    }
   }
 
   @Override
   @Transactional
-  public ResponseDTO<LoginDTO> loginInApp(KakaoTokenResponseDTO request) {
+  public ResponseDTO<LoginDTO> loginInApp(AppLoginDTO request) {
     return loginWithKakao(request);
   }
 
@@ -315,7 +314,7 @@ public class MemberServiceImpl implements MemberService {
 
 
   /*카카오 로그인*/
-  private ResponseDTO<LoginDTO> loginWithKakao(KakaoTokenResponseDTO request) {
+  private ResponseDTO<LoginDTO> loginWithKakao(AppLoginDTO request) {
     Long kakaoId = kakaoRequest.requestKakaoMemberInfo(
         request.getAccessToken()
     ).getKakaoId();
@@ -339,7 +338,7 @@ public class MemberServiceImpl implements MemberService {
             (
                 request.getAccessToken(), request.getRefreshToken()
             ),
-        (long) request.getRefreshExpiresIn()
+        5183999L
     );
     if (existMember) {
       return new ResponseDTO<>(loginDTO, Responses.OK);

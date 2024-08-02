@@ -22,7 +22,7 @@ public class TradeRepositoryImpl implements TradeRepository{
     @Override
     public List<TradeRequest> findAllByFromMemberIdIfPending(Long memberId) {
         return em.createQuery("select t from TradeRequest t"
-                        + " left fetch join t.fromMember fm"
+                        + " left join fetch t.fromMember fm"
                         + " where fm.id = :memberId"
                         + " and t.status = 'PENDING'",
                         TradeRequest.class)
@@ -33,7 +33,7 @@ public class TradeRepositoryImpl implements TradeRepository{
     @Override
     public List<TradeRequest> findAllByToMemberIdIfPending(Long memberId) {
         return em.createQuery("select t from TradeRequest t"
-                        + " left fetch join t.toMember tm"
+                        + " left join fetch t.toMember tm"
                         + " where tm.id = :memberId"
                         + " and t.status = 'PENDING'",
                         TradeRequest.class)

@@ -29,8 +29,6 @@ public class CheckOnionServiceImpl implements CheckOnionService {
 
     @Transactional
     public ResponseDTO<PosCheckResult> checkPosNote(String posNote) {
-        System.out.println("CheckOnionServiceImpl.checkPosNote.apikeyyyyyyyy");
-        System.out.println("apikey = " + API_KEY);
         String gptResponse = getGptResponse(posNote);
         switch (gptResponse) {
             case "0":

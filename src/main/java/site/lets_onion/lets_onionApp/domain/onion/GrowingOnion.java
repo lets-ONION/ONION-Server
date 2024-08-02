@@ -19,32 +19,35 @@ public class GrowingOnion {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    private String name;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "name", column = @Column(name = "pos_onion_name")),
+            @AttributeOverride(name = "isPos", column = @Column(name = "pos_onion_is_pos")),
+            @AttributeOverride(name = "growthStage", column = @Column(name = "pos_onion_growth_stage")),
+            @AttributeOverride(name = "onionLevel", column = @Column(name = "pos_onion_level")),
+            @AttributeOverride(name = "generation", column = @Column(name = "pos_onion_generation"))
+    })
+    private Onion posOnion;
 
-    private boolean posOrNeg;
-
-    private int growthStage;
-
-    private OnionLevel onionLevel;
-
-    private int generation;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "name", column = @Column(name = "neg_onion_name")),
+            @AttributeOverride(name = "isPos", column = @Column(name = "neg_onion_is_pos")),
+            @AttributeOverride(name = "growthStage", column = @Column(name = "neg_onion_growth_stage")),
+            @AttributeOverride(name = "onionLevel", column = @Column(name = "neg_onion_level")),
+            @AttributeOverride(name = "generation", column = @Column(name = "neg_onion_generation"))
+    })
+    private Onion negOnion;
 
     @Builder
-    public GrowingOnion(Member member, String name, boolean posOrNeg) {
+    public GrowingOnion(Member member) {
         this.member = member;
-        this.name = name;
-        this.posOrNeg = posOrNeg;
-        this.growthStage = 0;
-        this.onionLevel = OnionLevel.ZERO;
-        this.generation = 1;
-    }
-
-    public void waterOnion(Long id){
-        ++this.growthStage;
-        if (this.growthStage == 7){
-            this.growthStage = 0;
-
-        }
+        this.posOnion = Onion.builder()
+                .isPos(true)
+                .build();
+        this.negOnion = Onion.builder()
+                .isPos(false)
+                .build();
     }
 
 }

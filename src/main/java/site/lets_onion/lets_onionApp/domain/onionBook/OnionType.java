@@ -4,6 +4,7 @@ import lombok.Getter;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 @Getter
 public enum OnionType {
@@ -39,5 +40,12 @@ public enum OnionType {
     }
     public static OnionType getByOnionName(String onionName) {
         return ONION_NAME_MAP.get(onionName);
+    }
+
+    private static final Random idx = new Random();
+
+    public static OnionType randomType(){
+        OnionType[] onionTypes = values();
+        return onionTypes[idx.nextInt(onionTypes.length)];
     }
 }

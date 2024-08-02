@@ -14,6 +14,9 @@ public class FirebaseConfig {
 
   @Bean
   public FirebaseApp initFirebase() throws IOException {
+    if (!FirebaseApp.getApps().isEmpty()) {
+      return FirebaseApp.getInstance();
+    }
     String firebaseConfigPath = "firebase/firebase-key.json";
 
 //        FirebaseOptions options = new FirebaseOptions.Builder()

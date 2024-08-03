@@ -1,5 +1,6 @@
 package site.lets_onion.lets_onionApp.service.member;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -9,17 +10,27 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.lets_onion.lets_onionApp.domain.DeviceToken;
 import site.lets_onion.lets_onionApp.domain.member.Member;
+import site.lets_onion.lets_onionApp.domain.onion.OnionLevel;
+import site.lets_onion.lets_onionApp.domain.onionBook.CollectedOnion;
+import site.lets_onion.lets_onionApp.domain.onionBook.OnionBook;
+import site.lets_onion.lets_onionApp.domain.onionBook.OnionType;
 import site.lets_onion.lets_onionApp.dto.integration.KakaoFriendRequestDTO;
 import site.lets_onion.lets_onionApp.dto.integration.KakaoScopesDTO;
 import site.lets_onion.lets_onionApp.dto.integration.KakaoTokenResponseDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.LogoutDTO;
 import site.lets_onion.lets_onionApp.dto.jwt.TokenDTO;
+import site.lets_onion.lets_onionApp.dto.member.AppLoginDTO;
 import site.lets_onion.lets_onionApp.dto.member.LoginDTO;
 import site.lets_onion.lets_onionApp.dto.member.MemberInfoDTO;
 import site.lets_onion.lets_onionApp.dto.member.StatusMessageDTO;
+import site.lets_onion.lets_onionApp.dto.member.*;
+import site.lets_onion.lets_onionApp.dto.onion.GainedOnionDTO;
+import site.lets_onion.lets_onionApp.dto.onion.OnionImageUrlDTO;
+import site.lets_onion.lets_onionApp.dto.onionBook.OnionDTO;
 import site.lets_onion.lets_onionApp.dto.push.PushNotificationDTO;
 import site.lets_onion.lets_onionApp.repository.deviceToken.DeviceTokenRepository;
 import site.lets_onion.lets_onionApp.repository.member.MemberRepository;
+import site.lets_onion.lets_onionApp.repository.onionBook.OnionBookRepository;
 import site.lets_onion.lets_onionApp.util.exception.CustomException;
 import site.lets_onion.lets_onionApp.util.exception.Exceptions;
 import site.lets_onion.lets_onionApp.util.jwt.JwtProvider;
@@ -40,6 +51,7 @@ public class MemberServiceImpl implements MemberService {
 
   private final MemberRepository memberRepository;
   private final DeviceTokenRepository deviceTokenRepository;
+  private final OnionBookRepository onionBookRepository;
   private final JwtProvider jwtProvider;
   private final ServiceRedisConnector serviceRedisConnector;
   private final KakaoRedisConnector kakaoRedisConnector;
@@ -70,43 +82,41 @@ public class MemberServiceImpl implements MemberService {
     KakaoTokenResponseDTO tokenResponse = kakaoRequest
         .requestKakaoAuthToken(code, redirection);
 
-    return loginWithKakao(tokenResponse);
+    Long kakaoId = kakaoRequest.requestKakaoMemberInfo(
+        tokenResponse.getAccessToken()
+    ).getKakaoId();
 
-//    Long kakaoId = kakaoRequest.requestKakaoMemberInfo(
-//        tokenResponse.getAccessToken()
-//    ).getKakaoId();
-//
-//    Optional<Member> searchedMember = memberRepository.findByKakaoId(kakaoId);
-//    boolean existMember;
-//    if (searchedMember.isEmpty()) {
-//      searchedMember = Optional.of(createMember(kakaoId));
-//      existMember = false;
-//    } else {
-//      existMember = true;
-//    }
-//    Member member = searchedMember.get();
-//    LoginDTO loginDTO = new LoginDTO(member,
-//        jwtProvider.createToken(member.getId(), TokenType.ACCESS),
-//        jwtProvider.createToken(member.getId(), TokenType.REFRESH),
-//        existMember
-//    );
-//    kakaoRedisConnector.setWithTtl(
-//        member.getId(), new KakaoTokens
-//            (
-//                tokenResponse.getAccessToken(), tokenResponse.getRefreshToken()
-//            ),
-//        (long) tokenResponse.getRefreshExpiresIn()
-//    );
-//    if (existMember) {
-//      return new ResponseDTO<>(loginDTO, Responses.OK);
-//    } else {
-//      return new ResponseDTO<>(loginDTO, Responses.CREATED);
-//    }
+    Optional<Member> searchedMember = memberRepository.findByKakaoId(kakaoId);
+    boolean existMember;
+    if (searchedMember.isEmpty()) {
+      searchedMember = Optional.of(createMember(kakaoId));
+      existMember = false;
+    } else {
+      existMember = true;
+    }
+    Member member = searchedMember.get();
+    LoginDTO loginDTO = new LoginDTO(member,
+        jwtProvider.createToken(member.getId(), TokenType.ACCESS),
+        jwtProvider.createToken(member.getId(), TokenType.REFRESH),
+        existMember
+    );
+    kakaoRedisConnector.setWithTtl(
+        member.getId(), new KakaoTokens
+            (
+                tokenResponse.getAccessToken(), tokenResponse.getRefreshToken()
+            ),
+        (long) tokenResponse.getRefreshExpiresIn()
+    );
+    if (existMember) {
+      return new ResponseDTO<>(loginDTO, Responses.OK);
+    } else {
+      return new ResponseDTO<>(loginDTO, Responses.CREATED);
+    }
   }
 
   @Override
   @Transactional
-  public ResponseDTO<LoginDTO> loginInApp(KakaoTokenResponseDTO request) {
+  public ResponseDTO<LoginDTO> loginInApp(AppLoginDTO request) {
     return loginWithKakao(request);
   }
 
@@ -315,36 +325,84 @@ public class MemberServiceImpl implements MemberService {
 
 
   /*카카오 로그인*/
-  private ResponseDTO<LoginDTO> loginWithKakao(KakaoTokenResponseDTO request) {
-    Long kakaoId = kakaoRequest.requestKakaoMemberInfo(
-        request.getAccessToken()
-    ).getKakaoId();
+  private ResponseDTO<LoginDTO> loginWithKakao(AppLoginDTO request) {
+      Long kakaoId = kakaoRequest.requestKakaoMemberInfo(
+              request.getAccessToken()
+      ).getKakaoId();
 
-    Optional<Member> searchedMember = memberRepository.findByKakaoId(kakaoId);
-    boolean existMember;
-    if (searchedMember.isEmpty()) {
-      searchedMember = Optional.of(createMember(kakaoId));
-      existMember = false;
-    } else {
-      existMember = true;
+      Optional<Member> searchedMember = memberRepository.findByKakaoId(kakaoId);
+      boolean existMember;
+      if (searchedMember.isEmpty()) {
+          searchedMember = Optional.of(createMember(kakaoId));
+          existMember = false;
+      } else {
+          existMember = true;
+      }
+      Member member = searchedMember.get();
+      LoginDTO loginDTO = new LoginDTO(member,
+              jwtProvider.createToken(member.getId(), TokenType.ACCESS),
+              jwtProvider.createToken(member.getId(), TokenType.REFRESH),
+              existMember
+      );
+      kakaoRedisConnector.setWithTtl(
+              member.getId(), new KakaoTokens
+                      (
+                              request.getAccessToken(), request.getRefreshToken()
+                      ),
+              5183999L
+      );
+      if (existMember) {
+          return new ResponseDTO<>(loginDTO, Responses.OK);
+      } else {
+          return new ResponseDTO<>(loginDTO, Responses.CREATED);
+      }
+  }
+
+
+    /**
+     * 마이페이지에서 유저 정보를 조회합니다.
+     * @param memberId
+     * @return
+     */
+    @Override
+    public ResponseDTO<MypageMemberInfoResponseDTO> getMypageMemberInfo(Long memberId) {
+        Member member = findMember(memberId);
+        MypageMemberInfoResponseDTO dto = new MypageMemberInfoResponseDTO(member);
+        return new ResponseDTO<>(dto, Responses.OK);
     }
-    Member member = searchedMember.get();
-    LoginDTO loginDTO = new LoginDTO(member,
-        jwtProvider.createToken(member.getId(), TokenType.ACCESS),
-        jwtProvider.createToken(member.getId(), TokenType.REFRESH),
-        existMember
-    );
-    kakaoRedisConnector.setWithTtl(
-        member.getId(), new KakaoTokens
-            (
-                request.getAccessToken(), request.getRefreshToken()
-            ),
-        (long) request.getRefreshExpiresIn()
-    );
-    if (existMember) {
-      return new ResponseDTO<>(loginDTO, Responses.OK);
-    } else {
-      return new ResponseDTO<>(loginDTO, Responses.CREATED);
+
+    /**
+     * 카카오톡 친구 목록을 조회합니다.
+     * @param memberId
+     * @param dto
+     * @return
+     */
+    @Override
+    @Transactional
+    public ResponseDTO<MypageMemberInfoResponseDTO> updateMypageMemberInfo(Long memberId, MypageMemberInfoRequestDTO dto) {
+        Member member = findMember(memberId);
+        member.updateNickname(dto.getNickname());
+        member.updateUserImageUrl(dto.getUserImageUrl());
+        MypageMemberInfoResponseDTO mypageMemberInfoResponseDTO = new MypageMemberInfoResponseDTO(member);
+        return new ResponseDTO<>(mypageMemberInfoResponseDTO, Responses.OK);
     }
+
+  @Override
+  public ResponseDTO<GainedOnionDTO> getGainedOnions(Long memberId) {
+    OnionBook onionBook = onionBookRepository.findByMemberId(memberId);
+    // 1개 이상 모인 양파 리스트
+    List<OnionImageUrlDTO> onionImageUrlDTOS = new ArrayList<>();
+    // 아직 도감에서 모은 양파가 없을 경우를 대비해 디폴트 프로필 이미지로 긍정/부정양파 0단계 제공
+    onionImageUrlDTOS.add(new OnionImageUrlDTO(OnionLevel.ZERO.getPosImageUrl()));
+    onionImageUrlDTOS.add(new OnionImageUrlDTO(OnionLevel.ZERO.getNegImageUrl()));
+    for (OnionType onionType: OnionType.values()) {
+      CollectedOnion collectedOnion = onionBook.getOnion(onionType);
+      if (collectedOnion.getCollectedQuantity() == 0) {
+        continue;
+      }
+      onionImageUrlDTOS.add(new OnionImageUrlDTO(onionType.getImageUrl()));
+    }
+    GainedOnionDTO dto = new GainedOnionDTO(onionImageUrlDTOS);
+    return new ResponseDTO<>(dto, Responses.OK);
   }
 }

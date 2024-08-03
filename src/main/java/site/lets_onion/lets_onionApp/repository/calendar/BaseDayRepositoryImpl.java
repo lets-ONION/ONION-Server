@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import site.lets_onion.lets_onionApp.domain.calendar.DayData;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -26,5 +27,13 @@ public class BaseDayRepositoryImpl implements BaseDayRepository {
         } catch (NoResultException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<DayData> findByMonthId(Long monthId) {
+        return em.createQuery("select d from DayData d"
+        + " where d.month.id =:monthId", DayData.class)
+                .setParameter("monthId", monthId)
+                .getResultList();
     }
 }

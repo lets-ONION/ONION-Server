@@ -48,7 +48,6 @@ dependencies {
 	runtimeOnly "io.jsonwebtoken:jjwt-impl:${JJWT_VERSION}"
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	implementation("io.netty:netty-resolver-dns-native-macos:4.1.75.Final:osx-aarch_64") //삭제하기
 }
 
 tasks.named('test') {

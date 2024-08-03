@@ -10,9 +10,12 @@ public class MemberInfoDTO {
     @JsonProperty("member_id")
     private Long memberId;
     private String nickname;
+    @JsonProperty("user_image_url")
+    private String userImageUrl;
 
     public MemberInfoDTO(Member member) {
         this.memberId = member.getId();
         this.nickname = member.getNickname();
+        this.userImageUrl = member.getUserImageUrl();
     }
 }

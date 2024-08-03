@@ -10,9 +10,12 @@ public class FriendDTO {
   @JsonProperty("member_id")
   private Long id;
   private String nickname;
+  @JsonProperty("image_url")
+  private String imageUrl;
 
   public FriendDTO(Member friend) {
     this.id = friend.getId();
     this.nickname = friend.getNickname();
+    this.imageUrl = friend.getUserImageUrl();
   }
 }

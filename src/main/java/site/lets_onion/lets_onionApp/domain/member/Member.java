@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import site.lets_onion.lets_onionApp.domain.DeviceToken;
 import site.lets_onion.lets_onionApp.domain.onion.GrowingOnion;
+import site.lets_onion.lets_onionApp.domain.onion.OnionLevel;
 import site.lets_onion.lets_onionApp.domain.onionBook.OnionBook;
 
 @Entity @Getter
@@ -32,6 +33,8 @@ public class Member {
     @OneToOne(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private OnionBook onionBook;
 
+    private String userImageUrl;
+
     @Builder
     public Member(Long id, @NonNull Long kakaoId, String nickname) {
         this.id = id;
@@ -40,10 +43,15 @@ public class Member {
         pushNotification = new PushNotification();
         this.onions = GrowingOnion.builder().member(this).build();
         this.onionBook = OnionBook.builder().member(this).build();
+        this.userImageUrl = OnionLevel.ZERO.getPosImageUrl();
     }
 
     public void updateNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public void updateUserImageUrl(String userImageUrl){
+        this.userImageUrl = userImageUrl;
     }
 
 }

@@ -16,6 +16,6 @@ public class FriendDTO {
   public FriendDTO(Member friend) {
     this.id = friend.getId();
     this.nickname = friend.getNickname();
-    this.nickname = friend.get
+    this.imageUrl = friend.getUserImageUrl();
   }
 }

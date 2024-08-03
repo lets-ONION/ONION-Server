@@ -66,10 +66,9 @@ public class CheckOnionServiceImpl implements CheckOnionService {
     public String getGptResponse(String note) {
         String question = note
                 + """
-                \n위의 텍스트의 결론이 문맥상으로 긍정적인지, 부정적인지, 혹은 판단할 수 없는지 확인해줘.
-                \n만약 문맥상 100% 부정적이라면 부정으로 판단해줘. 그렇지 않으면 긍정으로 판단해줘.
+                \n위의 텍스트의 결론이 문맥상으로 긍정적인지, 부정적인지, 혹은 판단할 수 없는지 확인해서 반드시 0, 1, 2 중 하나로만 대답해줘. 다른 말은 하지 말아줘.
+                \n만약 문맥상 100% 부정적이라면 부정으로 판단해줘. 그렇지 않으면 전부다 긍정으로 판단해줘.
                 \n긍정적이면 0, 부정적이면 1을 보내줘. 만약 텍스트가 너무 짧거나, 텍스트가 불명확하거나, 텍스트가 인식되지 않거나, 판단이 어려우면 2를 보내줘. 
-                나머지 경우에는 반드시 긍정 혹은 부정 중 하나로 판단해줘. 다른 답은 하지 말아줘.
                 """;
 
         HttpHeaders headers = new HttpHeaders();
@@ -77,7 +76,7 @@ public class CheckOnionServiceImpl implements CheckOnionService {
         headers.set("Authorization", "Bearer " + API_KEY);
 
         Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("model","gpt-3.5-turbo");
+        requestBody.put("model","gpt-4-turbo");
         requestBody.put("messages", List.of(
                 Map.of("role", "user", "content", question)
         ));

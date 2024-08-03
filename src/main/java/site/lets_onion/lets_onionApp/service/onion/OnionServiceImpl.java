@@ -10,6 +10,7 @@ import site.lets_onion.lets_onionApp.domain.calendar.OnionHistory;
 import site.lets_onion.lets_onionApp.domain.member.Member;
 import site.lets_onion.lets_onionApp.domain.onion.Onion;
 import site.lets_onion.lets_onionApp.domain.onion.GrowingOnion;
+import site.lets_onion.lets_onionApp.domain.onionBook.OnionBook;
 import site.lets_onion.lets_onionApp.domain.onionBook.OnionType;
 import site.lets_onion.lets_onionApp.dto.calendar.PosNoteDTO;
 import site.lets_onion.lets_onionApp.dto.onion.*;
@@ -18,6 +19,7 @@ import site.lets_onion.lets_onionApp.repository.calendar.MonthRepository;
 import site.lets_onion.lets_onionApp.repository.member.MemberRepository;
 import site.lets_onion.lets_onionApp.repository.onion.GrowingOnionRepository;
 import site.lets_onion.lets_onionApp.repository.onion.OnionHistoryRepository;
+import site.lets_onion.lets_onionApp.repository.onionBook.OnionBookRepository;
 import site.lets_onion.lets_onionApp.util.exception.CustomException;
 import site.lets_onion.lets_onionApp.util.exception.Exceptions;
 import site.lets_onion.lets_onionApp.util.response.ResponseDTO;
@@ -37,6 +39,7 @@ public class OnionServiceImpl implements OnionService{
     private final DayRepository dayRepository;
     private final OnionHistoryRepository onionHistoryRepository;
     private final GrowingOnionRepository growingOnionRepository;
+    private final OnionBookRepository onionBookRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -103,6 +106,9 @@ public class OnionServiceImpl implements OnionService{
                 .nameAndGeneration(onionName)
                 .build();
         onionHistoryRepository.save(onionHistory);
+
+        OnionBook onionBook = onionBookRepository.findByMemberId(memberId);
+        onionBook.getOnion(onionType).increaseQuantity();
 
         onion.nextOnion();
         EvolvedOnionDTO evolvedOnionDTO = new EvolvedOnionDTO(onionHistory);

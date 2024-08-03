@@ -171,7 +171,7 @@ public class MemberServiceImpl implements MemberService {
   @Override
   @Transactional
   public ResponseDTO<StatusMessageDTO> updateStatusMessage(Long memberId, String message) {
-    serviceRedisConnector.setWithTtl(memberId.toString(), message, 86400000L); // 24시간 유지
+    serviceRedisConnector.setWithTtl(memberId.toString()+"_status_message", message, 86400000L); // 24시간 유지
     return new ResponseDTO<>(new StatusMessageDTO(message),
         Responses.CREATED);
   }
@@ -186,7 +186,7 @@ public class MemberServiceImpl implements MemberService {
   @Override
   @Transactional
   public ResponseDTO<StatusMessageDTO> getStatusMessage(Long memberId) {
-    String message = serviceRedisConnector.get(memberId.toString());
+    String message = serviceRedisConnector.get(memberId.toString()+"_status_message");
     return new ResponseDTO<>(new StatusMessageDTO(message),
         Responses.OK);
   }

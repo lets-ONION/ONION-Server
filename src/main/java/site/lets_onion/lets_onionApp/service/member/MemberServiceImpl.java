@@ -14,6 +14,7 @@ import site.lets_onion.lets_onionApp.domain.onion.OnionLevel;
 import site.lets_onion.lets_onionApp.domain.onionBook.CollectedOnion;
 import site.lets_onion.lets_onionApp.domain.onionBook.OnionBook;
 import site.lets_onion.lets_onionApp.domain.onionBook.OnionType;
+import site.lets_onion.lets_onionApp.dto.integration.FriendFromKakao;
 import site.lets_onion.lets_onionApp.dto.integration.KakaoFriendRequestDTO;
 import site.lets_onion.lets_onionApp.dto.integration.KakaoScopesDTO;
 import site.lets_onion.lets_onionApp.dto.integration.KakaoTokenResponseDTO;
@@ -22,13 +23,14 @@ import site.lets_onion.lets_onionApp.dto.jwt.TokenDTO;
 import site.lets_onion.lets_onionApp.dto.member.AppLoginDTO;
 import site.lets_onion.lets_onionApp.dto.member.LoginDTO;
 import site.lets_onion.lets_onionApp.dto.member.MemberInfoDTO;
+import site.lets_onion.lets_onionApp.dto.member.MypageMemberInfoRequestDTO;
+import site.lets_onion.lets_onionApp.dto.member.MypageMemberInfoResponseDTO;
 import site.lets_onion.lets_onionApp.dto.member.StatusMessageDTO;
-import site.lets_onion.lets_onionApp.dto.member.*;
 import site.lets_onion.lets_onionApp.dto.onion.GainedOnionDTO;
 import site.lets_onion.lets_onionApp.dto.onion.OnionImageUrlDTO;
-import site.lets_onion.lets_onionApp.dto.onionBook.OnionDTO;
 import site.lets_onion.lets_onionApp.dto.push.PushNotificationDTO;
 import site.lets_onion.lets_onionApp.repository.deviceToken.DeviceTokenRepository;
+import site.lets_onion.lets_onionApp.repository.friendship.FriendshipRepository;
 import site.lets_onion.lets_onionApp.repository.member.MemberRepository;
 import site.lets_onion.lets_onionApp.repository.onionBook.OnionBookRepository;
 import site.lets_onion.lets_onionApp.util.exception.CustomException;
@@ -55,6 +57,7 @@ public class MemberServiceImpl implements MemberService {
   private final JwtProvider jwtProvider;
   private final ServiceRedisConnector serviceRedisConnector;
   private final KakaoRedisConnector kakaoRedisConnector;
+  private final FriendshipRepository friendshipRepository;
 
   @Value("${kakao.apiKey}")
   private String clientId;
@@ -288,13 +291,21 @@ public class MemberServiceImpl implements MemberService {
    * @return
    */
   @Override
-  public ResponseDTO<KakaoFriendRequestDTO> requestKakaoFriends(Long memberId, int offset) {
+  public ResponseDTO<List<MemberInfoDTO>> requestKakaoFriends(Long memberId, int offset) {
     Member member = findMember(memberId);
     String kakaoToken = kakaoRedisConnector.get(memberId).getAccessToken();
-    return new ResponseDTO<>(
-        kakaoRequest.kakaoRequestFriends(member, kakaoToken, offset),
-        Responses.OK
-    );
+    KakaoFriendRequestDTO response = kakaoRequest.kakaoRequestFriends(member, kakaoToken, offset);
+
+    List<Long> kakaoIds = response.getFriends().stream().map(FriendFromKakao::getId).toList();
+    List<Member> kakaoFriends = memberRepository.findAllByKakaoId(member.getId(), kakaoIds);
+
+    List<Long> friendIds = kakaoFriends.stream().map(Member::getId).toList();
+    List<MemberInfoDTO> result = memberRepository.findAllNotFriend(member.getId(), friendIds)
+        .stream().map(MemberInfoDTO::new).toList();
+
+
+
+    return new ResponseDTO<>(result, Responses.OK);
   }
 
 

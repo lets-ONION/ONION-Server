@@ -307,6 +307,13 @@ public class MemberServiceImpl implements MemberService {
     return new ResponseDTO<>(result, Responses.OK);
   }
 
+  @Override
+  public ResponseDTO<PushNotificationDTO> getPushConfiguration(Long memberId) {
+    Member member = findMember(memberId);
+    return new ResponseDTO<>(new PushNotificationDTO(member),
+        Responses.OK);
+  }
+
 
   /**
    * 새로운 유저 데이터를 생성합니다.

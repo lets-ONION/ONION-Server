@@ -56,6 +56,9 @@ public interface MemberService {
     /*유저의 카카오 친구 목록 조회*/
     ResponseDTO<List<MemberInfoDTO>> requestKakaoFriends(Long memberId, int offset);
 
+    /*유저 현재 푸시 설정 조회*/
+    ResponseDTO<PushNotificationDTO> getPushConfiguration(Long memberId);
+
     // 마이페이지에서 유저 정보 조회
     ResponseDTO<MypageMemberInfoResponseDTO> getMypageMemberInfo(Long memberId);
 

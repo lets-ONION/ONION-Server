@@ -49,7 +49,7 @@ public class OnionBookServiceImpl implements OnionBookService{
 
         String message = "";
         try {
-            message = serviceRedisConnector.get(memberId.toString());
+            message = serviceRedisConnector.getStatusMessage(memberId.toString());
         } catch (Exception e) {
             message = "";
         }

@@ -12,7 +12,6 @@ public enum OnionType {
     ONION_GGANG("양파깡", "https://imgur.com/s8D57zC.png"),
     ONION_RING("양파링", "https://imgur.com/vfcZzfs.png"),
     ONION_RAW("생양파", "https://imgur.com/cpH5jvA.png"),
-    ONION_PILLED("깐양파", "https://imgur.com/dNv03Iq.png"),
     ONION_FRIED("양파튀김", "https://imgur.com/NNg1jfT.png"),
     ONION_PICKLE("양파피클", "https://imgur.com/4mjrwWX.png"),
     ONION_SUSHI("양파가 누운 연어초밥", "https://imgur.com/rHv8v3c.png"),

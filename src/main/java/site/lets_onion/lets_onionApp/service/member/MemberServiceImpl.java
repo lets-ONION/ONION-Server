@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import site.lets_onion.lets_onionApp.domain.DeviceToken;
 import site.lets_onion.lets_onionApp.domain.member.Member;
-import site.lets_onion.lets_onionApp.domain.onion.OnionLevel;
 import site.lets_onion.lets_onionApp.domain.onionBook.CollectedOnion;
 import site.lets_onion.lets_onionApp.domain.onionBook.OnionBook;
 import site.lets_onion.lets_onionApp.domain.onionBook.OnionType;
@@ -171,7 +170,7 @@ public class MemberServiceImpl implements MemberService {
   @Override
   @Transactional
   public ResponseDTO<StatusMessageDTO> updateStatusMessage(Long memberId, String message) {
-    serviceRedisConnector.setWithTtl(memberId.toString()+"_status_message", message, 86400000L); // 24시간 유지
+    serviceRedisConnector.setStatusMessage(memberId.toString(), message); // 24시간 유지
     return new ResponseDTO<>(new StatusMessageDTO(message),
         Responses.CREATED);
   }
@@ -186,7 +185,7 @@ public class MemberServiceImpl implements MemberService {
   @Override
   @Transactional
   public ResponseDTO<StatusMessageDTO> getStatusMessage(Long memberId) {
-    String message = serviceRedisConnector.get(memberId.toString()+"_status_message");
+    String message = serviceRedisConnector.getStatusMessage(memberId.toString());
     return new ResponseDTO<>(new StatusMessageDTO(message),
         Responses.OK);
   }
@@ -404,8 +403,7 @@ public class MemberServiceImpl implements MemberService {
     // 1개 이상 모인 양파 리스트
     List<OnionImageUrlDTO> onionImageUrlDTOS = new ArrayList<>();
     // 아직 도감에서 모은 양파가 없을 경우를 대비해 디폴트 프로필 이미지로 긍정/부정양파 0단계 제공
-    onionImageUrlDTOS.add(new OnionImageUrlDTO(OnionLevel.ZERO.getPosImageUrl()));
-    onionImageUrlDTOS.add(new OnionImageUrlDTO(OnionLevel.ZERO.getNegImageUrl()));
+    onionImageUrlDTOS.add(new OnionImageUrlDTO("https://imgur.com/dNv03Iq.png"));
     for (OnionType onionType: OnionType.values()) {
       CollectedOnion collectedOnion = onionBook.getOnion(onionType);
       if (collectedOnion.getCollectedQuantity() == 0) {

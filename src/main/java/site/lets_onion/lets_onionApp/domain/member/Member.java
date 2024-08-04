@@ -1,13 +1,24 @@
 package site.lets_onion.lets_onionApp.domain.member;
 
-import jakarta.persistence.*;
-import lombok.*;
-
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import site.lets_onion.lets_onionApp.domain.DeviceToken;
 import site.lets_onion.lets_onionApp.domain.onion.GrowingOnion;
-import site.lets_onion.lets_onionApp.domain.onion.OnionLevel;
 import site.lets_onion.lets_onionApp.domain.onionBook.OnionBook;
 
 @Entity @Getter
@@ -43,7 +54,7 @@ public class Member {
         pushNotification = new PushNotification();
         this.onions = GrowingOnion.builder().member(this).build();
         this.onionBook = OnionBook.builder().member(this).build();
-        this.userImageUrl = OnionLevel.ZERO.getPosImageUrl();
+        this.userImageUrl = "https://imgur.com/dNv03Iq.png"; // 기본 프로필 이미지를 깐양파로 설정
     }
 
     public void updateNickname(String nickname) {

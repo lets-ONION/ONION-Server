@@ -23,10 +23,20 @@ public class ServiceRedisConnector {
         redisTemplate.opsForValue().set(key, value, ttl, TimeUnit.MILLISECONDS);
     }
 
+    /*상태 메시지 저장*/
+    public void setStatusMessage(String key, String value) {
+        redisTemplate.opsForValue().set(key+"_status_message", value, 86400000L, TimeUnit.MILLISECONDS);
+    }
+
 
     /*키로 값 조회*/
     public String get(String key){
         return redisTemplate.opsForValue().get(key);
+    }
+
+    /*상태 메시지 조회*/
+    public String getStatusMessage(String key) {
+        return redisTemplate.opsForValue().get(key+"_status_message");
     }
 
 

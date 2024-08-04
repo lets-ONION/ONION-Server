@@ -1,7 +1,18 @@
 package site.lets_onion.lets_onionApp.domain.onionBook;
 
 
-import jakarta.persistence.*;
+import static jakarta.persistence.FetchType.LAZY;
+
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,8 +20,6 @@ import lombok.NoArgsConstructor;
 import site.lets_onion.lets_onionApp.domain.member.Member;
 import site.lets_onion.lets_onionApp.util.exception.CustomException;
 import site.lets_onion.lets_onionApp.util.exception.Exceptions;
-
-import static jakarta.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
@@ -48,13 +57,6 @@ public class OnionBook {
             @AttributeOverride(name = "onionType", column = @Column(name = "onion_raw_type")),
     })
     private CollectedOnion onionRaw;
-
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "collectedQuantity", column = @Column(name = "onion_pilled_quantity")),
-            @AttributeOverride(name = "onionType", column = @Column(name = "onion_pilled_type")),
-    })
-    private CollectedOnion onionPilled;
 
     @Embedded
     @AttributeOverrides({
@@ -105,7 +107,6 @@ public class OnionBook {
         this.onionGgang = CollectedOnion.builder().onionType(OnionType.ONION_GGANG).build();
         this.onionRing = CollectedOnion.builder().onionType(OnionType.ONION_RING).build();
         this.onionRaw = CollectedOnion.builder().onionType(OnionType.ONION_RAW).build();
-        this.onionPilled = CollectedOnion.builder().onionType(OnionType.ONION_PILLED).build();
         this.onionFried = CollectedOnion.builder().onionType(OnionType.ONION_FRIED).build();
         this.onionPickle = CollectedOnion.builder().onionType(OnionType.ONION_PICKLE).build();
         this.onionSushi = CollectedOnion.builder().onionType(OnionType.ONION_SUSHI).build();
@@ -121,7 +122,6 @@ public class OnionBook {
         this.onionGgang = CollectedOnion.testBuilder().onionType(OnionType.ONION_GGANG).collectedQuantity(ggang).build();
         this.onionRing = CollectedOnion.testBuilder().onionType(OnionType.ONION_RING).collectedQuantity(ring).build();
         this.onionRaw = CollectedOnion.testBuilder().onionType(OnionType.ONION_RAW).collectedQuantity(raw).build();
-        this.onionPilled = CollectedOnion.testBuilder().onionType(OnionType.ONION_PILLED).collectedQuantity(pilled).build();
         this.onionFried = CollectedOnion.testBuilder().onionType(OnionType.ONION_FRIED).collectedQuantity(fried).build();
         this.onionPickle = CollectedOnion.testBuilder().onionType(OnionType.ONION_PICKLE).collectedQuantity(pickle).build();
         this.onionSushi = CollectedOnion.testBuilder().onionType(OnionType.ONION_SUSHI).collectedQuantity(sushi).build();
@@ -143,8 +143,6 @@ public class OnionBook {
                 return this.onionRing;
             case ONION_RAW:
                 return this.onionRaw;
-            case ONION_PILLED:
-                return this.onionPilled;
             case ONION_FRIED:
                 return this.onionFried;
             case ONION_PICKLE:

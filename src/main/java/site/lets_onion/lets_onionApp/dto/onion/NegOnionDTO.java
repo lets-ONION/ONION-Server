@@ -11,11 +11,14 @@ public class NegOnionDTO {
     private int level;
     @JsonProperty("image_url")
     private String imageUrl;
+    @JsonProperty("is_evolvable")
+    private boolean isEvolvable;
 
     public NegOnionDTO(Onion onion) {
         this.name = onion.getName() + " " + onion.getGeneration() + "세";
         this.level = onion.getGrowthStage();
         this.imageUrl = onion.getOnionLevel().getNegImageUrl();
+        this.isEvolvable = (this.level == 7);
     }
 
 }

@@ -62,7 +62,7 @@ public class MainOnionController {
       긍정양파를 한 단계 성장시키는 API입니다.
       """)
     @ApiResponse(responseCode = "200")
-    public ResponseDTO<PosOnionWithEvolvableDTO> waterPosOnion(
+    public ResponseDTO<PosOnionDTO> waterPosOnion(
             HttpServletRequest request
     ){
         Long memberId = jwtProvider.getMemberId(request);
@@ -74,7 +74,7 @@ public class MainOnionController {
       부정양파를 한 단계 성장시키는 API입니다.
       """)
     @ApiResponse(responseCode = "200")
-    public ResponseDTO<NegOnionWithEvolvableDTO> waterNegOnion(
+    public ResponseDTO<NegOnionDTO> waterNegOnion(
             HttpServletRequest request
     ){
         Long memberId = jwtProvider.getMemberId(request);

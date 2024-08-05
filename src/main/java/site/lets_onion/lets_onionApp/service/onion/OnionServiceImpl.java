@@ -71,23 +71,23 @@ public class OnionServiceImpl implements OnionService{
     }
 
     @Override
-    public ResponseDTO<PosOnionWithEvolvableDTO> waterPosOnion(Long memberId) {
+    public ResponseDTO<PosOnionDTO> waterPosOnion(Long memberId) {
         checkAndCreateDay(memberId);
         Member member = findMember(memberId);
         Onion posOnion = member.getOnions().getPosOnion();
         posOnion.waterOnion();
 
-        PosOnionWithEvolvableDTO posOnionDTO = new PosOnionWithEvolvableDTO(posOnion);
+        PosOnionDTO posOnionDTO = new PosOnionDTO(posOnion);
         return new ResponseDTO<>(posOnionDTO, Responses.OK);
     }
 
     @Override
-    public ResponseDTO<NegOnionWithEvolvableDTO> waterNegOnion(Long memberId) {
+    public ResponseDTO<NegOnionDTO> waterNegOnion(Long memberId) {
         checkAndCreateDay(memberId);
         Member member = findMember(memberId);
         Onion negOnion = member.getOnions().getNegOnion();
         negOnion.waterOnion();
-        NegOnionWithEvolvableDTO negOnionDTO = new NegOnionWithEvolvableDTO(negOnion);
+        NegOnionDTO negOnionDTO = new NegOnionDTO(negOnion);
         return new ResponseDTO<>(negOnionDTO, Responses.OK);
     }
 

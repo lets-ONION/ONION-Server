@@ -16,8 +16,8 @@ public interface OnionService {
     ResponseDTO<Boolean> savePosNote(Long memberId, PosNoteDTO posNoteDTO);
 
     /*긍정, 부정 양파 물 주기*/
-    ResponseDTO<PosOnionWithEvolvableDTO> waterPosOnion(Long memberId);
-    ResponseDTO<NegOnionWithEvolvableDTO> waterNegOnion(Long memberId);
+    ResponseDTO<PosOnionDTO> waterPosOnion(Long memberId);
+    ResponseDTO<NegOnionDTO> waterNegOnion(Long memberId);
 
     /*양파 진화*/
     ResponseDTO<EvolvedOnionDTO> evolveOnion(Long memberId, boolean isPos);

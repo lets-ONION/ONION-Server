@@ -24,6 +24,17 @@ public class PushProvider {
     private final MemberRepository memberRepository;
     private final DeviceTokenRepository deviceTokenRepository;
 
+    /*물주기 푸시 알림*/
+    public void sendPushWateringTime(List<String> deviceTokens) {
+        Notification notification = Notification.builder()
+                .setTitle(PushType.WATERING_TIME.getMessage())
+                .setBody(PushType.WATERING_TIME.getMessage())
+                .build();
+
+        sendPushByFcm(notification, deviceTokens);
+    }
+
+
     public void sendPushToOne(Member fromMember, Member toMember, PushType pushType) {
         String message = fromMember.getNickname() + pushType.getMessage();
 
@@ -65,15 +76,15 @@ public class PushProvider {
     }
 
     /*FCM을 통해 푸시 알림 전송*/
-    private void sendPushByFcm(Notification notification, List<String> deviceTokens) {
-        if (deviceTokens.isEmpty()) {return;}
+    private PushTestResponseDTO sendPushByFcm(Notification notification, List<String> deviceTokens) {
+        if (deviceTokens.isEmpty()) {return null;}
         MulticastMessage pushes = MulticastMessage.builder()
                 .setNotification(notification)
                 .addAllTokens(deviceTokens)
                 .build();
 
         try {
-            FirebaseMessaging.getInstance().sendEachForMulticast(pushes);
+          return new PushTestResponseDTO(FirebaseMessaging.getInstance().sendEachForMulticast(pushes));
         } catch (FirebaseMessagingException e) {
             log.error("푸시 전체 발송 에러 발생: {}", e.getMessage(), e);
             throw new CustomException(Exceptions.FAILED_TO_SEND_PUSH_MESSAGE);

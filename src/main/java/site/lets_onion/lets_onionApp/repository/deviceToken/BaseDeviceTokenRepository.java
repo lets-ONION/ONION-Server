@@ -12,4 +12,7 @@ public interface BaseDeviceTokenRepository {
 
     /*특정 디바이스 토큰 삭제*/
     int deleteDeviceToken(Long memberId, String deviceToken);
+
+    /*푸시 타입 별 디바이스 토큰 조회*/
+    List<String> findAllByWateringTime();
 }

@@ -81,7 +81,7 @@ public class JwtProvider {
         }
         Long memberId = Long.parseLong(claims.getPayload().getSubject());
         blackList.putToken(refreshToken, expireAt.toString());
-        return new TokenDTO(createToken(memberId, TokenType.REFRESH),
+        return new TokenDTO(createToken(memberId, TokenType.ACCESS),
                 createToken(memberId, TokenType.REFRESH));
     }
 

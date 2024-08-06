@@ -15,7 +15,7 @@ public class PosOnionDTO {
     private boolean isEvolvable;
 
     public PosOnionDTO(Onion onion) {
-        this.name = "착한말양파 " + onion.getName() + " " + onion.getGeneration() + "세";
+        this.name = "착한말 " + onion.getName() + " " + onion.getGeneration() + "세";
         this.level = onion.getGrowthStage();
         this.imageUrl = onion.getOnionLevel().getPosImageUrl();
         this.isEvolvable = (this.level == 7);

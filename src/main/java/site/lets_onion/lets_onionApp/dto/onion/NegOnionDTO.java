@@ -15,7 +15,7 @@ public class NegOnionDTO {
     private boolean isEvolvable;
 
     public NegOnionDTO(Onion onion) {
-        this.name = "나쁜말양파 " + onion.getName() + " " + onion.getGeneration() + "세";
+        this.name = "나쁜말 " + onion.getName() + " " + onion.getGeneration() + "세";
         this.level = onion.getGrowthStage();
         this.imageUrl = onion.getOnionLevel().getNegImageUrl();
         this.isEvolvable = (this.level == 7);

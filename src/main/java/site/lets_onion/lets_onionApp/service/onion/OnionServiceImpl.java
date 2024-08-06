@@ -96,7 +96,7 @@ public class OnionServiceImpl implements OnionService{
         GrowingOnion growingOnion = growingOnionRepository.findByMemberId(memberId);
         Onion onion = (isPos) ? growingOnion.getPosOnion() : growingOnion.getNegOnion();
         if (onion.getGrowthStage() < 7){throw new CustomException(Exceptions.ONION_LEVEL_UNDER_7);}
-        String posOrNeg = (isPos) ? "착한말양파" : "나쁜말양파";
+        String posOrNeg = (isPos) ? "착한말" : "나쁜말";
         String onionName = posOrNeg + " " + onion.getName() + " " + onion.getGeneration() + "세";
 
         OnionType onionType = OnionType.randomType();

@@ -20,6 +20,7 @@ public class OnionHistory {
     private DayData dayData;
 
     @Column(name = "onion_type")
+    @Enumerated(EnumType.STRING)
     private OnionType onionType;
 
     @Column(name = "name_and_generation")
